@@ -1,5 +1,14 @@
 <html>
 <body>
-Hello World
-<a href="webide/ui5/pages/CatalogBrowser/">link</a>
+This image provides the following services:
+<ul>
+<li><a href="../openui5">SAP OpenUI5 library</a></li>
+<li><a href="../protected/rest/procedures">Get a list of all Hana procedures</a></li>
+<li>Invoke any Hana procedure e.g. POST http://..../protected/rest/procedures/SYS/GET_OBJECT_DEFINITION with Json payload {"SCHEMA": "PUBLIC", "OBJECT": "VIEWS" }</li>
+<li><a href="../protected/rest/lookup/SYS/OBJECTS?$select=SCHEMA_NAME, OBJECT_NAME, OBJECT_TYPE, OBJECT_OID&SCHEMA_NAME=SYS&OBJECT_NAME=TABLES">Lookup a single (first) row in any table or view</a></li>
+<li><a href="../protected/odata/SYS/OBJECTS/$metadata">Access any table or view via oData</a></li>
+<li><a href="../protected/rest/openapi.json">Get the swagger definition of all APIs</a></li>
+<li><a href="../protected/ui5">Mount point where any custom UI5 application can be added</a></li>
+<li><a href="../public">Mount point where any non-protected content can be added, e.g. login pages</a></li>
+</ul>
 </body></html>
