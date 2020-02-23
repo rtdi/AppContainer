@@ -1,0 +1,15 @@
+<mvc:View height="100%" class="sapUiSizeCompact"
+	controllerName="io.rtdi.hanaappcontainer.editorapp.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:dnd="sap.ui.core.dnd" 
+	xmlns:core="sap.ui.core">
+	<Panel height="100%">
+		<content>
+			<TextArea value="{/content}" />
+			<Text text="{/path}" />
+		</content>
+	</Panel>
+
+</mvc:View>
+

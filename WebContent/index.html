@@ -1,14 +1,34 @@
-<html>
-<body>
-This image provides the following services:
-<ul>
-<li><a href="../openui5">SAP OpenUI5 library</a></li>
-<li><a href="../protected/rest/procedures">Get a list of all Hana procedures</a></li>
-<li>Invoke any Hana procedure e.g. POST http://..../protected/rest/procedures/SYS/GET_OBJECT_DEFINITION with Json payload {"SCHEMA": "PUBLIC", "OBJECT": "VIEWS" }</li>
-<li><a href="../protected/rest/lookup/SYS/OBJECTS?$select=SCHEMA_NAME, OBJECT_NAME, OBJECT_TYPE, OBJECT_OID&SCHEMA_NAME=SYS&OBJECT_NAME=TABLES">Lookup a single (first) row in any table or view</a></li>
-<li><a href="../protected/odata/SYS/OBJECTS/$metadata">Access any table or view via oData</a></li>
-<li><a href="../protected/rest/openapi.json">Get the swagger definition of all APIs</a></li>
-<li><a href="../protected/ui5">Mount point where any custom UI5 application can be added</a></li>
-<li><a href="../public">Mount point where any non-protected content can be added, e.g. login pages</a></li>
-</ul>
-</body></html>
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Application Directory</title>
+
+	<script id="sap-ui-bootstrap"
+		src="/openui5/resources/sap-ui-core.js"
+		data-sap-ui-theme="sap_fiori_3"
+		data-sap-ui-libs="sap.m"
+		data-sap-ui-xx-bindingSyntax="complex"
+		data-sap-ui-xx-supportedLanguages="en"
+		data-sap-ui-resourceroots='{
+			"io.rtdi.hanaappcontainer": "./"
+		}'
+		data-sap-ui-async="true"
+		data-sap-ui-compatVersion="edge"
+		data-sap-ui-frameOptions="trusted" >
+	</script>
+	<script>
+		sap.ui.getCore().attachInit(function () {
+			document.body.innerHTML=''
+			new sap.ui.xmlview({
+				viewName: "io.rtdi.hanaappcontainer.View"
+				}).placeAt("content");
+			});
+	</script>
+</head>
+
+<body class="sapUiBody" id="content" style="height: 100%;">
+	<p>Loading OpenUI5 from <a href="/openui5/resources/sap-ui-core.js">here</a></p>
+</body>
+</html>
