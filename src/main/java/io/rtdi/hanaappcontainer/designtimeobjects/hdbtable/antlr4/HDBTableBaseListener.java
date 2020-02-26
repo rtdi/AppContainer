@@ -1,5 +1,5 @@
 // Generated from HDBTable.g4 by ANTLR 4.4
-package io.rtdi.hanaappcontainer.antlr4.hdbtable;
+package io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;

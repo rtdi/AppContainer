@@ -1,11 +1,13 @@
 package io.rtdi.hanaappcontainer.importapp;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import io.rtdi.hanaappcontainer.antlr4.hdbtable.HDBTableLexer;
-import io.rtdi.hanaappcontainer.antlr4.hdbtable.HDBTableParser;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.ANTLRHDBTableSetter;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableLexer;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser;
+import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 
 public class HDBTableTest {
 	public static void main(String[] args) throws Exception {
@@ -31,7 +33,7 @@ public class HDBTableTest {
 		HDBTableParser parser = new HDBTableParser(tokens);
 		ParseTree tree = parser.keyvaluepairs(); // begin parsing at rule 'r'
 		ParseTreeWalker walker = new ParseTreeWalker();
-		HDBTable table = new HDBTable();
+		HanaTable table = new HanaTable();
 		ANTLRHDBTableSetter listener= new ANTLRHDBTableSetter(table);
 		walker.walk(listener, tree);
 		

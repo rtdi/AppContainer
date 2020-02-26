@@ -1,4 +1,4 @@
-package io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements;
+package io.rtdi.hanaappcontainer.objects.table.subelements;
 
 import java.util.List;
 

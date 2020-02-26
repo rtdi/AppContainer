@@ -2,7 +2,6 @@ package io.rtdi.hanaappcontainer.importapp;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
@@ -27,8 +26,9 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.Actions;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
+import io.rtdi.hanaappcontainer.objects.table.Actions;
+import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.rtdi.hanaappserver.utils.ErrorMessage;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
@@ -72,9 +72,8 @@ public class ImportService {
 				try (ResultSet rs = stmt.executeQuery();) {
 					while (rs.next()) {
 						String tablename = rs.getString(1);
-						HDBTable hdbtable = Actions.createHDBTableFromDatabase(conn, schemaname, tablename);
-						StringWriter w = new StringWriter();
-						hdbtable.write(w);
+						HanaTable table = Actions.createHanaTableFromDatabase(conn, schemaname, tablename);
+						String hdbtablecontent = HDBTable.getHDBTableDefinition(table);
 						String path = Util.packageToPath(tablename);
 						String filename = Util.packageToFilename(tablename);
 						filename = filename + ".hdbtable";
@@ -84,7 +83,7 @@ public class ImportService {
 								throw new HanaSQLException("Failed to create the directory", d.getAbsolutePath(), 10005);
 							}
 						}
-						Files.writeString(new File(d.getAbsolutePath() + File.separatorChar + filename).toPath(), w.toString(), StandardOpenOption.CREATE);
+						Files.writeString(new File(d.getAbsolutePath() + File.separatorChar + filename).toPath(), hdbtablecontent, StandardOpenOption.CREATE);
 					}
 				}
 			} catch (SQLException e) {

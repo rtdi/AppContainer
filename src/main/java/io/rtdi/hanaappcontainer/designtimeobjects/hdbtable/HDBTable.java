@@ -1,138 +1,174 @@
 package io.rtdi.hanaappcontainer.designtimeobjects.hdbtable;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.ColumnDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.IndexDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.PrimaryKeyDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.TableLoggingType;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.TableType;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-public class HDBTable {
-	/*
-		struct TableDefinition {
-		    string schemaName;
-		    optional bool temporary;
-		    optional TableType tableType;
-		    optional bool public;
-		    optional TableLoggingType loggingType;
-		    list<ColumnDefinition> columns;
-		    optional list<IndexDefinition> indexes;
-		    optional PrimaryKeyDefinition primaryKey;
-		    optional string description;
-		};
-		TableDefinition table;
-	 * };
-	 * 
-	 */
-	String schemaName;
-	Boolean temporary;
-	TableType tableType;
-	Boolean isPublic;
-	TableLoggingType loggingType;
-	List<ColumnDefinition> columns;
-	List<IndexDefinition> indexes;
-	PrimaryKeyDefinition primaryKey;
-	String description;
-	
-	public HDBTable() {
-		super();
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableLexer;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser;
+import io.rtdi.hanaappcontainer.objects.table.HanaTable;
+import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.IndexDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.Order;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
+import io.rtdi.hanaappserver.utils.HanaSQLException;
+
+public class HDBTable {	
+
+	public static HanaTable parseHDBTableText(String text, String tablename) {
+		CharStream input = CharStreams.fromString(text);;
+		HDBTableLexer lexer = new HDBTableLexer(input);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		HDBTableParser parser = new HDBTableParser(tokens);
+		ParseTree tree = parser.keyvaluepairs();
+		ParseTreeWalker walker = new ParseTreeWalker();
+		HanaTable table = new HanaTable();
+		table.setTableName(tablename);
+		ANTLRHDBTableSetter listener= new ANTLRHDBTableSetter(table);
+		walker.walk(listener, tree);
+		return table;
 	}
 	
-	public String getSchemaName() { // should not be used!
-		return schemaName;
+	private static String translate(TableType type) throws HanaSQLException {
+		if (type == null) {
+			return "";
+		} else if (type == TableType.COLUMN) {
+			return "columnstore";
+		} else if (type == TableType.ROW) {
+			return "rowstore";
+		} else {
+			throw new HanaSQLException("The table type is not supported by .hdbtable files of SAP", type.name(), 30001);
+		}
 	}
-	public void write(Writer w) throws IOException {
-		w.append("table.schemaName = \"").append(schemaName).append("\";\n");
-		w.append("table.temporary = ").append(String.valueOf(temporary)).append(";\n");
-		w.append("table.tableType = ").append(tableType.name()).append(";\n");
-		w.append("table.loggingType = ").append(loggingType.name()).append(";\n");
+
+	public static String getHDBTableDefinition(HanaTable table) throws IOException, HanaSQLException {
+		/*
+			struct TableDefinition {
+			    string schemaName;
+			    optional bool temporary;
+			    optional TableType tableType;
+			    optional bool public;
+			    optional TableLoggingType loggingType;
+			    list<ColumnDefinition> columns;
+			    optional list<IndexDefinition> indexes;
+			    optional PrimaryKeyDefinition primaryKey;
+			    optional string description;
+			};
+			TableDefinition table;
+		 * };
+		 * 
+		 */
+		StringWriter w = new StringWriter();
+		if (table.getSchemaName() != null) {
+			w.append("table.schemaName = \"").append(table.getSchemaName()).append("\";\n");
+		}
+		if (table.getTemporary() != null) {
+			w.append("table.temporary = ").append(table.getTemporary()==TemporaryType.GLOBALTEMPORARY?"true":"false").append(";\n");
+		}
+		if (table.getTableType() != null) {
+			w.append("table.tableType = ").append(translate(table.getTableType())).append(";\n");
+		}
+		if (table.getLoggingType() != null) {
+			w.append("table.loggingType = ").append(table.getLoggingType().name()).append(";\n");
+		}
 		w.append("table.columns = [\n");
 		boolean first = true;
-		for (ColumnDefinition c : columns) {
+		for (ColumnDefinition c : table.getColumns()) {
 			if (first) {
 				first = false;
 			} else {
 				w.append(",\n");
 			}
 			w.append("         ");
-			c.write(w);
+			writeColumnDefinition(w,c);
 		}
 		w.append("\n];\n");
-		if (indexes != null && indexes.size() != 0) {
+		if (table.getIndexes() != null && table.getIndexes().size() != 0) {
 			w.append("table.indexes = [\n");
 			first = true;
-			for (IndexDefinition idx : indexes) {
+			for (IndexDefinition idx : table.getIndexes()) {
 				if (first) {
 					first = false;
 				} else {
 					w.append(",\n");
 				}
 				w.append("         ");
-				idx.write(w);
+				writeIndexDefinition(w, idx);
 			}
 			w.append("\n];\n");
 		}
-		if (primaryKey != null && primaryKey.getPkcolumns() != null && primaryKey.getPkcolumns().size() != 0) {
-			w.append("table.primaryKey.pkcolumns = ").append(HDBTable.writeStringList(primaryKey.getPkcolumns())).append(";\n");
+		if (table.getPrimaryKey() != null && table.getPrimaryKey().getPkcolumns() != null && table.getPrimaryKey().getPkcolumns().size() != 0) {
+			w.append("table.primaryKey.pkcolumns = ").append(HDBTable.writeStringList(table.getPrimaryKey().getPkcolumns())).append(";\n");
 		}
+		return w.toString();
 	}
-	public void setSchemaName(String schemaName) {
-		this.schemaName = schemaName;
+	
+	private static void writeColumnDefinition(Writer w, ColumnDefinition c) throws IOException {
+		/*
+			struct ColumnDefinition {
+			    string name;
+			    SqlDataType sqlType;
+			    optional bool nullable;
+			    optional bool unique;
+			    optional int32 length;
+			    optional int32 scale;
+			    optional int32 precision;
+			    optional string defaultValue;
+			    optional string comment;
+			};
+		 */
+		w.append("{name = \"").append(c.getName()).append("\";");
+		w.append(" sqlType = \"").append(c.getSqlType().toString()).append("\";");
+		if (c.getNullable() != null) {
+			w.append(" nullable = ").append(String.valueOf(c.getNullable())).append(";");
+		}
+		if (c.getLength() != null) {
+			w.append(" length = ").append(String.valueOf(c.getLength())).append(";");
+		}
+		if (c.getPrecision() != null) {
+			w.append(" precision = ").append(String.valueOf(c.getPrecision())).append(";");
+		}
+		if (c.getScale() != null) {
+			w.append(" scale = ").append(String.valueOf(c.getScale())).append(";");
+		}
+		if (c.getDefaultValue() != null) {
+			w.append(" defaultValue = \"").append(c.getDefaultValue()).append("\";");
+		}
+		if (c.getComment() != null) {
+			w.append(" comment = \"").append(c.getComment()).append("\";");
+		}
+		w.append("}");
 	}
-	public Boolean getTemporary() {
-		return temporary;
-	}
-	public void setTemporary(Boolean temporary) {
-		this.temporary = temporary;
-	}
-	public TableType getTableType() {
-		return tableType;
-	}
-	public void setTableType(TableType tableType) {
-		this.tableType = tableType;
-	}
-	public Boolean getPublic() {
-		return isPublic;
-	}
-	public void setPublic(Boolean isPublic) {
-		this.isPublic = isPublic;
-	}
-	public TableLoggingType getLoggingType() {
-		return loggingType;
-	}
-	public void setLoggingType(TableLoggingType loggingType) {
-		this.loggingType = loggingType;
-	}
-	public List<ColumnDefinition> getColumns() {
-		return columns;
-	}
-	public void setColumns(List<ColumnDefinition> columns) {
-		this.columns = columns;
-	}
-	public List<IndexDefinition> getIndexes() {
-		return indexes;
-	}
-	public void setIndexes(List<IndexDefinition> indexes) {
-		this.indexes = indexes;
-	}
-	public PrimaryKeyDefinition getPrimaryKey() {
-		return primaryKey;
-	}
-	public void setPrimaryKey(PrimaryKeyDefinition primaryKey) {
-		this.primaryKey = primaryKey;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	@Override
-	public String toString() {
-		return "HDBTable:" + columns;
+
+	private static void writeIndexDefinition(Writer w, IndexDefinition idx) throws IOException {
+		/*
+			struct IndexDefinition {
+			    string name;
+			    bool unique;
+			    optional Order order;
+			    optional IndexType indexType;
+			    list<string> indexColumns;
+			};
+		 */
+		w.append("{name = \"").append(idx.getName()).append("\";");
+		if (idx.getUnique() != null) {
+			w.append(" unique = ").append(String.valueOf(idx.getUnique())).append(";");
+		}
+		if (idx.getOrder() != null) {
+			w.append(" order = ").append(idx.getOrder() == Order.ASC?"ASC":"DSC").append(";");
+		}
+		if (idx.getIndexType() != null) {
+			w.append(" indexType = ").append(idx.getIndexType().name()).append(";");
+		}
+		w.append(" indexColumns = ").append(HDBTable.writeStringList(idx.getIndexColumns())).append(";}");
 	}
 
 	public static String writeStringList(List<String> list) {

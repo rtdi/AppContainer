@@ -1,25 +1,9 @@
-package io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements;
-
-import java.io.IOException;
-import java.io.Writer;
+package io.rtdi.hanaappcontainer.objects.table.subelements;
 
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 
 public class ColumnDefinition {
-	/*
-		struct ColumnDefinition {
-		    string name;
-		    SqlDataType sqlType;
-		    optional bool nullable;
-		    optional bool unique;
-		    optional int32 length;
-		    optional int32 scale;
-		    optional int32 precision;
-		    optional string defaultValue;
-		    optional string comment;
-		};
-	 */
 	String name;
 	HanaDataType sqlType;
 	Boolean nullable;
@@ -30,29 +14,6 @@ public class ColumnDefinition {
 	String defaultValue;
 	String comment;
 	
-	public void write(Writer w) throws IOException {
-		w.append("{name = \"").append(name).append("\";");
-		w.append(" sqlType = \"").append(sqlType.toString()).append("\";");
-		if (nullable != null) {
-			w.append(" nullable = ").append(String.valueOf(nullable)).append(";");
-		}
-		if (length != null) {
-			w.append(" length = ").append(String.valueOf(length)).append(";");
-		}
-		if (precision != null) {
-			w.append(" precision = ").append(String.valueOf(precision)).append(";");
-		}
-		if (scale != null) {
-			w.append(" scale = ").append(String.valueOf(scale)).append(";");
-		}
-		if (defaultValue != null) {
-			w.append(" defaultValue = \"").append(defaultValue).append("\";");
-		}
-		if (comment != null) {
-			w.append(" comment = \"").append(comment).append("\";");
-		}
-		w.append("}");
-	}
 	public String getName() {
 		return name;
 	}

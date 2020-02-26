@@ -1,4 +1,4 @@
-package io.rtdi.hanaappcontainer.designtimeobjects.hdbtable;
+package io.rtdi.hanaappcontainer.objects.table;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,21 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
-import io.rtdi.hanaappcontainer.antlr4.hdbtable.HDBTableLexer;
-import io.rtdi.hanaappcontainer.antlr4.hdbtable.HDBTableParser;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.ColumnDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.IndexDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.IndexType;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.Order;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.PrimaryKeyDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.TableLoggingType;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.TableType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.IndexDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.IndexType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.Order;
+import io.rtdi.hanaappcontainer.objects.table.subelements.PrimaryKeyDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TableLoggingType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.Util;
 
@@ -46,24 +39,10 @@ import io.rtdi.hanaappserver.utils.Util;
  * <ul><li>The schema information is ignored as the schema comes from the package root folder</li></ul>
  */
 public class Actions {
-	public static final String TRUE = "TRUE";
 
-	public static HDBTable parseHDBTableText(String text) {
-		CharStream input = CharStreams.fromString(text);;
-		HDBTableLexer lexer = new HDBTableLexer(input);
+	private static final Object TRUE = "TRUE";
 
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-		HDBTableParser parser = new HDBTableParser(tokens);
-		ParseTree tree = parser.keyvaluepairs();
-		ParseTreeWalker walker = new ParseTreeWalker();
-		HDBTable hdbtable = new HDBTable();
-		ANTLRHDBTableSetter listener= new ANTLRHDBTableSetter(hdbtable);
-		walker.walk(listener, tree);
-		return hdbtable;
-	}
-
-	public static HDBTable createHDBTableFromDatabase(Connection conn, String schemaname, String tablename) throws HanaSQLException {
+	public static HanaTable createHanaTableFromDatabase(Connection conn, String schemaname, String tablename) throws HanaSQLException {
 		String sql = "select t.comments, t.is_logged, t.table_type, t.temporary_table_type, "
 				+ "t.partition_spec, t.is_preload, t.is_series_table, t.unload_priority, t.temporal_type, s.synonym_name "
 				+ "from tables t "
@@ -75,12 +54,13 @@ public class Actions {
 			stmt.setString(2, tablename);
 			try (ResultSet rs = stmt.executeQuery();) {
 				if (rs.next()) {
-					HDBTable table = new HDBTable();
+					HanaTable table = new HanaTable();
+					table.setTableName(tablename);
 					table.setDescription(rs.getString(1));
 					table.setLoggingType(TRUE.equals(rs.getString(2))?TableLoggingType.LOGGING:TableLoggingType.NOLOGGING);
-					table.setTableType("COLUMN".equals(rs.getString(3))?TableType.COLUMNSTORE:TableType.ROWSTORE);
-					table.setTemporary("GLOBAL".equals(rs.getString(4)));
-					table.setPublic(tablename.equals(rs.getString(10))); // When there is a public synonym of same name, then its public property is set to true
+					table.setTableType("COLUMN".equals(rs.getString(3))?TableType.COLUMN:TableType.ROW);
+					table.setTemporary("GLOBAL".equals(rs.getString(4))?TemporaryType.GLOBALTEMPORARY:null);
+					table.setHasPublicSynonym(tablename.equals(rs.getString(10))); // When there is a public synonym of same name, then its public property is set to true
 					table.setSchemaName(schemaname);
 					
 					sql = "select position, column_name, data_type_name, length, scale, is_nullable, default_value, "
@@ -149,10 +129,10 @@ public class Actions {
 		}
 	}
 	
-	public static List<String> activate(Connection conn, String schemaname, String tablename, HDBTable hdbtable) throws HanaSQLException {
+	public static List<String> activate(Connection conn, String schemaname, String tablename, HanaTable table) throws HanaSQLException {
 		List<String> ret = new ArrayList<>();
 		try {
-			HDBTable currentdef = createHDBTableFromDatabase(conn, schemaname, tablename);
+			HanaTable currentdef = createHanaTableFromDatabase(conn, schemaname, tablename);
 		} catch (HanaSQLException e) {
 			if (e.getErrorcode() == 10003) {
 				// No table exists yet
@@ -166,23 +146,21 @@ public class Actions {
 					 | VIRTUAL TABLE
 				 */
 				String tabletypekeyword;
-				if (hdbtable.getTableType() == null || hdbtable.getTableType() == TableType.COLUMNSTORE) {
+				if (table.getTableType() == null || table.getTableType() == TableType.COLUMN) {
 					tabletypekeyword = "column ";
 				} else {
 					tabletypekeyword = "row ";
 				}
-				String temporarykeyword;
-				if (hdbtable.getTemporary() == null || hdbtable.getTemporary().booleanValue()) {
-					temporarykeyword = "global temporary ";
-				} else {
-					temporarykeyword = "";
+				String temporarykeyword = "";
+				if (table.getTemporary() != null) {
+					temporarykeyword = table.getTemporary().getKey();
 				}
 				b.append("create ").append(temporarykeyword).append(tabletypekeyword)
 				.append("table \"").append(schemaname).append("\".\"").append(tablename).append("\" ");
 				b.append("(\n");
 				Map<String, String> columncomments = new HashMap<>();
 				boolean first = true;
-				for (ColumnDefinition c : hdbtable.getColumns()) {
+				for (ColumnDefinition c : table.getColumns()) {
 					if (first) {
 						first = false;
 					} else {
@@ -197,11 +175,11 @@ public class Actions {
 						columncomments.put(c.getName(), c.getComment());
 					}
 				}
-				if (hdbtable.getPrimaryKey() != null) {
-					if (hdbtable.getPrimaryKey().getPkcolumns() != null) {
+				if (table.getPrimaryKey() != null) {
+					if (table.getPrimaryKey().getPkcolumns() != null) {
 						b.append(",\n    primary key (");
 						first = true;
-						for (String p : hdbtable.getPrimaryKey().getPkcolumns()) {
+						for (String p : table.getPrimaryKey().getPkcolumns()) {
 							if (first) {
 								first = false;
 							} else {
@@ -213,20 +191,23 @@ public class Actions {
 					}
 				}
 				b.append(')');
+				if (table.getLoggingType() != null) {
+					b.append(table.getLoggingType().getKey());
+				}
 				try (PreparedStatement stmt = conn.prepareStatement(b.toString());) {
 					stmt.execute();
 					ret.add(b.toString());
-					if (hdbtable.getDescription() != null) {
+					if (table.getDescription() != null) {
 						b = new StringBuffer();
 						b.append("comment on table \"").append(schemaname).append("\".\"").append(tablename).append("\" is ");
-						b.append('\'').append(hdbtable.getDescription()).append('\'');
+						b.append('\'').append(table.getDescription()).append('\'');
 						try (PreparedStatement stmtcomment = conn.prepareStatement(b.toString());) {
 							stmtcomment.execute();
 							ret.add(b.toString());
 						}
 					}
-					if (hdbtable.getIndexes() != null) {
-						for (IndexDefinition idx : hdbtable.getIndexes()) {
+					if (table.getIndexes() != null) {
+						for (IndexDefinition idx : table.getIndexes()) {
 							b = new StringBuffer();
 							String indextype = "";
 							if (idx.getUnique() != null && idx.getUnique().booleanValue()) {
@@ -266,7 +247,7 @@ public class Actions {
 							}
 						}
 					}
-					if (hdbtable.getPublic() != null && hdbtable.getPublic().booleanValue()) {
+					if (table.getHasPublicSynonym() != null && table.getHasPublicSynonym().booleanValue()) {
 						b = new StringBuffer();
 						b.append("select synonym_name from synonyms where schema_name = 'PUBLIC' and synonym_name = ?");
 						try (PreparedStatement stmtsynquery = conn.prepareStatement(b.toString());) {
@@ -290,7 +271,7 @@ public class Actions {
 							b = new StringBuffer();
 							b.append("comment on column \"").append(schemaname).append("\".\"")
 							.append(tablename).append("\".\"").append(column).append("\" is ");
-							b.append('\'').append(hdbtable.getDescription()).append('\'');
+							b.append('\'').append(table.getDescription()).append('\'');
 							try (PreparedStatement stmtcc = conn.prepareStatement(b.toString());) {
 								stmtcc.execute();
 								ret.add(b.toString());

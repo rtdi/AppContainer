@@ -2,31 +2,56 @@ package io.rtdi.hanaappcontainer.designtimeobjects.hdbtable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import io.rtdi.hanaappcontainer.antlr4.hdbtable.HDBTableBaseListener;
-import io.rtdi.hanaappcontainer.antlr4.hdbtable.HDBTableParser.*;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.ColumnDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.IndexDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.IndexType;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.Order;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.PrimaryKeyDefinition;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.TableLoggingType;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.subelements.TableType;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableBaseListener;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnarContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumncommentContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumndefContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumndefaultvalueContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnlengthContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnnameContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnnullableContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnprecisionContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnscaleContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnsqltypeContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.ColumnuniqueContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.DescriptionContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.IndexTypeContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.IndexcolumnsContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.IndexdefContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.IndexnameContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.IndexorderContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.IndexuniqueContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.LoggingContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.PrimarykeyindextypeContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.PrimarykeysContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.SchemanameContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.StringarrayContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.SynonymContext;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser.TemporaryContext;
+import io.rtdi.hanaappcontainer.objects.table.HanaTable;
+import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.IndexDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.IndexType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.Order;
+import io.rtdi.hanaappcontainer.objects.table.subelements.PrimaryKeyDefinition;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TableLoggingType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.Util;
 
 
 public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	
-	private HDBTable hdbtable;
+	private HanaTable hdbtable;
 	private ColumnDefinition columndef;
 	private IndexDefinition indexdef;
 
-	public ANTLRHDBTableSetter(HDBTable hdbtable) {
+	public ANTLRHDBTableSetter(HanaTable hdbtable) {
 		this.hdbtable = hdbtable;
 	}
 
@@ -34,7 +59,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterTemporary(TemporaryContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			hdbtable.setTemporary(Boolean.valueOf(t.getText()));
+			hdbtable.setTemporary(t.getText().equalsIgnoreCase("TRUE")?TemporaryType.GLOBALTEMPORARY:null);
 		}
 	}
 
@@ -91,7 +116,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterSynonym(SynonymContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			hdbtable.setPublic(Boolean.valueOf(t.getText()));
+			hdbtable.setHasPublicSynonym(Boolean.valueOf(t.getText()));
 		}
 	}
 
@@ -199,7 +224,15 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			if (hdbtable.getPrimaryKey() == null) {
 				hdbtable.setPrimaryKey(new PrimaryKeyDefinition());
 			}
-			hdbtable.getPrimaryKey().setIndexType(IndexType.valueOf(t.getText()));
+			switch (t.getText().toUpperCase()) {
+			case "B_TREE": 
+				hdbtable.getPrimaryKey().setIndexType(IndexType.B_TREE);
+				break;
+			case "CPB_TREE": 
+				hdbtable.getPrimaryKey().setIndexType(IndexType.CPB_TREE);
+				break;
+			default:
+			}
 		}
 	}
 

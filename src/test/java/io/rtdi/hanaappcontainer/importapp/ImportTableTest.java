@@ -9,7 +9,9 @@ import java.sql.DriverManager;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.Actions;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
+import io.rtdi.hanaappcontainer.objects.table.Actions;
+import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 
 public class ImportTableTest {
 	private Connection conn;
@@ -28,7 +30,7 @@ public class ImportTableTest {
 			hdbtable.write(w);
 			System.out.print(w.toString());*/
 			
-			Actions.parseHDBTableText("table.schemaName = \"MYSCHEMA\";\r\n" + 
+			HanaTable table = HDBTable.parseHDBTableText("table.schemaName = \"MYSCHEMA\";\r\n" + 
 					"table.temporary = true;\r\n" + 
 					"table.tableType = COLUMNSTORE;\r\n" + 
 					"table.loggingType = NOLOGGING;\r\n" + 
@@ -40,7 +42,7 @@ public class ImportTableTest {
 					"table.indexes =  [\r\n" + 
 					"	{name = \"MYINDEX1\"; unique = true; order = DSC; indexColumns = [\"Col2\"];},\r\n" + 
 					"	{name = \"MYINDEX2\"; unique = true; order = DSC; indexType = B_TREE; indexColumns = [\"Col1\", \"Col4\"];}];\r\n" + 
-					"table.primaryKey.pkcolumns = [\"Col1\", \"Col2\"];");
+					"table.primaryKey.pkcolumns = [\"Col1\", \"Col2\"];", "TABLE1");
 
 		} catch (Exception e) {
 			e.printStackTrace();
