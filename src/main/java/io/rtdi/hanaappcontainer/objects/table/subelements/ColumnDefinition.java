@@ -1,7 +1,10 @@
 package io.rtdi.hanaappcontainer.objects.table.subelements;
 
+import java.util.List;
+
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
+import io.rtdi.hanaappserver.utils.Util;
 
 public class ColumnDefinition {
 	String name;
@@ -61,7 +64,7 @@ public class ColumnDefinition {
 			this.length = null;
 			break;
 		default:
-			throw new HanaSQLException("Unknown datatype", datatypename, 10005);
+			throw new HanaSQLException("Unknown datatype, please file an issue", datatypename);
 		}
 		this.nullable = nullable;
 	}
@@ -120,4 +123,75 @@ public class ColumnDefinition {
 	public String toString() {
 		return (name!=null?name:"unknown name") + " " + (sqlType != null?sqlType.name():"unknown datatype");
 	}
+	public void validate(List<String> ret) throws HanaSQLException {
+		if (name == null || name.length() == 0) {
+			ret.add("Column has no name");
+			throw new HanaSQLException("The columns has no name", "Check return information");
+		}
+		if (sqlType == null) {
+			ret.add("Column \"" + name + "\" has no data type");
+			throw new HanaSQLException("The column has no data type", "Check return information");
+		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		} else if (!(o instanceof ColumnDefinition)) {
+			return false;
+		} else {
+			ColumnDefinition c = (ColumnDefinition) o;
+			if (c.name == null || name == null || !c.name.equals((name))) { // just a failsafe
+				return false;
+			} else if (!Util.sameOrNull(c.sqlType, sqlType)) {
+				return false;
+			} else if (!Util.sameOrNull(c.nullable, nullable)) {
+				return false;
+			} else if (!Util.sameOrNull(c.unique, unique)) {
+				return false;
+			} else if (!Util.sameOrNull(c.length, length)) {
+				return false;
+			} else if (!Util.sameOrNull(c.scale, scale)) {
+				return false;
+			} else if (!Util.sameOrNull(c.precision, precision)) {
+				return false;
+			} else if (!Util.sameOrNull(c.defaultValue, defaultValue)) {
+				return false;
+			} else if (!Util.sameOrNull(c.comment, comment)) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+	public String getColumnDefinition() throws HanaSQLException {
+		StringBuffer b = new StringBuffer();
+		b.append('"').append(name).append("\" ");
+		b.append(Util.getDataTypeString(getSqlType(), getLength(), getPrecision(), getScale()));
+		if (getNullable() != null && !getNullable().booleanValue()) {
+			b.append(" not null");
+		}
+		if (getDefaultValue() != null) {
+			if (getSqlType().isStringType()) {
+				b.append(" default '").append(getDefaultValue()).append("'");
+			} else {
+				b.append(" default ").append(getDefaultValue());
+			}
+		}
+		if (getComment() != null) {
+			b.append(" comment '").append(getComment()).append("'");
+		}
+		return b.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		if (name == null) {
+			return 1;
+		} else {
+			return name.hashCode(); // name is unique enough for the hash buckets
+		}
+	}
+
 }

@@ -3,12 +3,16 @@ package io.rtdi.hanaappcontainer.browseapp;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -21,8 +25,10 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.rtdi.hanaappcontainer.WebAppConstants;
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.rtdi.hanaappserver.utils.ErrorMessage;
+import io.rtdi.hanaappserver.utils.SuccessMessage;
 import io.rtdi.hanaappserver.utils.Util;
 
 @Path("/browseapp")
@@ -45,7 +51,7 @@ public class BrowseService {
     public Response browse() {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath("/protected/hanarepo");
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
 			File rootdir = new File(rootpath + File.separatorChar + username);
@@ -56,7 +62,7 @@ public class BrowseService {
 			Directory directorytree = new Directory(username, rootdir); 
 			return Response.ok(directorytree).build();
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
 		}
 	}
 
@@ -66,7 +72,7 @@ public class BrowseService {
     public Response listFiles(@PathParam("path") String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath("/protected/hanarepo");
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
 			File rootdir = new File(rootpath + File.separatorChar + username);
@@ -75,16 +81,164 @@ public class BrowseService {
 				throw new IOException("The directory is not accessible on the server \"" + filedir.getAbsolutePath() + "\"");
 			}
 			File[] files = filedir.listFiles(plainfilefilter);
-			List<FileData> directorylist = new ArrayList<>();
+			DirectoryContent directorylist = new DirectoryContent(getPath(filedir, rootdir));
 			for(File f : files) {
 				directorylist.add(new FileData(f, rootdir));
 			}
+			Collections.sort(directorylist.getFiles());
 			return Response.ok(directorylist).build();
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
 		}
 	}
 
+	@GET
+	@Path("touchfile/{path:.*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response touchFile(@PathParam("path") String path) {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
+		try {
+			username = Util.validateFilename(username);
+			File rootdir = new File(rootpath + File.separatorChar + username);
+			File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+			if (file.exists()) {
+				throw new IOException("The file exists on the server already \"" + file.getAbsolutePath() + "\"");
+			}
+			
+			java.nio.file.Path newfile = Files.createFile(file.toPath());
+			FileData data = new FileData(newfile.toFile(), rootdir);
+			return Response.ok(data).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+
+	@GET
+	@Path("mkdir/{path:.*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response mkDir(@PathParam("path") String path) {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
+		try {
+			username = Util.validateFilename(username);
+			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+			File rootdir = filedir.getParentFile();
+			if (!rootdir.isDirectory()) {
+				throw new IOException("The directory is not accessible on the server \"" 
+						+ rootdir.getAbsolutePath() + "\", cannot create a directory under it");
+			}
+			if (filedir.exists()) {
+				throw new IOException("A file of that name exists already on the server \"" 
+						+ filedir.getAbsolutePath() + "\"");
+			}
+			filedir.mkdir();
+			return Response.ok(new SuccessMessage(path)).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+
+	@GET
+	@Path("rmdir/{path:.*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response rmDir(@PathParam("path") String path) {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
+		try {
+			username = Util.validateFilename(username);
+			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+			if (!filedir.isDirectory()) {
+				throw new IOException("The directory is not accessible on the server \"" + filedir.getAbsolutePath() + "\"");
+			}
+			Files.delete(filedir.toPath());
+			return Response.ok(new SuccessMessage(path)).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+
+	@GET
+	@Path("rmfile/{path:.*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response rmFile(@PathParam("path") String path) {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
+		try {
+			username = Util.validateFilename(username);
+			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+			if (!filedir.isFile()) {
+				throw new IOException("The file does not exist or is a directory \"" + filedir.getAbsolutePath() + "\"");
+			}
+			Files.delete(filedir.toPath());
+			return Response.ok(new SuccessMessage(path)).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+
+	@POST
+	@Path("mvfile/{path:.*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response mvFile(@PathParam("path") String path, FileData target) {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
+		try {
+			username = Util.validateFilename(username);
+			File rootdir = new File(rootpath + File.separatorChar + username);
+			File sourcefile = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+			File targetfile = new File(rootpath + File.separatorChar + username + File.separatorChar + target.path);
+			Util.validatePathWithin(targetfile, rootdir);
+			if (!sourcefile.exists()) {
+				throw new IOException("The file does not exist \"" + sourcefile.getAbsolutePath() + "\"");
+			}
+			if (targetfile.exists()) {
+				throw new IOException("The target file exist already \"" + targetfile.getAbsolutePath() + "\"");
+			}
+			Files.move(sourcefile.toPath(), targetfile.toPath());
+			return Response.ok(new SuccessMessage(path)).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+
+	public static class DirectoryContent {
+		List<FileData> directorylist = new ArrayList<>();
+		String path;
+		
+		public DirectoryContent() {
+			super();
+		}
+
+		public void add(FileData filedata) {
+			directorylist.add(filedata);
+		}
+
+		public DirectoryContent(String path) {
+			super();
+			this.path = path;
+		}
+
+		public List<FileData> getFiles() {
+			return directorylist;
+		}
+		public void setFiles(List<FileData> directorylist) {
+			this.directorylist = directorylist;
+		}
+		
+		public String getPath() {
+			return path;
+		}
+		public void setPath(String path) {
+			this.path = path;
+		}
+	}
 	
 	public static class Directory extends Folder {
 		private String username;
@@ -174,7 +328,7 @@ public class BrowseService {
 		
 	}
 
-	public static class FileData {
+	public static class FileData implements Comparable<FileData> {
 		private String name;
 		private String extension;
 		private String path;
@@ -190,15 +344,7 @@ public class BrowseService {
 			if (pos != -1) {
 				extension = name.substring(pos+1);
 			}
-			// Cannot work with Path methods as these create \ chars on Windows systems.
-			StringBuilder b = new StringBuilder();
-			b.append(file.getName());
-			while (file.getParentFile() != null && !file.getParentFile().equals(rootdir)) {
-				file = file.getParentFile();
-				b.insert(0, '/');
-				b.insert(0, file.getName());
-			}
-			path = b.toString();
+			path = BrowseService.getPath(file, rootdir);
 		}
 
 		public String getName() {
@@ -212,5 +358,22 @@ public class BrowseService {
 		public String getPath() {
 			return path;
 		}
+
+		@Override
+		public int compareTo(FileData o) {
+			return name.compareTo(o.name);
+		}
+	}
+	
+	public static String getPath(File file, File rootdir) {
+		// Cannot work with Path methods as these create \ chars on Windows systems.
+		StringBuilder b = new StringBuilder();
+		b.append(file.getName());
+		while (file.getParentFile() != null && !file.getParentFile().equals(rootdir)) {
+			file = file.getParentFile();
+			b.insert(0, '/');
+			b.insert(0, file.getName());
+		}
+		return b.toString();
 	}
 }

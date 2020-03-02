@@ -5,20 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import io.rtdi.hanaappcontainer.objects.ActivationStyle;
 import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.IndexDefinition;
-import io.rtdi.hanaappcontainer.objects.table.subelements.IndexType;
-import io.rtdi.hanaappcontainer.objects.table.subelements.Order;
 import io.rtdi.hanaappcontainer.objects.table.subelements.PrimaryKeyDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableLoggingType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
-import io.rtdi.hanaappserver.utils.Util;
 
 /**
  * SAP syntax is missing...
@@ -42,7 +38,7 @@ public class Actions {
 
 	private static final Object TRUE = "TRUE";
 
-	public static HanaTable createHanaTableFromDatabase(Connection conn, String schemaname, String tablename) throws HanaSQLException {
+	public static HanaTable createDefinitionFromDatabase(Connection conn, String schemaname, String tablename) throws HanaSQLException {
 		String sql = "select t.comments, t.is_logged, t.table_type, t.temporary_table_type, "
 				+ "t.partition_spec, t.is_preload, t.is_series_table, t.unload_priority, t.temporal_type, s.synonym_name "
 				+ "from tables t "
@@ -121,171 +117,23 @@ public class Actions {
 
 					return table;
 				} else {
-					throw new HanaSQLException("No table with the name found", schemaname + "." + tablename, 10003);
+					return null;
 				}
 			}
 		} catch (SQLException e) {
-			throw new HanaSQLException(e, sql, "Please file an issue", 10001);
+			throw new HanaSQLException(e, sql, "Please file an issue");
 		}
 	}
 	
-	public static List<String> activate(Connection conn, String schemaname, String tablename, HanaTable table) throws HanaSQLException {
-		List<String> ret = new ArrayList<>();
-		try {
-			HanaTable currentdef = createHanaTableFromDatabase(conn, schemaname, tablename);
-		} catch (HanaSQLException e) {
-			if (e.getErrorcode() == 10003) {
-				// No table exists yet
-				StringBuffer b = new StringBuffer();
-				
-				/*
-				 * 	ROW | [ COLUMN ] } TABLE
-					 | HISTORY COLUMN TABLE
-					 | GLOBAL TEMPORARY { [ ROW ] | COLUMN } TABLE
-					 | LOCAL TEMPORARY { [ ROW ] | COLUMN } TABLE
-					 | VIRTUAL TABLE
-				 */
-				String tabletypekeyword;
-				if (table.getTableType() == null || table.getTableType() == TableType.COLUMN) {
-					tabletypekeyword = "column ";
-				} else {
-					tabletypekeyword = "row ";
-				}
-				String temporarykeyword = "";
-				if (table.getTemporary() != null) {
-					temporarykeyword = table.getTemporary().getKey();
-				}
-				b.append("create ").append(temporarykeyword).append(tabletypekeyword)
-				.append("table \"").append(schemaname).append("\".\"").append(tablename).append("\" ");
-				b.append("(\n");
-				Map<String, String> columncomments = new HashMap<>();
-				boolean first = true;
-				for (ColumnDefinition c : table.getColumns()) {
-					if (first) {
-						first = false;
-					} else {
-						b.append(",\n");
-					}
-					b.append("    \"").append(c.getName()).append("\" ");
-					b.append(Util.getDataTypeString(c.getSqlType(), c.getLength(), c.getPrecision(), c.getScale()));
-					if (c.getNullable() != null && !c.getNullable().booleanValue()) {
-						b.append("not null ");
-					}
-					if (c.getComment() != null && c.getComment().length() > 0) {
-						columncomments.put(c.getName(), c.getComment());
-					}
-				}
-				if (table.getPrimaryKey() != null) {
-					if (table.getPrimaryKey().getPkcolumns() != null) {
-						b.append(",\n    primary key (");
-						first = true;
-						for (String p : table.getPrimaryKey().getPkcolumns()) {
-							if (first) {
-								first = false;
-							} else {
-								b.append(", ");
-							}
-							b.append('"').append(p).append("\"");
-						}
-						b.append(')');
-					}
-				}
-				b.append(')');
-				if (table.getLoggingType() != null) {
-					b.append(table.getLoggingType().getKey());
-				}
-				try (PreparedStatement stmt = conn.prepareStatement(b.toString());) {
-					stmt.execute();
-					ret.add(b.toString());
-					if (table.getDescription() != null) {
-						b = new StringBuffer();
-						b.append("comment on table \"").append(schemaname).append("\".\"").append(tablename).append("\" is ");
-						b.append('\'').append(table.getDescription()).append('\'');
-						try (PreparedStatement stmtcomment = conn.prepareStatement(b.toString());) {
-							stmtcomment.execute();
-							ret.add(b.toString());
-						}
-					}
-					if (table.getIndexes() != null) {
-						for (IndexDefinition idx : table.getIndexes()) {
-							b = new StringBuffer();
-							String indextype = "";
-							if (idx.getUnique() != null && idx.getUnique().booleanValue()) {
-								indextype = "UNIQUE ";
-							}
-							if (idx.getIndexType() != null) {
-								if (idx.getIndexType() == IndexType.B_TREE) {
-									indextype += "BTREE ";
-								} else {
-									indextype += "CPBTREE ";
-								}
-							}
-							b.append("create ").append(indextype).append("index \"").append(schemaname).append("\".\"").append(idx.getName()).append("\" ");
-							b.append("on \"").append(schemaname).append("\".\"").append(tablename).append("\"(");
-							if (idx.getIndexColumns() != null && idx.getIndexColumns().size() > 0) {
-								first = true;
-								for (String p : idx.getIndexColumns()) {
-									if (first) {
-										first = false;
-									} else {
-										b.append(", ");
-									}
-									b.append('"').append(p).append("\"");
-								}
-								b.append(") ");
-								if (idx.getOrder() != null) {
-									if (idx.getOrder() == Order.ASC) {
-										b.append("ASC");
-									} else {
-										b.append("DESC");
-									}
-								}
-								try (PreparedStatement stmtidx = conn.prepareStatement(b.toString());) {
-									stmtidx.execute();
-									ret.add(b.toString());
-								}
-							}
-						}
-					}
-					if (table.getHasPublicSynonym() != null && table.getHasPublicSynonym().booleanValue()) {
-						b = new StringBuffer();
-						b.append("select synonym_name from synonyms where schema_name = 'PUBLIC' and synonym_name = ?");
-						try (PreparedStatement stmtsynquery = conn.prepareStatement(b.toString());) {
-							stmtsynquery.setString(1, tablename);
-							try (ResultSet rssyn = stmtsynquery.executeQuery();) {
-								if (!rssyn.next()) {
-									// No Synonym of that name exists yet, create one
-									b = new StringBuffer();
-									b.append("create public synonym \"").append(tablename).append("\" for \"")
-									.append(schemaname).append("\".\"").append(tablename).append("\" ");
-									try (PreparedStatement stmtsyn = conn.prepareStatement(b.toString());) {
-										stmtsyn.execute();
-										ret.add(b.toString());
-									}
-								}
-							}
-						}
-					}
-					if (columncomments != null && columncomments.size() > 0) {
-						for (String column : columncomments.keySet()) {
-							b = new StringBuffer();
-							b.append("comment on column \"").append(schemaname).append("\".\"")
-							.append(tablename).append("\".\"").append(column).append("\" is ");
-							b.append('\'').append(table.getDescription()).append('\'');
-							try (PreparedStatement stmtcc = conn.prepareStatement(b.toString());) {
-								stmtcc.execute();
-								ret.add(b.toString());
-							}
-							
-						}
-					}
-				} catch (SQLException e1) {
-					throw new HanaSQLException(e1, "No table found but creating it failed", b.toString(), 10001);
-				}
-			} else {
-				throw e;
-			}
+	public static void activate(Connection conn, String schemaname, HanaTable table, ActivationStyle activation) throws HanaSQLException {
+		String tablename = table.getTableName();
+		HanaTableDiffAction action = new HanaTableDiffAction(conn, table, activation);
+		HanaTable currenttable = createDefinitionFromDatabase(conn, schemaname, tablename);
+		if (currenttable == null) {
+			action.createTable();
+		} else {
+			table.addCreationMessage("Table exists already, applying changes if needed");
+			currenttable.diff(action);
 		}
-		return ret;
 	}
 }

@@ -2,6 +2,10 @@ package io.rtdi.hanaappcontainer.objects.table.subelements;
 
 import java.util.List;
 
+import io.rtdi.hanaappcontainer.objects.table.HanaTableDiffAction;
+import io.rtdi.hanaappserver.utils.HanaSQLException;
+import io.rtdi.hanaappserver.utils.Util;
+
 public class PrimaryKeyDefinition {
 	/*
 		struct PrimaryKeyDefinition {
@@ -10,7 +14,6 @@ public class PrimaryKeyDefinition {
 		};
 	 */
 	List<String> pkcolumns;
-	
 	IndexType indexType;
 	
 	public List<String> getPkcolumns() {
@@ -27,5 +30,42 @@ public class PrimaryKeyDefinition {
 	}
 	public String toString() {
 		return "" + pkcolumns;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		} else if (!(o instanceof PrimaryKeyDefinition)) {
+			return false;
+		} else {
+			PrimaryKeyDefinition p = (PrimaryKeyDefinition) o;
+			if (!Util.sameOrNull(indexType, p.getIndexType())) {
+				return false;
+			} else if (!Util.sameOrNull(pkcolumns, p.getPkcolumns())) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		if (pkcolumns == null) {
+			return 1;
+		} else {
+			return pkcolumns.hashCode(); // pkcolumns is unique enough for the hash buckets
+		}
+	}
+
+	public void diff(PrimaryKeyDefinition newpk, HanaTableDiffAction action) throws HanaSQLException {
+		if (!Util.sameOrNull(indexType, newpk.getIndexType()) || !Util.sameOrNull(pkcolumns, newpk.getPkcolumns())) {
+			action.dropPK();
+			action.createPK();
+		} else {
+			action.addCreationMessage("No change in public synonym setting");
+		}
+
 	}
 }

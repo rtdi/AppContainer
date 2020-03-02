@@ -45,11 +45,14 @@
 		
 		function codemirrorsave() {
 			var sContent = window.editor.getValue();
+			console.log(sContent);
 			var xhttp = new XMLHttpRequest();
 		    xhttp.onreadystatechange = function() {
-		         if (this.readyState == 4 && this.status == 200) {
-		         } else {
-		             alert(this.responseText);
+		         if (this.readyState == 4 ) {
+		        	 if (this.status == 200) {
+		         	 } else {
+			             alert(this.responseText);
+		         	 }
 		         }
 		    };
 		    const queryString = window.location.search;

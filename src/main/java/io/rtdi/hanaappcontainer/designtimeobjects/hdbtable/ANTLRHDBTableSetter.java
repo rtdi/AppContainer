@@ -59,7 +59,16 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterTemporary(TemporaryContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			hdbtable.setTemporary(t.getText().equalsIgnoreCase("TRUE")?TemporaryType.GLOBALTEMPORARY:null);
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "TRUE": 
+				hdbtable.setTemporary(TemporaryType.GLOBALTEMPORARY);
+				break;
+			case "FALSE":
+				break;
+			default:
+				hdbtable.addCreationMessage("The value for \"table.temporary\" can only be \"true\" or \"false\" (" + t.getText() + "\"");	
+			}
 		}
 	}
 
@@ -75,7 +84,11 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterColumnlength(ColumnlengthContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			columndef.setLength(Integer.valueOf(t.getText()));
+			try {
+				columndef.setLength(Integer.valueOf(t.getText()));
+			} catch (NumberFormatException e) {
+				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid length number (" + t.getText() + ")");
+			}
 		}
 	}
 
@@ -100,7 +113,11 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterColumnprecision(ColumnprecisionContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			columndef.setPrecision(Integer.valueOf(t.getText()));
+			try {
+				columndef.setPrecision(Integer.valueOf(t.getText()));
+			} catch (NumberFormatException e) {
+				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid precision number (" + t.getText() + ")");
+			}
 		}
 	}
 
@@ -108,7 +125,17 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterColumnar(ColumnarContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			hdbtable.setTableType(TableType.valueOf(t.getText()));
+			String s = t.getText();
+			switch (s) {
+			case "ROWSTORE":
+				hdbtable.setTableType(TableType.ROW);
+				break;
+			case "COLUMNSTORE":
+				hdbtable.setTableType(TableType.COLUMN);
+				break;
+			default:
+				break;
+			}			
 		}
 	}
 
@@ -116,7 +143,16 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterSynonym(SynonymContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			hdbtable.setHasPublicSynonym(Boolean.valueOf(t.getText()));
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "TRUE": 
+				hdbtable.setHasPublicSynonym(Boolean.TRUE);
+				break;
+			case "FALSE":
+				break;
+			default:
+				hdbtable.addCreationMessage("The value for \"table.public\" can only be \"true\" or \"false\" (" + t.getText() + "\"");	
+			}
 		}
 	}
 
@@ -124,7 +160,17 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterIndexorder(IndexorderContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			indexdef.setOrder(Order.valueOf(t.getText()));
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "ASC":
+				indexdef.setOrder(Order.ASC);
+				break;
+			case "DSC":
+				indexdef.setOrder(Order.DESC);
+				break;
+			default:
+				hdbtable.addCreationMessage("The value for the index definition \"order\" can only be \"ASC\" or \"DSC\" (" + t.getText() + "\"");	
+			}
 		}
 	}
 
@@ -150,7 +196,17 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterIndexunique(IndexuniqueContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			indexdef.setUnique(Boolean.valueOf(t.getText()));
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "TRUE": 
+				indexdef.setUnique(Boolean.TRUE);
+				break;
+			case "FALSE":
+				indexdef.setUnique(Boolean.FALSE);
+				break;
+			default:
+				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid unique boolean value (" + t.getText() + ")");	
+			}
 		}
 	}
 
@@ -158,7 +214,11 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterColumnscale(ColumnscaleContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			columndef.setScale(Integer.valueOf(t.getText()));
+			try {
+				columndef.setScale(Integer.valueOf(t.getText()));
+			} catch (NumberFormatException e) {
+				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid scale number (" + t.getText() + ")");
+			}
 		}
 	}
 
@@ -166,7 +226,17 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterColumnnullable(ColumnnullableContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			columndef.setNullable(Boolean.valueOf(t.getText()));
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "TRUE": 
+				columndef.setNullable(Boolean.TRUE);
+				break;
+			case "FALSE":
+				columndef.setNullable(Boolean.FALSE);
+				break;
+			default:
+				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid nullable boolean value (" + t.getText() + ")");	
+			}
 		}
 	}
 
@@ -203,7 +273,11 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			case ",":
 				break;
 			default:
-				l.add(tag);
+				if (tag.startsWith("\"") && tag.endsWith("\"")) {
+					l.add(tag.substring(1, tag.length()-1));
+				} else {
+					l.add(tag);
+				}
 			}
 		}
 		return l;
@@ -213,7 +287,17 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterIndexType(IndexTypeContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			indexdef.setIndexType(IndexType.valueOf(t.getText()));
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "B_TREE":
+				indexdef.setIndexType(IndexType.BTREE);
+				break;
+			case "CPB_TREE":
+				indexdef.setIndexType(IndexType.CPBTREE);
+				break;
+			default:
+				hdbtable.addCreationMessage("The value for the index definition \"order\" can only be \"ASC\" or \"DSC\" (" + t.getText() + "\"");	
+			}
 		}
 	}
 
@@ -226,12 +310,13 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			}
 			switch (t.getText().toUpperCase()) {
 			case "B_TREE": 
-				hdbtable.getPrimaryKey().setIndexType(IndexType.B_TREE);
+				hdbtable.getPrimaryKey().setIndexType(IndexType.BTREE);
 				break;
 			case "CPB_TREE": 
-				hdbtable.getPrimaryKey().setIndexType(IndexType.CPB_TREE);
+				hdbtable.getPrimaryKey().setIndexType(IndexType.CPBTREE);
 				break;
 			default:
+				hdbtable.addCreationMessage("The value for the index definition \"type\" can only be \"B_TREE\" or \"CPB_TREE\" (" + t.getText() + "\"");	
 			}
 		}
 	}
@@ -240,7 +325,17 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterColumnunique(ColumnuniqueContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			columndef.setUnique(Boolean.valueOf(t.getText()));
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "TRUE": 
+				columndef.setUnique(Boolean.TRUE);
+				break;
+			case "FALSE":
+				columndef.setUnique(Boolean.FALSE);
+				break;
+			default:
+				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid unique boolean value (" + t.getText() + ")");	
+			}
 		}
 	}
 
@@ -256,7 +351,18 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterLogging(LoggingContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			hdbtable.setLoggingType(TableLoggingType.valueOf(t.getText()));
+			String s = t.getText().toUpperCase();
+			switch (s) {
+			case "NOLOGGING":
+				hdbtable.setLoggingType(TableLoggingType.NOLOGGING);
+				break;
+			case "LOGGING":
+				hdbtable.setLoggingType(TableLoggingType.LOGGING);
+				break;
+			default:
+				hdbtable.addCreationMessage("The value for the table logging can only be \"LOGGING\" or \"NOLOGGING\" (" + t.getText() + "\"");	
+				break;
+			}
 		}
 	}
 
@@ -264,7 +370,11 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	public void enterColumnsqltype(ColumnsqltypeContext ctx) {
 		ParseTree t = ctx.getChild(2);
 		if (t != null) {
-			columndef.setSqlType(HanaDataType.valueOf(t.getText()));
+			try {
+				columndef.setSqlType(HanaDataType.valueOf(t.getText()));
+			} catch (Exception e) {
+				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid sqlType value (" + t.getText() + ")");	
+			}
 		}
 	}
 
@@ -291,8 +401,8 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 
 	@Override
 	public void visitErrorNode(ErrorNode node) {
-		// TODO Auto-generated method stub
-		super.visitErrorNode(node);
+		hdbtable.addCreationMessage("Found the text \"" + node.getText() + "\" which cannot be parsed. The file is syntactically incorrect.");
+		hdbtable.addCreationMessage("Details: " + node.toStringTree());
 	}
 
 }

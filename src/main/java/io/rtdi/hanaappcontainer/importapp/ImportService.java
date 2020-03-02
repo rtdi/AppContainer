@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.rtdi.hanaappcontainer.WebAppConstants;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
 import io.rtdi.hanaappcontainer.objects.table.Actions;
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
@@ -54,7 +55,7 @@ public class ImportService {
     public Response runImport(@PathParam("schema") String schemaraw, @QueryParam("type") ImportType importtype) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath("/protected/hanarepo");
+		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		ArrayList<String> importresult = new ArrayList<>();
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
 			username = Util.validateFilename(username);
@@ -72,7 +73,7 @@ public class ImportService {
 				try (ResultSet rs = stmt.executeQuery();) {
 					while (rs.next()) {
 						String tablename = rs.getString(1);
-						HanaTable table = Actions.createHanaTableFromDatabase(conn, schemaname, tablename);
+						HanaTable table = Actions.createDefinitionFromDatabase(conn, schemaname, tablename);
 						String hdbtablecontent = HDBTable.getHDBTableDefinition(table);
 						String path = Util.packageToPath(tablename);
 						String filename = Util.packageToFilename(tablename);
@@ -80,14 +81,14 @@ public class ImportService {
 						File d = new File(rootdir.getAbsolutePath() + File.separatorChar + path);
 						if (!d.exists()) {
 							if (!d.mkdirs()) {
-								throw new HanaSQLException("Failed to create the directory", d.getAbsolutePath(), 10005);
+								throw new HanaSQLException("Failed to create the directory", d.getAbsolutePath());
 							}
 						}
 						Files.writeString(new File(d.getAbsolutePath() + File.separatorChar + filename).toPath(), hdbtablecontent, StandardOpenOption.CREATE);
 					}
 				}
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql, "Please file an issue", 10002);
+				throw new HanaSQLException(e, sql, "Please file an issue");
 			}
 			return Response.ok(importresult).build();
 		} catch (Exception e) {

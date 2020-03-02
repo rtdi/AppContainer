@@ -30,7 +30,7 @@ public class ImportTableTest {
 			hdbtable.write(w);
 			System.out.print(w.toString());*/
 			
-			HanaTable table = HDBTable.parseHDBTableText("table.schemaName = \"MYSCHEMA\";\r\n" + 
+			/* HanaTable table = HDBTable.parseHDBTableText("table.schemaName = \"MYSCHEMA\";\r\n" + 
 					"table.temporary = true;\r\n" + 
 					"table.tableType = COLUMNSTORE;\r\n" + 
 					"table.loggingType = NOLOGGING;\r\n" + 
@@ -42,8 +42,24 @@ public class ImportTableTest {
 					"table.indexes =  [\r\n" + 
 					"	{name = \"MYINDEX1\"; unique = true; order = DSC; indexColumns = [\"Col2\"];},\r\n" + 
 					"	{name = \"MYINDEX2\"; unique = true; order = DSC; indexType = B_TREE; indexColumns = [\"Col1\", \"Col4\"];}];\r\n" + 
-					"table.primaryKey.pkcolumns = [\"Col1\", \"Col2\"];", "TABLE1");
+					"table.primaryKey.pkcolumns = [\"Col1\", \"Col2\"];", "MYSCHEMA", "TABLE1"); */
 
+			HanaTable table = HDBTable.parseHDBTableText("table.schemaName = \"SAPHANADB\";\r\n" + 
+					"table.temporary = false;\r\n" + 
+					"table.tableType = COLUMNSTORE;\r\n" + 
+					"table.loggingType = LOGGING;\r\n" + 
+					"table.columns = [\r\n" + 
+					"         {name = \"TABNAME\"; sqlType = NVARCHAR; nullable = false; length = 30; defaultValue = \"\";},\r\n" + 
+					"         {name = \"FIELDNAME\"; sqlType = NVARCHAR; nullable = false; length = 30; defaultValue = \"\";},\r\n" + 
+					"         {name = \"DDLANGUAGE\"; sqlType = NVARCHAR; nullable = false; length = 1; defaultValue = \"\";},\r\n" + 
+					"         {name = \"AS4LOCAL\"; sqlType = NVARCHAR; nullable = false; length = 1; defaultValue = \"\";},\r\n" + 
+					"         {name = \"AS4VERS\"; sqlType = NVARCHAR; nullable = false; length = 4; defaultValue = \"0000\";},\r\n" + 
+					"         {name = \"DDTEXT\"; sqlType = NVARCHAR; nullable = false; length = 60; defaultValue = \"\";},\r\n" + 
+					"         {name = \"MESTEXT\"; sqlType = NVARCHAR; nullable = false; length = 73; defaultValue = \"\";}\r\n" + 
+					"];\r\n" + 
+					"table.primaryKey.pkcolumns = [\"TABNAME\", \"DDLANGUAGE\", \"AS4LOCAL\", \"FIELDNAME\", \"AS4VERS\"];\r\n" + 
+					"", "SAPHANADB", "DD08T");
+			System.out.println(table.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

@@ -22,8 +22,10 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.rtdi.hanaappcontainer.WebAppConstants;
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.rtdi.hanaappserver.utils.ErrorMessage;
+import io.rtdi.hanaappserver.utils.SuccessMessage;
 import io.rtdi.hanaappserver.utils.Util;
 
 @Path("/editorapp")
@@ -46,7 +48,7 @@ public class EditorService {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {
 			String username = user.getHanaUser();
-			String rootpath = request.getServletContext().getRealPath("/protected/hanarepo");
+			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 			username = Util.validateFilename(username);
 			File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
 			if (!file.isFile()) {
@@ -54,7 +56,7 @@ public class EditorService {
 			}
 			return Response.ok(new FileContent(file, path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
 		}
 	}
 
@@ -66,16 +68,16 @@ public class EditorService {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {
 			String username = user.getHanaUser();
-			String rootpath = request.getServletContext().getRealPath("/protected/hanarepo");
+			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 			username = Util.validateFilename(username);
 			File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
 			if (!file.isFile()) {
 				throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
 			}
 			Files.writeString(file.toPath(), content, StandardOpenOption.CREATE);
-			return Response.ok().build();
+			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
 		}
 	}
 

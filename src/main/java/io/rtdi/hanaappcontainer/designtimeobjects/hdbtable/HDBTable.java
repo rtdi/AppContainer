@@ -3,7 +3,6 @@ package io.rtdi.hanaappcontainer.designtimeobjects.hdbtable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.List;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -20,10 +19,11 @@ import io.rtdi.hanaappcontainer.objects.table.subelements.Order;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
+import io.rtdi.hanaappserver.utils.Util;
 
 public class HDBTable {	
 
-	public static HanaTable parseHDBTableText(String text, String tablename) {
+	public static HanaTable parseHDBTableText(String text, String schemaname, String tablename) {
 		CharStream input = CharStreams.fromString(text);;
 		HDBTableLexer lexer = new HDBTableLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -31,9 +31,10 @@ public class HDBTable {
 		ParseTree tree = parser.keyvaluepairs();
 		ParseTreeWalker walker = new ParseTreeWalker();
 		HanaTable table = new HanaTable();
-		table.setTableName(tablename);
 		ANTLRHDBTableSetter listener= new ANTLRHDBTableSetter(table);
 		walker.walk(listener, tree);
+		table.setSchemaName(schemaname); // ignore the schema name in the file
+		table.setTableName(tablename);
 		return table;
 	}
 	
@@ -45,7 +46,7 @@ public class HDBTable {
 		} else if (type == TableType.ROW) {
 			return "rowstore";
 		} else {
-			throw new HanaSQLException("The table type is not supported by .hdbtable files of SAP", type.name(), 30001);
+			throw new HanaSQLException("The table type is not supported by .hdbtable files of SAP", type.name());
 		}
 	}
 
@@ -106,7 +107,7 @@ public class HDBTable {
 			w.append("\n];\n");
 		}
 		if (table.getPrimaryKey() != null && table.getPrimaryKey().getPkcolumns() != null && table.getPrimaryKey().getPkcolumns().size() != 0) {
-			w.append("table.primaryKey.pkcolumns = ").append(HDBTable.writeStringList(table.getPrimaryKey().getPkcolumns())).append(";\n");
+			w.append("table.primaryKey.pkcolumns = ").append(Util.writeStringList(table.getPrimaryKey().getPkcolumns())).append(";\n");
 		}
 		return w.toString();
 	}
@@ -126,7 +127,7 @@ public class HDBTable {
 			};
 		 */
 		w.append("{name = \"").append(c.getName()).append("\";");
-		w.append(" sqlType = \"").append(c.getSqlType().toString()).append("\";");
+		w.append(" sqlType = ").append(c.getSqlType().toString()).append(";");
 		if (c.getNullable() != null) {
 			w.append(" nullable = ").append(String.valueOf(c.getNullable())).append(";");
 		}
@@ -168,23 +169,7 @@ public class HDBTable {
 		if (idx.getIndexType() != null) {
 			w.append(" indexType = ").append(idx.getIndexType().name()).append(";");
 		}
-		w.append(" indexColumns = ").append(HDBTable.writeStringList(idx.getIndexColumns())).append(";}");
-	}
-
-	public static String writeStringList(List<String> list) {
-		StringBuffer b = new StringBuffer();
-		b.append("[");
-		boolean first = true;
-		for (String s : list) {
-			if (first) {
-				first = false;
-			} else {
-				b.append(", ");
-			}
-			b.append("\"").append(s).append("\"");
-		}
-		b.append("]");
-		return b.toString();
+		w.append(" indexColumns = ").append(Util.writeStringList(idx.getIndexColumns())).append(";}");
 	}
 
 }

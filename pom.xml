@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.rtdi.hanaappserver</groupId>
 	<artifactId>HanaAppContainer</artifactId>
-	<version>0.8.5</version>
+	<version>0.8.6</version>
 	<packaging>war</packaging>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>io.rtdi.hanaappserver</groupId>
 			<artifactId>hanaappserver</artifactId>
-			<version>0.8.5</version>
+			<version>0.8.6</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

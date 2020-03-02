@@ -1,4 +1,5 @@
-<mvc:View height="100%" class="sapUiSizeCompact"
+<mvc:View height="100%" class="sapUiSizeCompact" 
+	id="mainview"
 	controllerName="io.rtdi.hanaappcontainer.browseapp.Controller"
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns="sap.m"
@@ -21,16 +22,41 @@
 			                    <OverflowToolbar>
 			                        <Title id="title" text="Directory for user {/username}"/>
 			                        <ToolbarSpacer/>
-			                        <Button icon="sap-icon://refresh"
-											tooltip="Reinitialize Model"
-											press="onDirectoryRefresh"/>
+									<Button icon="sap-icon://add" tooltip="Add new root directory" press="onAddDirectory" />
+			                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
 			                    </OverflowToolbar>
 			                </t:extension>
+							<t:dragDropConfig>
+								<dnd:DragInfo
+									groupName="browsefiles"
+									sourceAggregation="rows" />
+								<dnd:DropInfo
+									groupName="browsefiles"
+									targetAggregation="rows"
+									dropPosition="On"
+									drop="onDropFile" />
+							</t:dragDropConfig>
 							<t:columns>
-								<t:Column width="100%">
-									<Label text="Directory tree"/>
+								<t:Column width="60%">
+									<Label text="Folder"/>
 									<t:template>
-										<Text text="{name} ({filecount} files)" wrapping="false" /> 
+										<Text text="{name}" wrapping="false" /> 
+									</t:template>
+								</t:Column>
+								<t:Column>
+									<Label text="File count"/>
+									<t:template>
+										<Text text="{filecount}" wrapping="false" /> 
+									</t:template>
+								</t:Column>
+								<t:Column hAlign="Right">
+									<Label text="Actions"/>
+									<t:template>
+										<HBox fitContainer="true" justifyContent="End" >
+											<core:Icon src="sap-icon://add-folder" tooltip="Add sub folder" press="onAddSubdirectory" class="sapUiTinyMargin" />
+											<core:Icon src="sap-icon://edit" tooltip="Rename folder" press="onRenameDirectory" class="sapUiTinyMargin" />
+											<core:Icon src="sap-icon://delete" tooltip="Delete folder" press="onDeleteDirectory" class="sapUiTinyMargin" />
+										</HBox>
 									</t:template>
 								</t:Column>
 							</t:columns>
@@ -39,20 +65,43 @@
 				</Panel>
 			</l:SplitPane>
 			<l:SplitPane>
-				<List
-					id="idFiles"
-					headerText="Files"
-					items="{
-						path: '/'
-					}"
-					 >
-					 <CustomListItem>
-						<HBox>
-							<!--  core:Icon size="2rem" src="sap-icon://attachment-photo" class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom" / -->
-							<Link text="{name}" target="_blank" href="../editorapp/index.html?filename={path}" />
-						</HBox>
-					</CustomListItem>
-				</List>
+				<t:TreeTable id="idFiles"
+					rows="{path:'/files'}"
+					selectionMode="None" enableSelectAll="false"
+					ariaLabelledBy="title"
+					cellClick="onSelectDir"
+					visibleRowCountMode="Auto">
+	                <t:extension>
+	                    <OverflowToolbar>
+							<Title text="Files in folder {/path}" level="H2" />
+							<ToolbarSpacer />
+							<Button icon="sap-icon://add" tooltip="Add new file" press="onAddFile" />
+	                        <Button icon="sap-icon://refresh" tooltip="Refresh file list" press="onFilesRefresh"/>
+	                    </OverflowToolbar>
+	                </t:extension>
+					<t:dragDropConfig>
+						<dnd:DragInfo
+							groupName="browsefiles"
+							sourceAggregation="rows" />
+					</t:dragDropConfig>
+					<t:columns>
+						<t:Column width="70%">
+							<Label text="Filename" />
+							<t:template>
+								<Link text="{name}" target="_blank" href="../editorapp/index.html?filename={path}" />
+							</t:template>
+						</t:Column>
+						<t:Column hAlign="Right">
+							<Label text="Actions"/>
+							<t:template>
+								<HBox fitContainer="true" justifyContent="End">
+									<core:Icon src="sap-icon://edit" tooltip="Rename file" press="onRenameFile" class="sapUiTinyMargin" />
+									<core:Icon src="sap-icon://delete" tooltip="Delete file" press="onDeleteFile" class="sapUiTinyMargin" />
+								</HBox>
+							</t:template>
+						</t:Column>
+					</t:columns>
+				</t:TreeTable>
 			</l:SplitPane>
 		</l:PaneContainer>
 	</l:ResponsiveSplitter>
