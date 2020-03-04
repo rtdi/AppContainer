@@ -7,6 +7,7 @@
 	<version>0.8.6</version>
 	<packaging>war</packaging>
 	<build>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
