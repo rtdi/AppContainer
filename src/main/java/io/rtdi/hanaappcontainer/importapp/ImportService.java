@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 
 import io.rtdi.hanaappcontainer.WebAppConstants;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
-import io.rtdi.hanaappcontainer.objects.table.Actions;
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.rtdi.hanaappserver.utils.ErrorMessage;
@@ -73,7 +72,7 @@ public class ImportService {
 				try (ResultSet rs = stmt.executeQuery();) {
 					while (rs.next()) {
 						String tablename = rs.getString(1);
-						HanaTable table = Actions.createDefinitionFromDatabase(conn, schemaname, tablename);
+						HanaTable table = HanaTable.createDefinitionFromDatabase(conn, schemaname, tablename);
 						String hdbtablecontent = HDBTable.getHDBTableDefinition(table);
 						String path = Util.packageToPath(tablename);
 						String filename = Util.packageToFilename(tablename);

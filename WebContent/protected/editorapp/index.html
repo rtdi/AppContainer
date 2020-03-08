@@ -16,8 +16,12 @@
 			<button class="item bold popup" aria-pressed="false" value="Save" tabindex="0" onclick="codemirrorsave()" >
 				Save
 			</button>
+			<button class="item bold popup" aria-pressed="false" value="activate" tabindex="0" onclick="activate()" >
+				activate
+			</button>
 		</div>
 		<textarea id="code" name="code" style="display: none;"></textarea>
+		<div id="statusline"></div>
 	</div>
 	<script>
 		window.onload = function() {
@@ -26,7 +30,9 @@
 			window.editor = CodeMirror.fromTextArea(te, {
 				lineNumbers : true,
 				lineWrapping : true
-			}); 
+			});
+			
+			window.statusline = document.getElementById("statusline")
 
 			var xhttp = new XMLHttpRequest();
 		    xhttp.onreadystatechange = function() {
@@ -45,11 +51,11 @@
 		
 		function codemirrorsave() {
 			var sContent = window.editor.getValue();
-			console.log(sContent);
 			var xhttp = new XMLHttpRequest();
 		    xhttp.onreadystatechange = function() {
 		         if (this.readyState == 4 ) {
 		        	 if (this.status == 200) {
+		        		 window.statusline.innerHTML = "saved";
 		         	 } else {
 			             alert(this.responseText);
 		         	 }
@@ -62,6 +68,27 @@
 		    xhttp.setRequestHeader("Content-type", "text/plain");
 		    xhttp.send(sContent);
 		}
+
+		function activate() {
+			var sContent = window.editor.getValue();
+			var xhttp = new XMLHttpRequest();
+		    xhttp.onreadystatechange = function() {
+		         if (this.readyState == 4 ) {
+		        	 if (this.status == 200) {
+		        		 window.statusline.innerHTML = "activated successfully";
+		         	 } else {
+			             alert(this.responseText);
+		         	 }
+		         }
+		    };
+		    const queryString = window.location.search;
+		    const urlParams = new URLSearchParams(queryString);
+		    const sFilename = urlParams.get('filename');
+		    xhttp.open("GET", "../rest/editorapp/activate/" + sFilename, true); 
+		    xhttp.setRequestHeader("Content-type", "application/json");
+		    xhttp.send(sContent);
+		}
+
 	</script>
 </body>
 </html>

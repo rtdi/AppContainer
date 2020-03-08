@@ -1,18 +1,21 @@
-package io.rtdi.hanaappcontainer.designtimeobjects.hdbcds;
+package io.rtdi.hanaappcontainer.importapp;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.ANTLRHDBCDSSetter;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.HDBCDS;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.antlr4.HDBCDSLexer;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.antlr4.HDBCDSParser;
+import io.rtdi.hanaappserver.ActivationResult;
 
 
 
 public class HDBCDSTest {
 	public static void main(String[] args) throws Exception {
 
-		ANTLRInputStream input = new ANTLRInputStream("context PurchaseOrder {\r\n" + 
+		String text = "context PurchaseOrder {\r\n" + 
 				"    type BusinessKey : String(10);\r\n" + 
 				"    type SDate : LocalDate;\r\n" + 
 				"    type CurrencyT : String(5);\r\n" + 
@@ -107,19 +110,12 @@ public class HDBCDSTest {
 				"            DELIVERYDATE             as \"DeliveryDate1\"\r\n" + 
 				"        }\r\n" + 
 				"        with structured privilege check;\r\n" + 
-				"};");
+				"};";
 
-		HDBCDSLexer lexer = new HDBCDSLexer(input);
-
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-		HDBCDSParser parser = new HDBCDSParser(tokens);
-		ParseTree tree = parser.root(); // begin parsing at rule 'root'
-		ParseTreeWalker walker = new ParseTreeWalker();
-		ANTLRHDBCDSSetter listener= new ANTLRHDBCDSSetter("schema1");
-		walker.walk(listener, tree);
+		HDBCDS cds = HDBCDS.parseHBDCDSFile(text, "schema1");
 		
-		System.out.println(tree.toStringTree(parser)); // print LISP-style tree
-		System.out.println(listener.getTables());
+		ActivationResult result = new ActivationResult();
+		cds.valid(result);
+		System.out.println(result.toString());
 	}
 }

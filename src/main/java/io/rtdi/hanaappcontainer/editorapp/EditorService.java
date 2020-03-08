@@ -74,7 +74,7 @@ public class EditorService {
 			if (!file.isFile()) {
 				throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
 			}
-			Files.writeString(file.toPath(), content, StandardOpenOption.CREATE);
+			Files.writeString(file.toPath(), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();

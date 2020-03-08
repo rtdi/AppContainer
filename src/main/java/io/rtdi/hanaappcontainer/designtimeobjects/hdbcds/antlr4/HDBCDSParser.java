@@ -26,29 +26,32 @@ public class HDBCDSParser extends Parser {
 		T__45=46, T__46=47, T__47=48, INTEGER=49, NAME=50, SEPARATOR=51, STRING=52, 
 		WS=53, COMMENT=54, LINE_COMMENT=55;
 	public static final int
-		RULE_root = 0, RULE_namespace = 1, RULE_context = 2, RULE_type = 3, RULE_primitivetype = 4, 
-		RULE_complextype = 5, RULE_typecolumnunit = 6, RULE_comment = 7, RULE_typecolumn = 8, 
-		RULE_columndefault = 9, RULE_columnnullable = 10, RULE_entity = 11, RULE_tablecolumnunit = 12, 
-		RULE_tablecolumn = 13, RULE_keycolumn = 14, RULE_regularcolumn = 15, RULE_association = 16, 
-		RULE_joinclause = 17, RULE_associatedcols = 18, RULE_generated = 19, RULE_generatedalways = 20, 
-		RULE_generatedbydefault = 21, RULE_identitystart = 22, RULE_identityincrement = 23, 
-		RULE_identityminclause = 24, RULE_identitynomin = 25, RULE_identitymin = 26, 
-		RULE_identitymaxclause = 27, RULE_identitynomax = 28, RULE_identitymax = 29, 
-		RULE_identitynochache = 30, RULE_identitynocycle = 31, RULE_techconfig = 32, 
-		RULE_tabletype = 33, RULE_tabletype1 = 34, RULE_tabletype2 = 35, RULE_define = 36, 
-		RULE_projection = 37, RULE_viewoptions = 38, RULE_privcheck = 39, RULE_databaseobject = 40, 
-		RULE_datatype1 = 41, RULE_datatype2 = 42, RULE_quotedname = 43;
+		RULE_root = 0, RULE_namespace = 1, RULE_context = 2, RULE_primitivetype = 3, 
+		RULE_complextype = 4, RULE_comment = 5, RULE_typecolumn = 6, RULE_columndefault = 7, 
+		RULE_columnnullable = 8, RULE_typenameprimitive = 9, RULE_typenamecomplex = 10, 
+		RULE_typecolumnname = 11, RULE_contextname = 12, RULE_datatype = 13, RULE_entity = 14, 
+		RULE_entityname = 15, RULE_tablecolumn = 16, RULE_keycolumn = 17, RULE_regularcolumn = 18, 
+		RULE_columnname = 19, RULE_association = 20, RULE_joinclause = 21, RULE_associatedcols = 22, 
+		RULE_generated = 23, RULE_generatedalways = 24, RULE_generatedbydefault = 25, 
+		RULE_identitystart = 26, RULE_identityincrement = 27, RULE_identityminclause = 28, 
+		RULE_identitynomin = 29, RULE_identitymin = 30, RULE_identitymaxclause = 31, 
+		RULE_identitynomax = 32, RULE_identitymax = 33, RULE_identitynochache = 34, 
+		RULE_identitynocycle = 35, RULE_techconfig = 36, RULE_tabletype = 37, 
+		RULE_tabletype1 = 38, RULE_tabletype2 = 39, RULE_define = 40, RULE_projection = 41, 
+		RULE_viewoptions = 42, RULE_privcheck = 43, RULE_databaseobject = 44, 
+		RULE_datatype1 = 45, RULE_datatype2 = 46, RULE_datatype3 = 47, RULE_quotedname = 48;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"root", "namespace", "context", "type", "primitivetype", "complextype", 
-			"typecolumnunit", "comment", "typecolumn", "columndefault", "columnnullable", 
-			"entity", "tablecolumnunit", "tablecolumn", "keycolumn", "regularcolumn", 
+			"root", "namespace", "context", "primitivetype", "complextype", "comment", 
+			"typecolumn", "columndefault", "columnnullable", "typenameprimitive", 
+			"typenamecomplex", "typecolumnname", "contextname", "datatype", "entity", 
+			"entityname", "tablecolumn", "keycolumn", "regularcolumn", "columnname", 
 			"association", "joinclause", "associatedcols", "generated", "generatedalways", 
 			"generatedbydefault", "identitystart", "identityincrement", "identityminclause", 
 			"identitynomin", "identitymin", "identitymaxclause", "identitynomax", 
 			"identitymax", "identitynochache", "identitynocycle", "techconfig", "tabletype", 
 			"tabletype1", "tabletype2", "define", "projection", "viewoptions", "privcheck", 
-			"databaseobject", "datatype1", "datatype2", "quotedname"
+			"databaseobject", "datatype1", "datatype2", "datatype3", "quotedname"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -136,11 +139,17 @@ public class HDBCDSParser extends Parser {
 		public ContextContext context(int i) {
 			return getRuleContext(ContextContext.class,i);
 		}
-		public List<TypeContext> type() {
-			return getRuleContexts(TypeContext.class);
+		public List<PrimitivetypeContext> primitivetype() {
+			return getRuleContexts(PrimitivetypeContext.class);
 		}
-		public TypeContext type(int i) {
-			return getRuleContext(TypeContext.class,i);
+		public PrimitivetypeContext primitivetype(int i) {
+			return getRuleContext(PrimitivetypeContext.class,i);
+		}
+		public List<ComplextypeContext> complextype() {
+			return getRuleContexts(ComplextypeContext.class);
+		}
+		public ComplextypeContext complextype(int i) {
+			return getRuleContext(ComplextypeContext.class,i);
 		}
 		public List<EntityContext> entity() {
 			return getRuleContexts(EntityContext.class);
@@ -175,51 +184,57 @@ public class HDBCDSParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(89);
+			setState(99);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__0) {
 				{
-				setState(88);
+				setState(98);
 				namespace();
 				}
 			}
 
-			setState(97);
+			setState(108);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__4) | (1L << T__6) | (1L << T__10) | (1L << T__40))) != 0)) {
 				{
-				setState(95);
+				setState(106);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 				case 1:
 					{
-					setState(91);
+					setState(101);
 					context();
 					}
 					break;
 				case 2:
 					{
-					setState(92);
-					type();
+					setState(102);
+					primitivetype();
 					}
 					break;
 				case 3:
 					{
-					setState(93);
-					entity();
+					setState(103);
+					complextype();
 					}
 					break;
 				case 4:
 					{
-					setState(94);
+					setState(104);
+					entity();
+					}
+					break;
+				case 5:
+					{
+					setState(105);
 					define();
 					}
 					break;
 				}
 				}
-				setState(99);
+				setState(110);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -259,11 +274,11 @@ public class HDBCDSParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(100);
+			setState(111);
 			match(T__0);
-			setState(101);
+			setState(112);
 			match(NAME);
-			setState(102);
+			setState(113);
 			match(SEPARATOR);
 			}
 		}
@@ -279,13 +294,30 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static class ContextContext extends ParserRuleContext {
-		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
-		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
-		public List<TypeContext> type() {
-			return getRuleContexts(TypeContext.class);
+		public ContextnameContext contextname() {
+			return getRuleContext(ContextnameContext.class,0);
 		}
-		public TypeContext type(int i) {
-			return getRuleContext(TypeContext.class,i);
+		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
+		public CommentContext comment() {
+			return getRuleContext(CommentContext.class,0);
+		}
+		public List<ContextContext> context() {
+			return getRuleContexts(ContextContext.class);
+		}
+		public ContextContext context(int i) {
+			return getRuleContext(ContextContext.class,i);
+		}
+		public List<PrimitivetypeContext> primitivetype() {
+			return getRuleContexts(PrimitivetypeContext.class);
+		}
+		public PrimitivetypeContext primitivetype(int i) {
+			return getRuleContext(PrimitivetypeContext.class,i);
+		}
+		public List<ComplextypeContext> complextype() {
+			return getRuleContexts(ComplextypeContext.class);
+		}
+		public ComplextypeContext complextype(int i) {
+			return getRuleContext(ComplextypeContext.class,i);
 		}
 		public List<EntityContext> entity() {
 			return getRuleContexts(EntityContext.class);
@@ -320,127 +352,69 @@ public class HDBCDSParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(104);
-			match(T__1);
-			setState(105);
-			match(NAME);
-			setState(106);
-			match(T__2);
-			setState(112);
+			setState(116);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__10) | (1L << T__40))) != 0)) {
+			if (_la==T__6) {
 				{
-				setState(110);
+				setState(115);
+				comment();
+				}
+			}
+
+			setState(118);
+			match(T__1);
+			setState(119);
+			contextname();
+			setState(120);
+			match(T__2);
+			setState(128);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__4) | (1L << T__6) | (1L << T__10) | (1L << T__40))) != 0)) {
+				{
+				setState(126);
 				_errHandler.sync(this);
-				switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
+				switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 				case 1:
 					{
-					setState(107);
-					type();
+					setState(121);
+					context();
 					}
 					break;
 				case 2:
 					{
-					setState(108);
-					entity();
+					setState(122);
+					primitivetype();
 					}
 					break;
 				case 3:
 					{
-					setState(109);
+					setState(123);
+					complextype();
+					}
+					break;
+				case 4:
+					{
+					setState(124);
+					entity();
+					}
+					break;
+				case 5:
+					{
+					setState(125);
 					define();
 					}
 					break;
 				}
 				}
-				setState(114);
+				setState(130);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(115);
+			setState(131);
 			match(T__3);
-			setState(116);
-			match(SEPARATOR);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class TypeContext extends ParserRuleContext {
-		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
-		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
-		public PrimitivetypeContext primitivetype() {
-			return getRuleContext(PrimitivetypeContext.class,0);
-		}
-		public ComplextypeContext complextype() {
-			return getRuleContext(ComplextypeContext.class,0);
-		}
-		public CommentContext comment() {
-			return getRuleContext(CommentContext.class,0);
-		}
-		public TypeContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_type; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitType(this);
-		}
-	}
-
-	public final TypeContext type() throws RecognitionException {
-		TypeContext _localctx = new TypeContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_type);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(119);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==T__6) {
-				{
-				setState(118);
-				comment();
-				}
-			}
-
-			setState(121);
-			match(T__4);
-			setState(122);
-			match(NAME);
-			setState(125);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case T__5:
-				{
-				setState(123);
-				primitivetype();
-				}
-				break;
-			case T__2:
-				{
-				setState(124);
-				complextype();
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-			setState(127);
+			setState(132);
 			match(SEPARATOR);
 			}
 		}
@@ -456,24 +430,15 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static class PrimitivetypeContext extends ParserRuleContext {
-		public Datatype1Context datatype1() {
-			return getRuleContext(Datatype1Context.class,0);
+		public TypenameprimitiveContext typenameprimitive() {
+			return getRuleContext(TypenameprimitiveContext.class,0);
 		}
-		public Datatype2Context datatype2() {
-			return getRuleContext(Datatype2Context.class,0);
+		public DatatypeContext datatype() {
+			return getRuleContext(DatatypeContext.class,0);
 		}
-		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
-		public List<ColumndefaultContext> columndefault() {
-			return getRuleContexts(ColumndefaultContext.class);
-		}
-		public ColumndefaultContext columndefault(int i) {
-			return getRuleContext(ColumndefaultContext.class,i);
-		}
-		public List<ColumnnullableContext> columnnullable() {
-			return getRuleContexts(ColumnnullableContext.class);
-		}
-		public ColumnnullableContext columnnullable(int i) {
-			return getRuleContext(ColumnnullableContext.class,i);
+		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
+		public CommentContext comment() {
+			return getRuleContext(CommentContext.class,0);
 		}
 		public PrimitivetypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -491,64 +456,31 @@ public class HDBCDSParser extends Parser {
 
 	public final PrimitivetypeContext primitivetype() throws RecognitionException {
 		PrimitivetypeContext _localctx = new PrimitivetypeContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_primitivetype);
+		enterRule(_localctx, 6, RULE_primitivetype);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(129);
-			match(T__5);
-			setState(133);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
-			case 1:
-				{
-				setState(130);
-				datatype1();
-				}
-				break;
-			case 2:
-				{
-				setState(131);
-				datatype2();
-				}
-				break;
-			case 3:
-				{
-				setState(132);
-				match(NAME);
-				}
-				break;
-			}
-			setState(139);
+			setState(135);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__7) | (1L << T__8) | (1L << T__9))) != 0)) {
+			if (_la==T__6) {
 				{
-				setState(137);
-				_errHandler.sync(this);
-				switch (_input.LA(1)) {
-				case T__7:
-					{
-					setState(135);
-					columndefault();
-					}
-					break;
-				case T__8:
-				case T__9:
-					{
-					setState(136);
-					columnnullable();
-					}
-					break;
-				default:
-					throw new NoViableAltException(this);
+				setState(134);
+				comment();
 				}
-				}
-				setState(141);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
 			}
+
+			setState(137);
+			match(T__4);
+			setState(138);
+			typenameprimitive();
+			setState(139);
+			match(T__5);
+			setState(140);
+			datatype();
+			setState(141);
+			match(SEPARATOR);
 			}
 		}
 		catch (RecognitionException re) {
@@ -563,11 +495,18 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static class ComplextypeContext extends ParserRuleContext {
-		public List<TypecolumnunitContext> typecolumnunit() {
-			return getRuleContexts(TypecolumnunitContext.class);
+		public TypenamecomplexContext typenamecomplex() {
+			return getRuleContext(TypenamecomplexContext.class,0);
 		}
-		public TypecolumnunitContext typecolumnunit(int i) {
-			return getRuleContext(TypecolumnunitContext.class,i);
+		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
+		public CommentContext comment() {
+			return getRuleContext(CommentContext.class,0);
+		}
+		public List<TypecolumnContext> typecolumn() {
+			return getRuleContexts(TypecolumnContext.class);
+		}
+		public TypecolumnContext typecolumn(int i) {
+			return getRuleContext(TypecolumnContext.class,i);
 		}
 		public ComplextypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -585,84 +524,44 @@ public class HDBCDSParser extends Parser {
 
 	public final ComplextypeContext complextype() throws RecognitionException {
 		ComplextypeContext _localctx = new ComplextypeContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_complextype);
+		enterRule(_localctx, 8, RULE_complextype);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(142);
+			setState(144);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==T__6) {
+				{
+				setState(143);
+				comment();
+				}
+			}
+
+			setState(146);
+			match(T__4);
+			setState(147);
+			typenamecomplex();
+			setState(148);
 			match(T__2);
-			setState(144); 
+			setState(150); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(143);
-				typecolumnunit();
+				setState(149);
+				typecolumn();
 				}
 				}
-				setState(146); 
+				setState(152); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==T__6 || _la==NAME );
-			setState(148);
-			match(T__3);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class TypecolumnunitContext extends ParserRuleContext {
-		public TypecolumnContext typecolumn() {
-			return getRuleContext(TypecolumnContext.class,0);
-		}
-		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
-		public CommentContext comment() {
-			return getRuleContext(CommentContext.class,0);
-		}
-		public TypecolumnunitContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_typecolumnunit; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterTypecolumnunit(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitTypecolumnunit(this);
-		}
-	}
-
-	public final TypecolumnunitContext typecolumnunit() throws RecognitionException {
-		TypecolumnunitContext _localctx = new TypecolumnunitContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_typecolumnunit);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(151);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==T__6) {
-				{
-				setState(150);
-				comment();
-				}
-			}
-
-			setState(153);
-			typecolumn();
 			setState(154);
+			match(T__3);
+			setState(155);
 			match(SEPARATOR);
 			}
 		}
@@ -695,15 +594,15 @@ public class HDBCDSParser extends Parser {
 
 	public final CommentContext comment() throws RecognitionException {
 		CommentContext _localctx = new CommentContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_comment);
+		enterRule(_localctx, 10, RULE_comment);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(156);
-			match(T__6);
 			setState(157);
-			match(T__5);
+			match(T__6);
 			setState(158);
+			match(T__5);
+			setState(159);
 			match(STRING);
 			}
 		}
@@ -719,9 +618,15 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static class TypecolumnContext extends ParserRuleContext {
-		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
-		public PrimitivetypeContext primitivetype() {
-			return getRuleContext(PrimitivetypeContext.class,0);
+		public TypecolumnnameContext typecolumnname() {
+			return getRuleContext(TypecolumnnameContext.class,0);
+		}
+		public DatatypeContext datatype() {
+			return getRuleContext(DatatypeContext.class,0);
+		}
+		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
+		public CommentContext comment() {
+			return getRuleContext(CommentContext.class,0);
 		}
 		public TypecolumnContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -739,14 +644,29 @@ public class HDBCDSParser extends Parser {
 
 	public final TypecolumnContext typecolumn() throws RecognitionException {
 		TypecolumnContext _localctx = new TypecolumnContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_typecolumn);
+		enterRule(_localctx, 12, RULE_typecolumn);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(160);
-			match(NAME);
-			setState(161);
-			primitivetype();
+			setState(162);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==T__6) {
+				{
+				setState(161);
+				comment();
+				}
+			}
+
+			setState(164);
+			typecolumnname();
+			setState(165);
+			match(T__5);
+			setState(166);
+			datatype();
+			setState(167);
+			match(SEPARATOR);
 			}
 		}
 		catch (RecognitionException re) {
@@ -779,14 +699,14 @@ public class HDBCDSParser extends Parser {
 
 	public final ColumndefaultContext columndefault() throws RecognitionException {
 		ColumndefaultContext _localctx = new ColumndefaultContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_columndefault);
+		enterRule(_localctx, 14, RULE_columndefault);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(163);
+			setState(169);
 			match(T__7);
-			setState(164);
+			setState(170);
 			_la = _input.LA(1);
 			if ( !(_la==NAME || _la==STRING) ) {
 			_errHandler.recoverInline(this);
@@ -826,22 +746,22 @@ public class HDBCDSParser extends Parser {
 
 	public final ColumnnullableContext columnnullable() throws RecognitionException {
 		ColumnnullableContext _localctx = new ColumnnullableContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_columnnullable);
+		enterRule(_localctx, 16, RULE_columnnullable);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(167);
+			setState(173);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__8) {
 				{
-				setState(166);
+				setState(172);
 				match(T__8);
 				}
 			}
 
-			setState(169);
+			setState(175);
 			match(T__9);
 			}
 		}
@@ -856,17 +776,232 @@ public class HDBCDSParser extends Parser {
 		return _localctx;
 	}
 
-	public static class EntityContext extends ParserRuleContext {
+	public static class TypenameprimitiveContext extends ParserRuleContext {
 		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public TypenameprimitiveContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_typenameprimitive; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterTypenameprimitive(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitTypenameprimitive(this);
+		}
+	}
+
+	public final TypenameprimitiveContext typenameprimitive() throws RecognitionException {
+		TypenameprimitiveContext _localctx = new TypenameprimitiveContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_typenameprimitive);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(177);
+			match(NAME);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class TypenamecomplexContext extends ParserRuleContext {
+		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public TypenamecomplexContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_typenamecomplex; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterTypenamecomplex(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitTypenamecomplex(this);
+		}
+	}
+
+	public final TypenamecomplexContext typenamecomplex() throws RecognitionException {
+		TypenamecomplexContext _localctx = new TypenamecomplexContext(_ctx, getState());
+		enterRule(_localctx, 20, RULE_typenamecomplex);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(179);
+			match(NAME);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class TypecolumnnameContext extends ParserRuleContext {
+		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public TypecolumnnameContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_typecolumnname; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterTypecolumnname(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitTypecolumnname(this);
+		}
+	}
+
+	public final TypecolumnnameContext typecolumnname() throws RecognitionException {
+		TypecolumnnameContext _localctx = new TypecolumnnameContext(_ctx, getState());
+		enterRule(_localctx, 22, RULE_typecolumnname);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(181);
+			match(NAME);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ContextnameContext extends ParserRuleContext {
+		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public ContextnameContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_contextname; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterContextname(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitContextname(this);
+		}
+	}
+
+	public final ContextnameContext contextname() throws RecognitionException {
+		ContextnameContext _localctx = new ContextnameContext(_ctx, getState());
+		enterRule(_localctx, 24, RULE_contextname);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(183);
+			match(NAME);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class DatatypeContext extends ParserRuleContext {
+		public Datatype1Context datatype1() {
+			return getRuleContext(Datatype1Context.class,0);
+		}
+		public Datatype2Context datatype2() {
+			return getRuleContext(Datatype2Context.class,0);
+		}
+		public Datatype3Context datatype3() {
+			return getRuleContext(Datatype3Context.class,0);
+		}
+		public DatatypeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_datatype; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterDatatype(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitDatatype(this);
+		}
+	}
+
+	public final DatatypeContext datatype() throws RecognitionException {
+		DatatypeContext _localctx = new DatatypeContext(_ctx, getState());
+		enterRule(_localctx, 26, RULE_datatype);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(188);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
+			case 1:
+				{
+				setState(185);
+				datatype1();
+				}
+				break;
+			case 2:
+				{
+				setState(186);
+				datatype2();
+				}
+				break;
+			case 3:
+				{
+				setState(187);
+				datatype3();
+				}
+				break;
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class EntityContext extends ParserRuleContext {
+		public EntitynameContext entityname() {
+			return getRuleContext(EntitynameContext.class,0);
+		}
 		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
 		public CommentContext comment() {
 			return getRuleContext(CommentContext.class,0);
 		}
-		public List<TablecolumnunitContext> tablecolumnunit() {
-			return getRuleContexts(TablecolumnunitContext.class);
+		public List<TablecolumnContext> tablecolumn() {
+			return getRuleContexts(TablecolumnContext.class);
 		}
-		public TablecolumnunitContext tablecolumnunit(int i) {
-			return getRuleContext(TablecolumnunitContext.class,i);
+		public TablecolumnContext tablecolumn(int i) {
+			return getRuleContext(TablecolumnContext.class,i);
 		}
 		public TechconfigContext techconfig() {
 			return getRuleContext(TechconfigContext.class,0);
@@ -887,54 +1022,54 @@ public class HDBCDSParser extends Parser {
 
 	public final EntityContext entity() throws RecognitionException {
 		EntityContext _localctx = new EntityContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_entity);
+		enterRule(_localctx, 28, RULE_entity);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(172);
+			setState(191);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__6) {
 				{
-				setState(171);
+				setState(190);
 				comment();
 				}
 			}
 
-			setState(174);
+			setState(193);
 			match(T__10);
-			setState(175);
-			match(NAME);
-			setState(176);
+			setState(194);
+			entityname();
+			setState(195);
 			match(T__2);
-			setState(178); 
+			setState(197); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(177);
-				tablecolumnunit();
+				setState(196);
+				tablecolumn();
 				}
 				}
-				setState(180); 
+				setState(199); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__6) | (1L << T__11) | (1L << NAME))) != 0) );
-			setState(182);
+			setState(201);
 			match(T__3);
-			setState(184);
+			setState(203);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__35) {
 				{
-				setState(183);
+				setState(202);
 				techconfig();
 				}
 			}
 
-			setState(186);
+			setState(205);
 			match(SEPARATOR);
 			}
 		}
@@ -949,49 +1084,30 @@ public class HDBCDSParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TablecolumnunitContext extends ParserRuleContext {
-		public TablecolumnContext tablecolumn() {
-			return getRuleContext(TablecolumnContext.class,0);
-		}
-		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
-		public CommentContext comment() {
-			return getRuleContext(CommentContext.class,0);
-		}
-		public TablecolumnunitContext(ParserRuleContext parent, int invokingState) {
+	public static class EntitynameContext extends ParserRuleContext {
+		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public EntitynameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_tablecolumnunit; }
+		@Override public int getRuleIndex() { return RULE_entityname; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterTablecolumnunit(this);
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterEntityname(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitTablecolumnunit(this);
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitEntityname(this);
 		}
 	}
 
-	public final TablecolumnunitContext tablecolumnunit() throws RecognitionException {
-		TablecolumnunitContext _localctx = new TablecolumnunitContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_tablecolumnunit);
-		int _la;
+	public final EntitynameContext entityname() throws RecognitionException {
+		EntitynameContext _localctx = new EntitynameContext(_ctx, getState());
+		enterRule(_localctx, 30, RULE_entityname);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(189);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==T__6) {
-				{
-				setState(188);
-				comment();
-				}
-			}
-
-			setState(191);
-			tablecolumn();
-			setState(192);
-			match(SEPARATOR);
+			setState(207);
+			match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1006,11 +1122,15 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static class TablecolumnContext extends ParserRuleContext {
+		public TerminalNode SEPARATOR() { return getToken(HDBCDSParser.SEPARATOR, 0); }
 		public KeycolumnContext keycolumn() {
 			return getRuleContext(KeycolumnContext.class,0);
 		}
 		public RegularcolumnContext regularcolumn() {
 			return getRuleContext(RegularcolumnContext.class,0);
+		}
+		public CommentContext comment() {
+			return getRuleContext(CommentContext.class,0);
 		}
 		public TablecolumnContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1028,28 +1148,41 @@ public class HDBCDSParser extends Parser {
 
 	public final TablecolumnContext tablecolumn() throws RecognitionException {
 		TablecolumnContext _localctx = new TablecolumnContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_tablecolumn);
+		enterRule(_localctx, 32, RULE_tablecolumn);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(196);
+			setState(210);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==T__6) {
+				{
+				setState(209);
+				comment();
+				}
+			}
+
+			setState(214);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__11:
 				{
-				setState(194);
+				setState(212);
 				keycolumn();
 				}
 				break;
 			case NAME:
 				{
-				setState(195);
+				setState(213);
 				regularcolumn();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
+			setState(216);
+			match(SEPARATOR);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1064,12 +1197,26 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static class KeycolumnContext extends ParserRuleContext {
-		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public ColumnnameContext columnname() {
+			return getRuleContext(ColumnnameContext.class,0);
+		}
 		public AssociationContext association() {
 			return getRuleContext(AssociationContext.class,0);
 		}
-		public PrimitivetypeContext primitivetype() {
-			return getRuleContext(PrimitivetypeContext.class,0);
+		public DatatypeContext datatype() {
+			return getRuleContext(DatatypeContext.class,0);
+		}
+		public List<ColumndefaultContext> columndefault() {
+			return getRuleContexts(ColumndefaultContext.class);
+		}
+		public ColumndefaultContext columndefault(int i) {
+			return getRuleContext(ColumndefaultContext.class,i);
+		}
+		public List<ColumnnullableContext> columnnullable() {
+			return getRuleContexts(ColumnnullableContext.class);
+		}
+		public ColumnnullableContext columnnullable(int i) {
+			return getRuleContext(ColumnnullableContext.class,i);
 		}
 		public GeneratedContext generated() {
 			return getRuleContext(GeneratedContext.class,0);
@@ -1090,29 +1237,60 @@ public class HDBCDSParser extends Parser {
 
 	public final KeycolumnContext keycolumn() throws RecognitionException {
 		KeycolumnContext _localctx = new KeycolumnContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_keycolumn);
+		enterRule(_localctx, 34, RULE_keycolumn);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(198);
+			setState(218);
 			match(T__11);
-			setState(199);
-			match(NAME);
-			setState(205);
+			setState(219);
+			columnname();
+			setState(220);
+			match(T__5);
+			setState(233);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
-			case 1:
+			switch (_input.LA(1)) {
+			case NAME:
 				{
 				{
-				setState(200);
-				primitivetype();
-				setState(202);
+				setState(221);
+				datatype();
+				setState(226);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__7) | (1L << T__8) | (1L << T__9))) != 0)) {
+					{
+					setState(224);
+					_errHandler.sync(this);
+					switch (_input.LA(1)) {
+					case T__7:
+						{
+						setState(222);
+						columndefault();
+						}
+						break;
+					case T__8:
+					case T__9:
+						{
+						setState(223);
+						columnnullable();
+						}
+						break;
+					default:
+						throw new NoViableAltException(this);
+					}
+					}
+					setState(228);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				setState(230);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__20) {
 					{
-					setState(201);
+					setState(229);
 					generated();
 					}
 				}
@@ -1120,12 +1298,14 @@ public class HDBCDSParser extends Parser {
 				}
 				}
 				break;
-			case 2:
+			case T__12:
 				{
-				setState(204);
+				setState(232);
 				association();
 				}
 				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 			}
 		}
@@ -1141,12 +1321,29 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static class RegularcolumnContext extends ParserRuleContext {
-		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
-		public PrimitivetypeContext primitivetype() {
-			return getRuleContext(PrimitivetypeContext.class,0);
+		public ColumnnameContext columnname() {
+			return getRuleContext(ColumnnameContext.class,0);
 		}
 		public AssociationContext association() {
 			return getRuleContext(AssociationContext.class,0);
+		}
+		public DatatypeContext datatype() {
+			return getRuleContext(DatatypeContext.class,0);
+		}
+		public List<ColumndefaultContext> columndefault() {
+			return getRuleContexts(ColumndefaultContext.class);
+		}
+		public ColumndefaultContext columndefault(int i) {
+			return getRuleContext(ColumndefaultContext.class,i);
+		}
+		public List<ColumnnullableContext> columnnullable() {
+			return getRuleContexts(ColumnnullableContext.class);
+		}
+		public ColumnnullableContext columnnullable(int i) {
+			return getRuleContext(ColumnnullableContext.class,i);
+		}
+		public GeneratedContext generated() {
+			return getRuleContext(GeneratedContext.class,0);
 		}
 		public RegularcolumnContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1164,28 +1361,111 @@ public class HDBCDSParser extends Parser {
 
 	public final RegularcolumnContext regularcolumn() throws RecognitionException {
 		RegularcolumnContext _localctx = new RegularcolumnContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_regularcolumn);
+		enterRule(_localctx, 36, RULE_regularcolumn);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(207);
-			match(NAME);
-			setState(210);
+			setState(235);
+			columnname();
+			setState(236);
+			match(T__5);
+			setState(249);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
-			case 1:
+			switch (_input.LA(1)) {
+			case NAME:
 				{
-				setState(208);
-				primitivetype();
+				{
+				setState(237);
+				datatype();
+				setState(242);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__7) | (1L << T__8) | (1L << T__9))) != 0)) {
+					{
+					setState(240);
+					_errHandler.sync(this);
+					switch (_input.LA(1)) {
+					case T__7:
+						{
+						setState(238);
+						columndefault();
+						}
+						break;
+					case T__8:
+					case T__9:
+						{
+						setState(239);
+						columnnullable();
+						}
+						break;
+					default:
+						throw new NoViableAltException(this);
+					}
+					}
+					setState(244);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				setState(246);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==T__20) {
+					{
+					setState(245);
+					generated();
+					}
+				}
+
+				}
 				}
 				break;
-			case 2:
+			case T__12:
 				{
-				setState(209);
+				setState(248);
 				association();
 				}
 				break;
+			default:
+				throw new NoViableAltException(this);
 			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ColumnnameContext extends ParserRuleContext {
+		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public ColumnnameContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_columnname; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterColumnname(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitColumnname(this);
+		}
+	}
+
+	public final ColumnnameContext columnname() throws RecognitionException {
+		ColumnnameContext _localctx = new ColumnnameContext(_ctx, getState());
+		enterRule(_localctx, 38, RULE_columnname);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(251);
+			match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1230,18 +1510,16 @@ public class HDBCDSParser extends Parser {
 
 	public final AssociationContext association() throws RecognitionException {
 		AssociationContext _localctx = new AssociationContext(_ctx, getState());
-		enterRule(_localctx, 32, RULE_association);
+		enterRule(_localctx, 40, RULE_association);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(212);
-			match(T__5);
-			setState(213);
+			setState(253);
 			match(T__12);
-			setState(214);
+			setState(254);
 			match(T__13);
-			setState(215);
+			setState(255);
 			_la = _input.LA(1);
 			if ( !(_la==INTEGER || _la==NAME) ) {
 			_errHandler.recoverInline(this);
@@ -1251,9 +1529,9 @@ public class HDBCDSParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(216);
+			setState(256);
 			match(T__14);
-			setState(217);
+			setState(257);
 			_la = _input.LA(1);
 			if ( !(_la==INTEGER || _la==NAME) ) {
 			_errHandler.recoverInline(this);
@@ -1263,24 +1541,24 @@ public class HDBCDSParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(218);
+			setState(258);
 			match(T__15);
-			setState(219);
+			setState(259);
 			match(T__16);
-			setState(220);
+			setState(260);
 			match(NAME);
-			setState(223);
+			setState(263);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__17:
 				{
-				setState(221);
+				setState(261);
 				joinclause();
 				}
 				break;
 			case T__2:
 				{
-				setState(222);
+				setState(262);
 				associatedcols();
 				}
 				break;
@@ -1321,36 +1599,36 @@ public class HDBCDSParser extends Parser {
 
 	public final JoinclauseContext joinclause() throws RecognitionException {
 		JoinclauseContext _localctx = new JoinclauseContext(_ctx, getState());
-		enterRule(_localctx, 34, RULE_joinclause);
+		enterRule(_localctx, 42, RULE_joinclause);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(225);
+			setState(265);
 			match(T__17);
-			setState(226);
+			setState(266);
 			match(NAME);
-			setState(227);
+			setState(267);
 			match(T__18);
-			setState(228);
+			setState(268);
 			match(NAME);
-			setState(235);
+			setState(275);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__19) {
 				{
 				{
-				setState(229);
+				setState(269);
 				match(T__19);
-				setState(230);
+				setState(270);
 				match(NAME);
-				setState(231);
+				setState(271);
 				match(T__18);
-				setState(232);
+				setState(272);
 				match(NAME);
 				}
 				}
-				setState(237);
+				setState(277);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -1388,32 +1666,32 @@ public class HDBCDSParser extends Parser {
 
 	public final AssociatedcolsContext associatedcols() throws RecognitionException {
 		AssociatedcolsContext _localctx = new AssociatedcolsContext(_ctx, getState());
-		enterRule(_localctx, 36, RULE_associatedcols);
+		enterRule(_localctx, 44, RULE_associatedcols);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(238);
+			setState(278);
 			match(T__2);
-			setState(239);
+			setState(279);
 			match(NAME);
-			setState(244);
+			setState(284);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__14) {
 				{
 				{
-				setState(240);
+				setState(280);
 				match(T__14);
-				setState(241);
+				setState(281);
 				match(NAME);
 				}
 				}
-				setState(246);
+				setState(286);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(247);
+			setState(287);
 			match(T__3);
 			}
 		}
@@ -1487,88 +1765,88 @@ public class HDBCDSParser extends Parser {
 
 	public final GeneratedContext generated() throws RecognitionException {
 		GeneratedContext _localctx = new GeneratedContext(_ctx, getState());
-		enterRule(_localctx, 38, RULE_generated);
+		enterRule(_localctx, 46, RULE_generated);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(249);
+			setState(289);
 			match(T__20);
-			setState(252);
+			setState(292);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__25:
 				{
-				setState(250);
+				setState(290);
 				generatedalways();
 				}
 				break;
 			case T__26:
 				{
-				setState(251);
+				setState(291);
 				generatedbydefault();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(254);
+			setState(294);
 			match(T__21);
-			setState(255);
+			setState(295);
 			match(T__22);
-			setState(256);
+			setState(296);
 			match(T__23);
-			setState(265);
+			setState(305);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__27) | (1L << T__29) | (1L << T__30) | (1L << T__31) | (1L << T__32) | (1L << T__33) | (1L << T__34))) != 0)) {
 				{
-				setState(263);
+				setState(303);
 				_errHandler.sync(this);
-				switch ( getInterpreter().adaptivePredict(_input,25,_ctx) ) {
+				switch ( getInterpreter().adaptivePredict(_input,29,_ctx) ) {
 				case 1:
 					{
-					setState(257);
+					setState(297);
 					identitystart();
 					}
 					break;
 				case 2:
 					{
-					setState(258);
+					setState(298);
 					identityincrement();
 					}
 					break;
 				case 3:
 					{
-					setState(259);
+					setState(299);
 					identityminclause();
 					}
 					break;
 				case 4:
 					{
-					setState(260);
+					setState(300);
 					identitymaxclause();
 					}
 					break;
 				case 5:
 					{
-					setState(261);
+					setState(301);
 					identitynochache();
 					}
 					break;
 				case 6:
 					{
-					setState(262);
+					setState(302);
 					identitynocycle();
 					}
 					break;
 				}
 				}
-				setState(267);
+				setState(307);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(268);
+			setState(308);
 			match(T__24);
 			}
 		}
@@ -1600,11 +1878,11 @@ public class HDBCDSParser extends Parser {
 
 	public final GeneratedalwaysContext generatedalways() throws RecognitionException {
 		GeneratedalwaysContext _localctx = new GeneratedalwaysContext(_ctx, getState());
-		enterRule(_localctx, 40, RULE_generatedalways);
+		enterRule(_localctx, 48, RULE_generatedalways);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(270);
+			setState(310);
 			match(T__25);
 			}
 		}
@@ -1636,13 +1914,13 @@ public class HDBCDSParser extends Parser {
 
 	public final GeneratedbydefaultContext generatedbydefault() throws RecognitionException {
 		GeneratedbydefaultContext _localctx = new GeneratedbydefaultContext(_ctx, getState());
-		enterRule(_localctx, 42, RULE_generatedbydefault);
+		enterRule(_localctx, 50, RULE_generatedbydefault);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(272);
+			setState(312);
 			match(T__26);
-			setState(273);
+			setState(313);
 			match(T__7);
 			}
 		}
@@ -1675,15 +1953,15 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentitystartContext identitystart() throws RecognitionException {
 		IdentitystartContext _localctx = new IdentitystartContext(_ctx, getState());
-		enterRule(_localctx, 44, RULE_identitystart);
+		enterRule(_localctx, 52, RULE_identitystart);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(275);
+			setState(315);
 			match(T__27);
-			setState(276);
+			setState(316);
 			match(T__28);
-			setState(277);
+			setState(317);
 			match(INTEGER);
 			}
 		}
@@ -1716,15 +1994,15 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentityincrementContext identityincrement() throws RecognitionException {
 		IdentityincrementContext _localctx = new IdentityincrementContext(_ctx, getState());
-		enterRule(_localctx, 46, RULE_identityincrement);
+		enterRule(_localctx, 54, RULE_identityincrement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(279);
+			setState(319);
 			match(T__29);
-			setState(280);
+			setState(320);
 			match(T__26);
-			setState(281);
+			setState(321);
 			match(INTEGER);
 			}
 		}
@@ -1762,22 +2040,22 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentityminclauseContext identityminclause() throws RecognitionException {
 		IdentityminclauseContext _localctx = new IdentityminclauseContext(_ctx, getState());
-		enterRule(_localctx, 48, RULE_identityminclause);
+		enterRule(_localctx, 56, RULE_identityminclause);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(285);
+			setState(325);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__30:
 				{
-				setState(283);
+				setState(323);
 				identitynomin();
 				}
 				break;
 			case T__31:
 				{
-				setState(284);
+				setState(324);
 				identitymin();
 				}
 				break;
@@ -1814,13 +2092,13 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentitynominContext identitynomin() throws RecognitionException {
 		IdentitynominContext _localctx = new IdentitynominContext(_ctx, getState());
-		enterRule(_localctx, 50, RULE_identitynomin);
+		enterRule(_localctx, 58, RULE_identitynomin);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(287);
+			setState(327);
 			match(T__30);
-			setState(288);
+			setState(328);
 			match(T__31);
 			}
 		}
@@ -1853,13 +2131,13 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentityminContext identitymin() throws RecognitionException {
 		IdentityminContext _localctx = new IdentityminContext(_ctx, getState());
-		enterRule(_localctx, 52, RULE_identitymin);
+		enterRule(_localctx, 60, RULE_identitymin);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(290);
+			setState(330);
 			match(T__31);
-			setState(291);
+			setState(331);
 			match(INTEGER);
 			}
 		}
@@ -1897,22 +2175,22 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentitymaxclauseContext identitymaxclause() throws RecognitionException {
 		IdentitymaxclauseContext _localctx = new IdentitymaxclauseContext(_ctx, getState());
-		enterRule(_localctx, 54, RULE_identitymaxclause);
+		enterRule(_localctx, 62, RULE_identitymaxclause);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(295);
+			setState(335);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__30:
 				{
-				setState(293);
+				setState(333);
 				identitynomax();
 				}
 				break;
 			case T__32:
 				{
-				setState(294);
+				setState(334);
 				identitymax();
 				}
 				break;
@@ -1949,13 +2227,13 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentitynomaxContext identitynomax() throws RecognitionException {
 		IdentitynomaxContext _localctx = new IdentitynomaxContext(_ctx, getState());
-		enterRule(_localctx, 56, RULE_identitynomax);
+		enterRule(_localctx, 64, RULE_identitynomax);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(297);
+			setState(337);
 			match(T__30);
-			setState(298);
+			setState(338);
 			match(T__32);
 			}
 		}
@@ -1988,13 +2266,13 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentitymaxContext identitymax() throws RecognitionException {
 		IdentitymaxContext _localctx = new IdentitymaxContext(_ctx, getState());
-		enterRule(_localctx, 58, RULE_identitymax);
+		enterRule(_localctx, 66, RULE_identitymax);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(300);
+			setState(340);
 			match(T__32);
-			setState(301);
+			setState(341);
 			match(INTEGER);
 			}
 		}
@@ -2026,22 +2304,22 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentitynochacheContext identitynochache() throws RecognitionException {
 		IdentitynochacheContext _localctx = new IdentitynochacheContext(_ctx, getState());
-		enterRule(_localctx, 60, RULE_identitynochache);
+		enterRule(_localctx, 68, RULE_identitynochache);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(304);
+			setState(344);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__30) {
 				{
-				setState(303);
+				setState(343);
 				match(T__30);
 				}
 			}
 
-			setState(306);
+			setState(346);
 			match(T__33);
 			}
 		}
@@ -2073,22 +2351,22 @@ public class HDBCDSParser extends Parser {
 
 	public final IdentitynocycleContext identitynocycle() throws RecognitionException {
 		IdentitynocycleContext _localctx = new IdentitynocycleContext(_ctx, getState());
-		enterRule(_localctx, 62, RULE_identitynocycle);
+		enterRule(_localctx, 70, RULE_identitynocycle);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(309);
+			setState(349);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__30) {
 				{
-				setState(308);
+				setState(348);
 				match(T__30);
 				}
 			}
 
-			setState(311);
+			setState(351);
 			match(T__34);
 			}
 		}
@@ -2123,21 +2401,21 @@ public class HDBCDSParser extends Parser {
 
 	public final TechconfigContext techconfig() throws RecognitionException {
 		TechconfigContext _localctx = new TechconfigContext(_ctx, getState());
-		enterRule(_localctx, 64, RULE_techconfig);
+		enterRule(_localctx, 72, RULE_techconfig);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(313);
+			setState(353);
 			match(T__35);
-			setState(314);
+			setState(354);
 			match(T__36);
-			setState(315);
+			setState(355);
 			match(T__2);
 			{
-			setState(316);
+			setState(356);
 			tabletype();
 			}
-			setState(317);
+			setState(357);
 			match(T__3);
 			}
 		}
@@ -2176,29 +2454,29 @@ public class HDBCDSParser extends Parser {
 
 	public final TabletypeContext tabletype() throws RecognitionException {
 		TabletypeContext _localctx = new TabletypeContext(_ctx, getState());
-		enterRule(_localctx, 66, RULE_tabletype);
+		enterRule(_localctx, 74, RULE_tabletype);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(321);
+			setState(361);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__37:
 				{
-				setState(319);
+				setState(359);
 				tabletype1();
 				}
 				break;
 			case T__39:
 				{
-				setState(320);
+				setState(360);
 				tabletype2();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(323);
+			setState(363);
 			match(SEPARATOR);
 			}
 		}
@@ -2230,13 +2508,13 @@ public class HDBCDSParser extends Parser {
 
 	public final Tabletype1Context tabletype1() throws RecognitionException {
 		Tabletype1Context _localctx = new Tabletype1Context(_ctx, getState());
-		enterRule(_localctx, 68, RULE_tabletype1);
+		enterRule(_localctx, 76, RULE_tabletype1);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(325);
+			setState(365);
 			match(T__37);
-			setState(326);
+			setState(366);
 			match(T__38);
 			}
 		}
@@ -2268,13 +2546,13 @@ public class HDBCDSParser extends Parser {
 
 	public final Tabletype2Context tabletype2() throws RecognitionException {
 		Tabletype2Context _localctx = new Tabletype2Context(_ctx, getState());
-		enterRule(_localctx, 70, RULE_tabletype2);
+		enterRule(_localctx, 78, RULE_tabletype2);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(328);
+			setState(368);
 			match(T__39);
-			setState(329);
+			setState(369);
 			match(T__38);
 			}
 		}
@@ -2323,68 +2601,68 @@ public class HDBCDSParser extends Parser {
 
 	public final DefineContext define() throws RecognitionException {
 		DefineContext _localctx = new DefineContext(_ctx, getState());
-		enterRule(_localctx, 72, RULE_define);
+		enterRule(_localctx, 80, RULE_define);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(332);
+			setState(372);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__6) {
 				{
-				setState(331);
+				setState(371);
 				comment();
 				}
 			}
 
-			setState(334);
+			setState(374);
 			match(T__40);
-			setState(335);
+			setState(375);
 			match(T__41);
-			setState(336);
+			setState(376);
 			match(NAME);
-			setState(337);
+			setState(377);
 			match(T__21);
-			setState(338);
+			setState(378);
 			match(T__42);
-			setState(339);
+			setState(379);
 			match(T__43);
-			setState(340);
+			setState(380);
 			match(NAME);
-			setState(341);
+			setState(381);
 			match(T__2);
-			setState(342);
+			setState(382);
 			projection();
-			setState(345); 
+			setState(385); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(343);
+				setState(383);
 				match(T__14);
-				setState(344);
+				setState(384);
 				projection();
 				}
 				}
-				setState(347); 
+				setState(387); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==T__14 );
-			setState(349);
+			setState(389);
 			match(T__3);
-			setState(351);
+			setState(391);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__28) {
 				{
-				setState(350);
+				setState(390);
 				viewoptions();
 				}
 			}
 
-			setState(353);
+			setState(393);
 			match(SEPARATOR);
 			}
 		}
@@ -2420,21 +2698,21 @@ public class HDBCDSParser extends Parser {
 
 	public final ProjectionContext projection() throws RecognitionException {
 		ProjectionContext _localctx = new ProjectionContext(_ctx, getState());
-		enterRule(_localctx, 74, RULE_projection);
+		enterRule(_localctx, 82, RULE_projection);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(355);
+			setState(395);
 			match(NAME);
-			setState(358);
+			setState(398);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__21) {
 				{
-				setState(356);
+				setState(396);
 				match(T__21);
-				setState(357);
+				setState(397);
 				databaseobject();
 				}
 			}
@@ -2472,12 +2750,12 @@ public class HDBCDSParser extends Parser {
 
 	public final ViewoptionsContext viewoptions() throws RecognitionException {
 		ViewoptionsContext _localctx = new ViewoptionsContext(_ctx, getState());
-		enterRule(_localctx, 76, RULE_viewoptions);
+		enterRule(_localctx, 84, RULE_viewoptions);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(360);
+			setState(400);
 			privcheck();
 			}
 			}
@@ -2510,17 +2788,17 @@ public class HDBCDSParser extends Parser {
 
 	public final PrivcheckContext privcheck() throws RecognitionException {
 		PrivcheckContext _localctx = new PrivcheckContext(_ctx, getState());
-		enterRule(_localctx, 78, RULE_privcheck);
+		enterRule(_localctx, 86, RULE_privcheck);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(362);
+			setState(402);
 			match(T__28);
-			setState(363);
+			setState(403);
 			match(T__44);
-			setState(364);
+			setState(404);
 			match(T__45);
-			setState(365);
+			setState(405);
 			match(T__46);
 			}
 		}
@@ -2556,22 +2834,22 @@ public class HDBCDSParser extends Parser {
 
 	public final DatabaseobjectContext databaseobject() throws RecognitionException {
 		DatabaseobjectContext _localctx = new DatabaseobjectContext(_ctx, getState());
-		enterRule(_localctx, 80, RULE_databaseobject);
+		enterRule(_localctx, 88, RULE_databaseobject);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(369);
+			setState(409);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__47:
 				{
-				setState(367);
+				setState(407);
 				quotedname();
 				}
 				break;
 			case NAME:
 				{
-				setState(368);
+				setState(408);
 				match(NAME);
 				}
 				break;
@@ -2610,17 +2888,17 @@ public class HDBCDSParser extends Parser {
 
 	public final Datatype1Context datatype1() throws RecognitionException {
 		Datatype1Context _localctx = new Datatype1Context(_ctx, getState());
-		enterRule(_localctx, 82, RULE_datatype1);
+		enterRule(_localctx, 90, RULE_datatype1);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(371);
+			setState(411);
 			match(NAME);
-			setState(372);
+			setState(412);
 			match(T__23);
-			setState(373);
+			setState(413);
 			match(INTEGER);
-			setState(374);
+			setState(414);
 			match(T__24);
 			}
 		}
@@ -2657,22 +2935,59 @@ public class HDBCDSParser extends Parser {
 
 	public final Datatype2Context datatype2() throws RecognitionException {
 		Datatype2Context _localctx = new Datatype2Context(_ctx, getState());
-		enterRule(_localctx, 84, RULE_datatype2);
+		enterRule(_localctx, 92, RULE_datatype2);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(376);
+			setState(416);
 			match(NAME);
-			setState(377);
+			setState(417);
 			match(T__23);
-			setState(378);
+			setState(418);
 			match(INTEGER);
-			setState(379);
+			setState(419);
 			match(T__14);
-			setState(380);
+			setState(420);
 			match(INTEGER);
-			setState(381);
+			setState(421);
 			match(T__24);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Datatype3Context extends ParserRuleContext {
+		public TerminalNode NAME() { return getToken(HDBCDSParser.NAME, 0); }
+		public Datatype3Context(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_datatype3; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).enterDatatype3(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof HDBCDSListener ) ((HDBCDSListener)listener).exitDatatype3(this);
+		}
+	}
+
+	public final Datatype3Context datatype3() throws RecognitionException {
+		Datatype3Context _localctx = new Datatype3Context(_ctx, getState());
+		enterRule(_localctx, 94, RULE_datatype3);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(423);
+			match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2704,15 +3019,15 @@ public class HDBCDSParser extends Parser {
 
 	public final QuotednameContext quotedname() throws RecognitionException {
 		QuotednameContext _localctx = new QuotednameContext(_ctx, getState());
-		enterRule(_localctx, 86, RULE_quotedname);
+		enterRule(_localctx, 96, RULE_quotedname);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(383);
+			setState(425);
 			match(T__47);
-			setState(384);
+			setState(426);
 			match(NAME);
-			setState(385);
+			setState(427);
 			match(T__47);
 			}
 		}
@@ -2728,137 +3043,154 @@ public class HDBCDSParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\39\u0186\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\39\u01b0\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
 		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\4*\t*\4+\t+\4"+
-		",\t,\4-\t-\3\2\5\2\\\n\2\3\2\3\2\3\2\3\2\7\2b\n\2\f\2\16\2e\13\2\3\3\3"+
-		"\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\7\4q\n\4\f\4\16\4t\13\4\3\4\3\4\3\4"+
-		"\3\5\5\5z\n\5\3\5\3\5\3\5\3\5\5\5\u0080\n\5\3\5\3\5\3\6\3\6\3\6\3\6\5"+
-		"\6\u0088\n\6\3\6\3\6\7\6\u008c\n\6\f\6\16\6\u008f\13\6\3\7\3\7\6\7\u0093"+
-		"\n\7\r\7\16\7\u0094\3\7\3\7\3\b\5\b\u009a\n\b\3\b\3\b\3\b\3\t\3\t\3\t"+
-		"\3\t\3\n\3\n\3\n\3\13\3\13\3\13\3\f\5\f\u00aa\n\f\3\f\3\f\3\r\5\r\u00af"+
-		"\n\r\3\r\3\r\3\r\3\r\6\r\u00b5\n\r\r\r\16\r\u00b6\3\r\3\r\5\r\u00bb\n"+
-		"\r\3\r\3\r\3\16\5\16\u00c0\n\16\3\16\3\16\3\16\3\17\3\17\5\17\u00c7\n"+
-		"\17\3\20\3\20\3\20\3\20\5\20\u00cd\n\20\3\20\5\20\u00d0\n\20\3\21\3\21"+
-		"\3\21\5\21\u00d5\n\21\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22"+
-		"\3\22\5\22\u00e2\n\22\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\7\23\u00ec"+
-		"\n\23\f\23\16\23\u00ef\13\23\3\24\3\24\3\24\3\24\7\24\u00f5\n\24\f\24"+
-		"\16\24\u00f8\13\24\3\24\3\24\3\25\3\25\3\25\5\25\u00ff\n\25\3\25\3\25"+
-		"\3\25\3\25\3\25\3\25\3\25\3\25\3\25\7\25\u010a\n\25\f\25\16\25\u010d\13"+
-		"\25\3\25\3\25\3\26\3\26\3\27\3\27\3\27\3\30\3\30\3\30\3\30\3\31\3\31\3"+
-		"\31\3\31\3\32\3\32\5\32\u0120\n\32\3\33\3\33\3\33\3\34\3\34\3\34\3\35"+
-		"\3\35\5\35\u012a\n\35\3\36\3\36\3\36\3\37\3\37\3\37\3 \5 \u0133\n \3 "+
-		"\3 \3!\5!\u0138\n!\3!\3!\3\"\3\"\3\"\3\"\3\"\3\"\3#\3#\5#\u0144\n#\3#"+
-		"\3#\3$\3$\3$\3%\3%\3%\3&\5&\u014f\n&\3&\3&\3&\3&\3&\3&\3&\3&\3&\3&\3&"+
-		"\6&\u015c\n&\r&\16&\u015d\3&\3&\5&\u0162\n&\3&\3&\3\'\3\'\3\'\5\'\u0169"+
-		"\n\'\3(\3(\3)\3)\3)\3)\3)\3*\3*\5*\u0174\n*\3+\3+\3+\3+\3+\3,\3,\3,\3"+
-		",\3,\3,\3,\3-\3-\3-\3-\3-\2\2.\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36"+
-		" \"$&(*,.\60\62\64\668:<>@BDFHJLNPRTVX\2\4\4\2\64\64\66\66\3\2\63\64\2"+
-		"\u0186\2[\3\2\2\2\4f\3\2\2\2\6j\3\2\2\2\by\3\2\2\2\n\u0083\3\2\2\2\f\u0090"+
-		"\3\2\2\2\16\u0099\3\2\2\2\20\u009e\3\2\2\2\22\u00a2\3\2\2\2\24\u00a5\3"+
-		"\2\2\2\26\u00a9\3\2\2\2\30\u00ae\3\2\2\2\32\u00bf\3\2\2\2\34\u00c6\3\2"+
-		"\2\2\36\u00c8\3\2\2\2 \u00d1\3\2\2\2\"\u00d6\3\2\2\2$\u00e3\3\2\2\2&\u00f0"+
-		"\3\2\2\2(\u00fb\3\2\2\2*\u0110\3\2\2\2,\u0112\3\2\2\2.\u0115\3\2\2\2\60"+
-		"\u0119\3\2\2\2\62\u011f\3\2\2\2\64\u0121\3\2\2\2\66\u0124\3\2\2\28\u0129"+
-		"\3\2\2\2:\u012b\3\2\2\2<\u012e\3\2\2\2>\u0132\3\2\2\2@\u0137\3\2\2\2B"+
-		"\u013b\3\2\2\2D\u0143\3\2\2\2F\u0147\3\2\2\2H\u014a\3\2\2\2J\u014e\3\2"+
-		"\2\2L\u0165\3\2\2\2N\u016a\3\2\2\2P\u016c\3\2\2\2R\u0173\3\2\2\2T\u0175"+
-		"\3\2\2\2V\u017a\3\2\2\2X\u0181\3\2\2\2Z\\\5\4\3\2[Z\3\2\2\2[\\\3\2\2\2"+
-		"\\c\3\2\2\2]b\5\6\4\2^b\5\b\5\2_b\5\30\r\2`b\5J&\2a]\3\2\2\2a^\3\2\2\2"+
-		"a_\3\2\2\2a`\3\2\2\2be\3\2\2\2ca\3\2\2\2cd\3\2\2\2d\3\3\2\2\2ec\3\2\2"+
-		"\2fg\7\3\2\2gh\7\64\2\2hi\7\65\2\2i\5\3\2\2\2jk\7\4\2\2kl\7\64\2\2lr\7"+
-		"\5\2\2mq\5\b\5\2nq\5\30\r\2oq\5J&\2pm\3\2\2\2pn\3\2\2\2po\3\2\2\2qt\3"+
-		"\2\2\2rp\3\2\2\2rs\3\2\2\2su\3\2\2\2tr\3\2\2\2uv\7\6\2\2vw\7\65\2\2w\7"+
-		"\3\2\2\2xz\5\20\t\2yx\3\2\2\2yz\3\2\2\2z{\3\2\2\2{|\7\7\2\2|\177\7\64"+
-		"\2\2}\u0080\5\n\6\2~\u0080\5\f\7\2\177}\3\2\2\2\177~\3\2\2\2\u0080\u0081"+
-		"\3\2\2\2\u0081\u0082\7\65\2\2\u0082\t\3\2\2\2\u0083\u0087\7\b\2\2\u0084"+
-		"\u0088\5T+\2\u0085\u0088\5V,\2\u0086\u0088\7\64\2\2\u0087\u0084\3\2\2"+
-		"\2\u0087\u0085\3\2\2\2\u0087\u0086\3\2\2\2\u0088\u008d\3\2\2\2\u0089\u008c"+
-		"\5\24\13\2\u008a\u008c\5\26\f\2\u008b\u0089\3\2\2\2\u008b\u008a\3\2\2"+
-		"\2\u008c\u008f\3\2\2\2\u008d\u008b\3\2\2\2\u008d\u008e\3\2\2\2\u008e\13"+
-		"\3\2\2\2\u008f\u008d\3\2\2\2\u0090\u0092\7\5\2\2\u0091\u0093\5\16\b\2"+
-		"\u0092\u0091\3\2\2\2\u0093\u0094\3\2\2\2\u0094\u0092\3\2\2\2\u0094\u0095"+
-		"\3\2\2\2\u0095\u0096\3\2\2\2\u0096\u0097\7\6\2\2\u0097\r\3\2\2\2\u0098"+
-		"\u009a\5\20\t\2\u0099\u0098\3\2\2\2\u0099\u009a\3\2\2\2\u009a\u009b\3"+
-		"\2\2\2\u009b\u009c\5\22\n\2\u009c\u009d\7\65\2\2\u009d\17\3\2\2\2\u009e"+
-		"\u009f\7\t\2\2\u009f\u00a0\7\b\2\2\u00a0\u00a1\7\66\2\2\u00a1\21\3\2\2"+
-		"\2\u00a2\u00a3\7\64\2\2\u00a3\u00a4\5\n\6\2\u00a4\23\3\2\2\2\u00a5\u00a6"+
-		"\7\n\2\2\u00a6\u00a7\t\2\2\2\u00a7\25\3\2\2\2\u00a8\u00aa\7\13\2\2\u00a9"+
-		"\u00a8\3\2\2\2\u00a9\u00aa\3\2\2\2\u00aa\u00ab\3\2\2\2\u00ab\u00ac\7\f"+
-		"\2\2\u00ac\27\3\2\2\2\u00ad\u00af\5\20\t\2\u00ae\u00ad\3\2\2\2\u00ae\u00af"+
-		"\3\2\2\2\u00af\u00b0\3\2\2\2\u00b0\u00b1\7\r\2\2\u00b1\u00b2\7\64\2\2"+
-		"\u00b2\u00b4\7\5\2\2\u00b3\u00b5\5\32\16\2\u00b4\u00b3\3\2\2\2\u00b5\u00b6"+
-		"\3\2\2\2\u00b6\u00b4\3\2\2\2\u00b6\u00b7\3\2\2\2\u00b7\u00b8\3\2\2\2\u00b8"+
-		"\u00ba\7\6\2\2\u00b9\u00bb\5B\"\2\u00ba\u00b9\3\2\2\2\u00ba\u00bb\3\2"+
-		"\2\2\u00bb\u00bc\3\2\2\2\u00bc\u00bd\7\65\2\2\u00bd\31\3\2\2\2\u00be\u00c0"+
-		"\5\20\t\2\u00bf\u00be\3\2\2\2\u00bf\u00c0\3\2\2\2\u00c0\u00c1\3\2\2\2"+
-		"\u00c1\u00c2\5\34\17\2\u00c2\u00c3\7\65\2\2\u00c3\33\3\2\2\2\u00c4\u00c7"+
-		"\5\36\20\2\u00c5\u00c7\5 \21\2\u00c6\u00c4\3\2\2\2\u00c6\u00c5\3\2\2\2"+
-		"\u00c7\35\3\2\2\2\u00c8\u00c9\7\16\2\2\u00c9\u00cf\7\64\2\2\u00ca\u00cc"+
-		"\5\n\6\2\u00cb\u00cd\5(\25\2\u00cc\u00cb\3\2\2\2\u00cc\u00cd\3\2\2\2\u00cd"+
-		"\u00d0\3\2\2\2\u00ce\u00d0\5\"\22\2\u00cf\u00ca\3\2\2\2\u00cf\u00ce\3"+
-		"\2\2\2\u00d0\37\3\2\2\2\u00d1\u00d4\7\64\2\2\u00d2\u00d5\5\n\6\2\u00d3"+
-		"\u00d5\5\"\22\2\u00d4\u00d2\3\2\2\2\u00d4\u00d3\3\2\2\2\u00d5!\3\2\2\2"+
-		"\u00d6\u00d7\7\b\2\2\u00d7\u00d8\7\17\2\2\u00d8\u00d9\7\20\2\2\u00d9\u00da"+
-		"\t\3\2\2\u00da\u00db\7\21\2\2\u00db\u00dc\t\3\2\2\u00dc\u00dd\7\22\2\2"+
-		"\u00dd\u00de\7\23\2\2\u00de\u00e1\7\64\2\2\u00df\u00e2\5$\23\2\u00e0\u00e2"+
-		"\5&\24\2\u00e1\u00df\3\2\2\2\u00e1\u00e0\3\2\2\2\u00e2#\3\2\2\2\u00e3"+
-		"\u00e4\7\24\2\2\u00e4\u00e5\7\64\2\2\u00e5\u00e6\7\25\2\2\u00e6\u00ed"+
-		"\7\64\2\2\u00e7\u00e8\7\26\2\2\u00e8\u00e9\7\64\2\2\u00e9\u00ea\7\25\2"+
-		"\2\u00ea\u00ec\7\64\2\2\u00eb\u00e7\3\2\2\2\u00ec\u00ef\3\2\2\2\u00ed"+
-		"\u00eb\3\2\2\2\u00ed\u00ee\3\2\2\2\u00ee%\3\2\2\2\u00ef\u00ed\3\2\2\2"+
-		"\u00f0\u00f1\7\5\2\2\u00f1\u00f6\7\64\2\2\u00f2\u00f3\7\21\2\2\u00f3\u00f5"+
-		"\7\64\2\2\u00f4\u00f2\3\2\2\2\u00f5\u00f8\3\2\2\2\u00f6\u00f4\3\2\2\2"+
-		"\u00f6\u00f7\3\2\2\2\u00f7\u00f9\3\2\2\2\u00f8\u00f6\3\2\2\2\u00f9\u00fa"+
-		"\7\6\2\2\u00fa\'\3\2\2\2\u00fb\u00fe\7\27\2\2\u00fc\u00ff\5*\26\2\u00fd"+
-		"\u00ff\5,\27\2\u00fe\u00fc\3\2\2\2\u00fe\u00fd\3\2\2\2\u00ff\u0100\3\2"+
-		"\2\2\u0100\u0101\7\30\2\2\u0101\u0102\7\31\2\2\u0102\u010b\7\32\2\2\u0103"+
-		"\u010a\5.\30\2\u0104\u010a\5\60\31\2\u0105\u010a\5\62\32\2\u0106\u010a"+
-		"\58\35\2\u0107\u010a\5> \2\u0108\u010a\5@!\2\u0109\u0103\3\2\2\2\u0109"+
-		"\u0104\3\2\2\2\u0109\u0105\3\2\2\2\u0109\u0106\3\2\2\2\u0109\u0107\3\2"+
-		"\2\2\u0109\u0108\3\2\2\2\u010a\u010d\3\2\2\2\u010b\u0109\3\2\2\2\u010b"+
-		"\u010c\3\2\2\2\u010c\u010e\3\2\2\2\u010d\u010b\3\2\2\2\u010e\u010f\7\33"+
-		"\2\2\u010f)\3\2\2\2\u0110\u0111\7\34\2\2\u0111+\3\2\2\2\u0112\u0113\7"+
-		"\35\2\2\u0113\u0114\7\n\2\2\u0114-\3\2\2\2\u0115\u0116\7\36\2\2\u0116"+
-		"\u0117\7\37\2\2\u0117\u0118\7\63\2\2\u0118/\3\2\2\2\u0119\u011a\7 \2\2"+
-		"\u011a\u011b\7\35\2\2\u011b\u011c\7\63\2\2\u011c\61\3\2\2\2\u011d\u0120"+
-		"\5\64\33\2\u011e\u0120\5\66\34\2\u011f\u011d\3\2\2\2\u011f\u011e\3\2\2"+
-		"\2\u0120\63\3\2\2\2\u0121\u0122\7!\2\2\u0122\u0123\7\"\2\2\u0123\65\3"+
-		"\2\2\2\u0124\u0125\7\"\2\2\u0125\u0126\7\63\2\2\u0126\67\3\2\2\2\u0127"+
-		"\u012a\5:\36\2\u0128\u012a\5<\37\2\u0129\u0127\3\2\2\2\u0129\u0128\3\2"+
-		"\2\2\u012a9\3\2\2\2\u012b\u012c\7!\2\2\u012c\u012d\7#\2\2\u012d;\3\2\2"+
-		"\2\u012e\u012f\7#\2\2\u012f\u0130\7\63\2\2\u0130=\3\2\2\2\u0131\u0133"+
-		"\7!\2\2\u0132\u0131\3\2\2\2\u0132\u0133\3\2\2\2\u0133\u0134\3\2\2\2\u0134"+
-		"\u0135\7$\2\2\u0135?\3\2\2\2\u0136\u0138\7!\2\2\u0137\u0136\3\2\2\2\u0137"+
-		"\u0138\3\2\2\2\u0138\u0139\3\2\2\2\u0139\u013a\7%\2\2\u013aA\3\2\2\2\u013b"+
-		"\u013c\7&\2\2\u013c\u013d\7\'\2\2\u013d\u013e\7\5\2\2\u013e\u013f\5D#"+
-		"\2\u013f\u0140\7\6\2\2\u0140C\3\2\2\2\u0141\u0144\5F$\2\u0142\u0144\5"+
-		"H%\2\u0143\u0141\3\2\2\2\u0143\u0142\3\2\2\2\u0144\u0145\3\2\2\2\u0145"+
-		"\u0146\7\65\2\2\u0146E\3\2\2\2\u0147\u0148\7(\2\2\u0148\u0149\7)\2\2\u0149"+
-		"G\3\2\2\2\u014a\u014b\7*\2\2\u014b\u014c\7)\2\2\u014cI\3\2\2\2\u014d\u014f"+
-		"\5\20\t\2\u014e\u014d\3\2\2\2\u014e\u014f\3\2\2\2\u014f\u0150\3\2\2\2"+
-		"\u0150\u0151\7+\2\2\u0151\u0152\7,\2\2\u0152\u0153\7\64\2\2\u0153\u0154"+
-		"\7\30\2\2\u0154\u0155\7-\2\2\u0155\u0156\7.\2\2\u0156\u0157\7\64\2\2\u0157"+
-		"\u0158\7\5\2\2\u0158\u015b\5L\'\2\u0159\u015a\7\21\2\2\u015a\u015c\5L"+
-		"\'\2\u015b\u0159\3\2\2\2\u015c\u015d\3\2\2\2\u015d\u015b\3\2\2\2\u015d"+
-		"\u015e\3\2\2\2\u015e\u015f\3\2\2\2\u015f\u0161\7\6\2\2\u0160\u0162\5N"+
-		"(\2\u0161\u0160\3\2\2\2\u0161\u0162\3\2\2\2\u0162\u0163\3\2\2\2\u0163"+
-		"\u0164\7\65\2\2\u0164K\3\2\2\2\u0165\u0168\7\64\2\2\u0166\u0167\7\30\2"+
-		"\2\u0167\u0169\5R*\2\u0168\u0166\3\2\2\2\u0168\u0169\3\2\2\2\u0169M\3"+
-		"\2\2\2\u016a\u016b\5P)\2\u016bO\3\2\2\2\u016c\u016d\7\37\2\2\u016d\u016e"+
-		"\7/\2\2\u016e\u016f\7\60\2\2\u016f\u0170\7\61\2\2\u0170Q\3\2\2\2\u0171"+
-		"\u0174\5X-\2\u0172\u0174\7\64\2\2\u0173\u0171\3\2\2\2\u0173\u0172\3\2"+
-		"\2\2\u0174S\3\2\2\2\u0175\u0176\7\64\2\2\u0176\u0177\7\32\2\2\u0177\u0178"+
-		"\7\63\2\2\u0178\u0179\7\33\2\2\u0179U\3\2\2\2\u017a\u017b\7\64\2\2\u017b"+
-		"\u017c\7\32\2\2\u017c\u017d\7\63\2\2\u017d\u017e\7\21\2\2\u017e\u017f"+
-		"\7\63\2\2\u017f\u0180\7\33\2\2\u0180W\3\2\2\2\u0181\u0182\7\62\2\2\u0182"+
-		"\u0183\7\64\2\2\u0183\u0184\7\62\2\2\u0184Y\3\2\2\2\'[acpry\177\u0087"+
-		"\u008b\u008d\u0094\u0099\u00a9\u00ae\u00b6\u00ba\u00bf\u00c6\u00cc\u00cf"+
-		"\u00d4\u00e1\u00ed\u00f6\u00fe\u0109\u010b\u011f\u0129\u0132\u0137\u0143"+
-		"\u014e\u015d\u0161\u0168\u0173";
+		",\t,\4-\t-\4.\t.\4/\t/\4\60\t\60\4\61\t\61\4\62\t\62\3\2\5\2f\n\2\3\2"+
+		"\3\2\3\2\3\2\3\2\7\2m\n\2\f\2\16\2p\13\2\3\3\3\3\3\3\3\3\3\4\5\4w\n\4"+
+		"\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\7\4\u0081\n\4\f\4\16\4\u0084\13\4\3\4"+
+		"\3\4\3\4\3\5\5\5\u008a\n\5\3\5\3\5\3\5\3\5\3\5\3\5\3\6\5\6\u0093\n\6\3"+
+		"\6\3\6\3\6\3\6\6\6\u0099\n\6\r\6\16\6\u009a\3\6\3\6\3\6\3\7\3\7\3\7\3"+
+		"\7\3\b\5\b\u00a5\n\b\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\n\5\n\u00b0\n\n"+
+		"\3\n\3\n\3\13\3\13\3\f\3\f\3\r\3\r\3\16\3\16\3\17\3\17\3\17\5\17\u00bf"+
+		"\n\17\3\20\5\20\u00c2\n\20\3\20\3\20\3\20\3\20\6\20\u00c8\n\20\r\20\16"+
+		"\20\u00c9\3\20\3\20\5\20\u00ce\n\20\3\20\3\20\3\21\3\21\3\22\5\22\u00d5"+
+		"\n\22\3\22\3\22\5\22\u00d9\n\22\3\22\3\22\3\23\3\23\3\23\3\23\3\23\3\23"+
+		"\7\23\u00e3\n\23\f\23\16\23\u00e6\13\23\3\23\5\23\u00e9\n\23\3\23\5\23"+
+		"\u00ec\n\23\3\24\3\24\3\24\3\24\3\24\7\24\u00f3\n\24\f\24\16\24\u00f6"+
+		"\13\24\3\24\5\24\u00f9\n\24\3\24\5\24\u00fc\n\24\3\25\3\25\3\26\3\26\3"+
+		"\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\5\26\u010a\n\26\3\27\3\27\3\27"+
+		"\3\27\3\27\3\27\3\27\3\27\7\27\u0114\n\27\f\27\16\27\u0117\13\27\3\30"+
+		"\3\30\3\30\3\30\7\30\u011d\n\30\f\30\16\30\u0120\13\30\3\30\3\30\3\31"+
+		"\3\31\3\31\5\31\u0127\n\31\3\31\3\31\3\31\3\31\3\31\3\31\3\31\3\31\3\31"+
+		"\7\31\u0132\n\31\f\31\16\31\u0135\13\31\3\31\3\31\3\32\3\32\3\33\3\33"+
+		"\3\33\3\34\3\34\3\34\3\34\3\35\3\35\3\35\3\35\3\36\3\36\5\36\u0148\n\36"+
+		"\3\37\3\37\3\37\3 \3 \3 \3!\3!\5!\u0152\n!\3\"\3\"\3\"\3#\3#\3#\3$\5$"+
+		"\u015b\n$\3$\3$\3%\5%\u0160\n%\3%\3%\3&\3&\3&\3&\3&\3&\3\'\3\'\5\'\u016c"+
+		"\n\'\3\'\3\'\3(\3(\3(\3)\3)\3)\3*\5*\u0177\n*\3*\3*\3*\3*\3*\3*\3*\3*"+
+		"\3*\3*\3*\6*\u0184\n*\r*\16*\u0185\3*\3*\5*\u018a\n*\3*\3*\3+\3+\3+\5"+
+		"+\u0191\n+\3,\3,\3-\3-\3-\3-\3-\3.\3.\5.\u019c\n.\3/\3/\3/\3/\3/\3\60"+
+		"\3\60\3\60\3\60\3\60\3\60\3\60\3\61\3\61\3\62\3\62\3\62\3\62\3\62\2\2"+
+		"\63\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@B"+
+		"DFHJLNPRTVXZ\\^`b\2\4\4\2\64\64\66\66\3\2\63\64\2\u01b2\2e\3\2\2\2\4q"+
+		"\3\2\2\2\6v\3\2\2\2\b\u0089\3\2\2\2\n\u0092\3\2\2\2\f\u009f\3\2\2\2\16"+
+		"\u00a4\3\2\2\2\20\u00ab\3\2\2\2\22\u00af\3\2\2\2\24\u00b3\3\2\2\2\26\u00b5"+
+		"\3\2\2\2\30\u00b7\3\2\2\2\32\u00b9\3\2\2\2\34\u00be\3\2\2\2\36\u00c1\3"+
+		"\2\2\2 \u00d1\3\2\2\2\"\u00d4\3\2\2\2$\u00dc\3\2\2\2&\u00ed\3\2\2\2(\u00fd"+
+		"\3\2\2\2*\u00ff\3\2\2\2,\u010b\3\2\2\2.\u0118\3\2\2\2\60\u0123\3\2\2\2"+
+		"\62\u0138\3\2\2\2\64\u013a\3\2\2\2\66\u013d\3\2\2\28\u0141\3\2\2\2:\u0147"+
+		"\3\2\2\2<\u0149\3\2\2\2>\u014c\3\2\2\2@\u0151\3\2\2\2B\u0153\3\2\2\2D"+
+		"\u0156\3\2\2\2F\u015a\3\2\2\2H\u015f\3\2\2\2J\u0163\3\2\2\2L\u016b\3\2"+
+		"\2\2N\u016f\3\2\2\2P\u0172\3\2\2\2R\u0176\3\2\2\2T\u018d\3\2\2\2V\u0192"+
+		"\3\2\2\2X\u0194\3\2\2\2Z\u019b\3\2\2\2\\\u019d\3\2\2\2^\u01a2\3\2\2\2"+
+		"`\u01a9\3\2\2\2b\u01ab\3\2\2\2df\5\4\3\2ed\3\2\2\2ef\3\2\2\2fn\3\2\2\2"+
+		"gm\5\6\4\2hm\5\b\5\2im\5\n\6\2jm\5\36\20\2km\5R*\2lg\3\2\2\2lh\3\2\2\2"+
+		"li\3\2\2\2lj\3\2\2\2lk\3\2\2\2mp\3\2\2\2nl\3\2\2\2no\3\2\2\2o\3\3\2\2"+
+		"\2pn\3\2\2\2qr\7\3\2\2rs\7\64\2\2st\7\65\2\2t\5\3\2\2\2uw\5\f\7\2vu\3"+
+		"\2\2\2vw\3\2\2\2wx\3\2\2\2xy\7\4\2\2yz\5\32\16\2z\u0082\7\5\2\2{\u0081"+
+		"\5\6\4\2|\u0081\5\b\5\2}\u0081\5\n\6\2~\u0081\5\36\20\2\177\u0081\5R*"+
+		"\2\u0080{\3\2\2\2\u0080|\3\2\2\2\u0080}\3\2\2\2\u0080~\3\2\2\2\u0080\177"+
+		"\3\2\2\2\u0081\u0084\3\2\2\2\u0082\u0080\3\2\2\2\u0082\u0083\3\2\2\2\u0083"+
+		"\u0085\3\2\2\2\u0084\u0082\3\2\2\2\u0085\u0086\7\6\2\2\u0086\u0087\7\65"+
+		"\2\2\u0087\7\3\2\2\2\u0088\u008a\5\f\7\2\u0089\u0088\3\2\2\2\u0089\u008a"+
+		"\3\2\2\2\u008a\u008b\3\2\2\2\u008b\u008c\7\7\2\2\u008c\u008d\5\24\13\2"+
+		"\u008d\u008e\7\b\2\2\u008e\u008f\5\34\17\2\u008f\u0090\7\65\2\2\u0090"+
+		"\t\3\2\2\2\u0091\u0093\5\f\7\2\u0092\u0091\3\2\2\2\u0092\u0093\3\2\2\2"+
+		"\u0093\u0094\3\2\2\2\u0094\u0095\7\7\2\2\u0095\u0096\5\26\f\2\u0096\u0098"+
+		"\7\5\2\2\u0097\u0099\5\16\b\2\u0098\u0097\3\2\2\2\u0099\u009a\3\2\2\2"+
+		"\u009a\u0098\3\2\2\2\u009a\u009b\3\2\2\2\u009b\u009c\3\2\2\2\u009c\u009d"+
+		"\7\6\2\2\u009d\u009e\7\65\2\2\u009e\13\3\2\2\2\u009f\u00a0\7\t\2\2\u00a0"+
+		"\u00a1\7\b\2\2\u00a1\u00a2\7\66\2\2\u00a2\r\3\2\2\2\u00a3\u00a5\5\f\7"+
+		"\2\u00a4\u00a3\3\2\2\2\u00a4\u00a5\3\2\2\2\u00a5\u00a6\3\2\2\2\u00a6\u00a7"+
+		"\5\30\r\2\u00a7\u00a8\7\b\2\2\u00a8\u00a9\5\34\17\2\u00a9\u00aa\7\65\2"+
+		"\2\u00aa\17\3\2\2\2\u00ab\u00ac\7\n\2\2\u00ac\u00ad\t\2\2\2\u00ad\21\3"+
+		"\2\2\2\u00ae\u00b0\7\13\2\2\u00af\u00ae\3\2\2\2\u00af\u00b0\3\2\2\2\u00b0"+
+		"\u00b1\3\2\2\2\u00b1\u00b2\7\f\2\2\u00b2\23\3\2\2\2\u00b3\u00b4\7\64\2"+
+		"\2\u00b4\25\3\2\2\2\u00b5\u00b6\7\64\2\2\u00b6\27\3\2\2\2\u00b7\u00b8"+
+		"\7\64\2\2\u00b8\31\3\2\2\2\u00b9\u00ba\7\64\2\2\u00ba\33\3\2\2\2\u00bb"+
+		"\u00bf\5\\/\2\u00bc\u00bf\5^\60\2\u00bd\u00bf\5`\61\2\u00be\u00bb\3\2"+
+		"\2\2\u00be\u00bc\3\2\2\2\u00be\u00bd\3\2\2\2\u00bf\35\3\2\2\2\u00c0\u00c2"+
+		"\5\f\7\2\u00c1\u00c0\3\2\2\2\u00c1\u00c2\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3"+
+		"\u00c4\7\r\2\2\u00c4\u00c5\5 \21\2\u00c5\u00c7\7\5\2\2\u00c6\u00c8\5\""+
+		"\22\2\u00c7\u00c6\3\2\2\2\u00c8\u00c9\3\2\2\2\u00c9\u00c7\3\2\2\2\u00c9"+
+		"\u00ca\3\2\2\2\u00ca\u00cb\3\2\2\2\u00cb\u00cd\7\6\2\2\u00cc\u00ce\5J"+
+		"&\2\u00cd\u00cc\3\2\2\2\u00cd\u00ce\3\2\2\2\u00ce\u00cf\3\2\2\2\u00cf"+
+		"\u00d0\7\65\2\2\u00d0\37\3\2\2\2\u00d1\u00d2\7\64\2\2\u00d2!\3\2\2\2\u00d3"+
+		"\u00d5\5\f\7\2\u00d4\u00d3\3\2\2\2\u00d4\u00d5\3\2\2\2\u00d5\u00d8\3\2"+
+		"\2\2\u00d6\u00d9\5$\23\2\u00d7\u00d9\5&\24\2\u00d8\u00d6\3\2\2\2\u00d8"+
+		"\u00d7\3\2\2\2\u00d9\u00da\3\2\2\2\u00da\u00db\7\65\2\2\u00db#\3\2\2\2"+
+		"\u00dc\u00dd\7\16\2\2\u00dd\u00de\5(\25\2\u00de\u00eb\7\b\2\2\u00df\u00e4"+
+		"\5\34\17\2\u00e0\u00e3\5\20\t\2\u00e1\u00e3\5\22\n\2\u00e2\u00e0\3\2\2"+
+		"\2\u00e2\u00e1\3\2\2\2\u00e3\u00e6\3\2\2\2\u00e4\u00e2\3\2\2\2\u00e4\u00e5"+
+		"\3\2\2\2\u00e5\u00e8\3\2\2\2\u00e6\u00e4\3\2\2\2\u00e7\u00e9\5\60\31\2"+
+		"\u00e8\u00e7\3\2\2\2\u00e8\u00e9\3\2\2\2\u00e9\u00ec\3\2\2\2\u00ea\u00ec"+
+		"\5*\26\2\u00eb\u00df\3\2\2\2\u00eb\u00ea\3\2\2\2\u00ec%\3\2\2\2\u00ed"+
+		"\u00ee\5(\25\2\u00ee\u00fb\7\b\2\2\u00ef\u00f4\5\34\17\2\u00f0\u00f3\5"+
+		"\20\t\2\u00f1\u00f3\5\22\n\2\u00f2\u00f0\3\2\2\2\u00f2\u00f1\3\2\2\2\u00f3"+
+		"\u00f6\3\2\2\2\u00f4\u00f2\3\2\2\2\u00f4\u00f5\3\2\2\2\u00f5\u00f8\3\2"+
+		"\2\2\u00f6\u00f4\3\2\2\2\u00f7\u00f9\5\60\31\2\u00f8\u00f7\3\2\2\2\u00f8"+
+		"\u00f9\3\2\2\2\u00f9\u00fc\3\2\2\2\u00fa\u00fc\5*\26\2\u00fb\u00ef\3\2"+
+		"\2\2\u00fb\u00fa\3\2\2\2\u00fc\'\3\2\2\2\u00fd\u00fe\7\64\2\2\u00fe)\3"+
+		"\2\2\2\u00ff\u0100\7\17\2\2\u0100\u0101\7\20\2\2\u0101\u0102\t\3\2\2\u0102"+
+		"\u0103\7\21\2\2\u0103\u0104\t\3\2\2\u0104\u0105\7\22\2\2\u0105\u0106\7"+
+		"\23\2\2\u0106\u0109\7\64\2\2\u0107\u010a\5,\27\2\u0108\u010a\5.\30\2\u0109"+
+		"\u0107\3\2\2\2\u0109\u0108\3\2\2\2\u010a+\3\2\2\2\u010b\u010c\7\24\2\2"+
+		"\u010c\u010d\7\64\2\2\u010d\u010e\7\25\2\2\u010e\u0115\7\64\2\2\u010f"+
+		"\u0110\7\26\2\2\u0110\u0111\7\64\2\2\u0111\u0112\7\25\2\2\u0112\u0114"+
+		"\7\64\2\2\u0113\u010f\3\2\2\2\u0114\u0117\3\2\2\2\u0115\u0113\3\2\2\2"+
+		"\u0115\u0116\3\2\2\2\u0116-\3\2\2\2\u0117\u0115\3\2\2\2\u0118\u0119\7"+
+		"\5\2\2\u0119\u011e\7\64\2\2\u011a\u011b\7\21\2\2\u011b\u011d\7\64\2\2"+
+		"\u011c\u011a\3\2\2\2\u011d\u0120\3\2\2\2\u011e\u011c\3\2\2\2\u011e\u011f"+
+		"\3\2\2\2\u011f\u0121\3\2\2\2\u0120\u011e\3\2\2\2\u0121\u0122\7\6\2\2\u0122"+
+		"/\3\2\2\2\u0123\u0126\7\27\2\2\u0124\u0127\5\62\32\2\u0125\u0127\5\64"+
+		"\33\2\u0126\u0124\3\2\2\2\u0126\u0125\3\2\2\2\u0127\u0128\3\2\2\2\u0128"+
+		"\u0129\7\30\2\2\u0129\u012a\7\31\2\2\u012a\u0133\7\32\2\2\u012b\u0132"+
+		"\5\66\34\2\u012c\u0132\58\35\2\u012d\u0132\5:\36\2\u012e\u0132\5@!\2\u012f"+
+		"\u0132\5F$\2\u0130\u0132\5H%\2\u0131\u012b\3\2\2\2\u0131\u012c\3\2\2\2"+
+		"\u0131\u012d\3\2\2\2\u0131\u012e\3\2\2\2\u0131\u012f\3\2\2\2\u0131\u0130"+
+		"\3\2\2\2\u0132\u0135\3\2\2\2\u0133\u0131\3\2\2\2\u0133\u0134\3\2\2\2\u0134"+
+		"\u0136\3\2\2\2\u0135\u0133\3\2\2\2\u0136\u0137\7\33\2\2\u0137\61\3\2\2"+
+		"\2\u0138\u0139\7\34\2\2\u0139\63\3\2\2\2\u013a\u013b\7\35\2\2\u013b\u013c"+
+		"\7\n\2\2\u013c\65\3\2\2\2\u013d\u013e\7\36\2\2\u013e\u013f\7\37\2\2\u013f"+
+		"\u0140\7\63\2\2\u0140\67\3\2\2\2\u0141\u0142\7 \2\2\u0142\u0143\7\35\2"+
+		"\2\u0143\u0144\7\63\2\2\u01449\3\2\2\2\u0145\u0148\5<\37\2\u0146\u0148"+
+		"\5> \2\u0147\u0145\3\2\2\2\u0147\u0146\3\2\2\2\u0148;\3\2\2\2\u0149\u014a"+
+		"\7!\2\2\u014a\u014b\7\"\2\2\u014b=\3\2\2\2\u014c\u014d\7\"\2\2\u014d\u014e"+
+		"\7\63\2\2\u014e?\3\2\2\2\u014f\u0152\5B\"\2\u0150\u0152\5D#\2\u0151\u014f"+
+		"\3\2\2\2\u0151\u0150\3\2\2\2\u0152A\3\2\2\2\u0153\u0154\7!\2\2\u0154\u0155"+
+		"\7#\2\2\u0155C\3\2\2\2\u0156\u0157\7#\2\2\u0157\u0158\7\63\2\2\u0158E"+
+		"\3\2\2\2\u0159\u015b\7!\2\2\u015a\u0159\3\2\2\2\u015a\u015b\3\2\2\2\u015b"+
+		"\u015c\3\2\2\2\u015c\u015d\7$\2\2\u015dG\3\2\2\2\u015e\u0160\7!\2\2\u015f"+
+		"\u015e\3\2\2\2\u015f\u0160\3\2\2\2\u0160\u0161\3\2\2\2\u0161\u0162\7%"+
+		"\2\2\u0162I\3\2\2\2\u0163\u0164\7&\2\2\u0164\u0165\7\'\2\2\u0165\u0166"+
+		"\7\5\2\2\u0166\u0167\5L\'\2\u0167\u0168\7\6\2\2\u0168K\3\2\2\2\u0169\u016c"+
+		"\5N(\2\u016a\u016c\5P)\2\u016b\u0169\3\2\2\2\u016b\u016a\3\2\2\2\u016c"+
+		"\u016d\3\2\2\2\u016d\u016e\7\65\2\2\u016eM\3\2\2\2\u016f\u0170\7(\2\2"+
+		"\u0170\u0171\7)\2\2\u0171O\3\2\2\2\u0172\u0173\7*\2\2\u0173\u0174\7)\2"+
+		"\2\u0174Q\3\2\2\2\u0175\u0177\5\f\7\2\u0176\u0175\3\2\2\2\u0176\u0177"+
+		"\3\2\2\2\u0177\u0178\3\2\2\2\u0178\u0179\7+\2\2\u0179\u017a\7,\2\2\u017a"+
+		"\u017b\7\64\2\2\u017b\u017c\7\30\2\2\u017c\u017d\7-\2\2\u017d\u017e\7"+
+		".\2\2\u017e\u017f\7\64\2\2\u017f\u0180\7\5\2\2\u0180\u0183\5T+\2\u0181"+
+		"\u0182\7\21\2\2\u0182\u0184\5T+\2\u0183\u0181\3\2\2\2\u0184\u0185\3\2"+
+		"\2\2\u0185\u0183\3\2\2\2\u0185\u0186\3\2\2\2\u0186\u0187\3\2\2\2\u0187"+
+		"\u0189\7\6\2\2\u0188\u018a\5V,\2\u0189\u0188\3\2\2\2\u0189\u018a\3\2\2"+
+		"\2\u018a\u018b\3\2\2\2\u018b\u018c\7\65\2\2\u018cS\3\2\2\2\u018d\u0190"+
+		"\7\64\2\2\u018e\u018f\7\30\2\2\u018f\u0191\5Z.\2\u0190\u018e\3\2\2\2\u0190"+
+		"\u0191\3\2\2\2\u0191U\3\2\2\2\u0192\u0193\5X-\2\u0193W\3\2\2\2\u0194\u0195"+
+		"\7\37\2\2\u0195\u0196\7/\2\2\u0196\u0197\7\60\2\2\u0197\u0198\7\61\2\2"+
+		"\u0198Y\3\2\2\2\u0199\u019c\5b\62\2\u019a\u019c\7\64\2\2\u019b\u0199\3"+
+		"\2\2\2\u019b\u019a\3\2\2\2\u019c[\3\2\2\2\u019d\u019e\7\64\2\2\u019e\u019f"+
+		"\7\32\2\2\u019f\u01a0\7\63\2\2\u01a0\u01a1\7\33\2\2\u01a1]\3\2\2\2\u01a2"+
+		"\u01a3\7\64\2\2\u01a3\u01a4\7\32\2\2\u01a4\u01a5\7\63\2\2\u01a5\u01a6"+
+		"\7\21\2\2\u01a6\u01a7\7\63\2\2\u01a7\u01a8\7\33\2\2\u01a8_\3\2\2\2\u01a9"+
+		"\u01aa\7\64\2\2\u01aaa\3\2\2\2\u01ab\u01ac\7\62\2\2\u01ac\u01ad\7\64\2"+
+		"\2\u01ad\u01ae\7\62\2\2\u01aec\3\2\2\2+elnv\u0080\u0082\u0089\u0092\u009a"+
+		"\u00a4\u00af\u00be\u00c1\u00c9\u00cd\u00d4\u00d8\u00e2\u00e4\u00e8\u00eb"+
+		"\u00f2\u00f4\u00f8\u00fb\u0109\u0115\u011e\u0126\u0131\u0133\u0147\u0151"+
+		"\u015a\u015f\u016b\u0176\u0185\u0189\u0190\u019b";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -38,16 +38,6 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 */
 	void exitContext(HDBCDSParser.ContextContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HDBCDSParser#type}.
-	 * @param ctx the parse tree
-	 */
-	void enterType(HDBCDSParser.TypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link HDBCDSParser#type}.
-	 * @param ctx the parse tree
-	 */
-	void exitType(HDBCDSParser.TypeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#primitivetype}.
 	 * @param ctx the parse tree
 	 */
@@ -67,16 +57,6 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitComplextype(HDBCDSParser.ComplextypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link HDBCDSParser#typecolumnunit}.
-	 * @param ctx the parse tree
-	 */
-	void enterTypecolumnunit(HDBCDSParser.TypecolumnunitContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link HDBCDSParser#typecolumnunit}.
-	 * @param ctx the parse tree
-	 */
-	void exitTypecolumnunit(HDBCDSParser.TypecolumnunitContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#comment}.
 	 * @param ctx the parse tree
@@ -118,6 +98,56 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 */
 	void exitColumnnullable(HDBCDSParser.ColumnnullableContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#typenameprimitive}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypenameprimitive(HDBCDSParser.TypenameprimitiveContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#typenameprimitive}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypenameprimitive(HDBCDSParser.TypenameprimitiveContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#typenamecomplex}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypenamecomplex(HDBCDSParser.TypenamecomplexContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#typenamecomplex}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypenamecomplex(HDBCDSParser.TypenamecomplexContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#typecolumnname}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypecolumnname(HDBCDSParser.TypecolumnnameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#typecolumnname}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypecolumnname(HDBCDSParser.TypecolumnnameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#contextname}.
+	 * @param ctx the parse tree
+	 */
+	void enterContextname(HDBCDSParser.ContextnameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#contextname}.
+	 * @param ctx the parse tree
+	 */
+	void exitContextname(HDBCDSParser.ContextnameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#datatype}.
+	 * @param ctx the parse tree
+	 */
+	void enterDatatype(HDBCDSParser.DatatypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#datatype}.
+	 * @param ctx the parse tree
+	 */
+	void exitDatatype(HDBCDSParser.DatatypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#entity}.
 	 * @param ctx the parse tree
 	 */
@@ -128,15 +158,15 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 */
 	void exitEntity(HDBCDSParser.EntityContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HDBCDSParser#tablecolumnunit}.
+	 * Enter a parse tree produced by {@link HDBCDSParser#entityname}.
 	 * @param ctx the parse tree
 	 */
-	void enterTablecolumnunit(HDBCDSParser.TablecolumnunitContext ctx);
+	void enterEntityname(HDBCDSParser.EntitynameContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link HDBCDSParser#tablecolumnunit}.
+	 * Exit a parse tree produced by {@link HDBCDSParser#entityname}.
 	 * @param ctx the parse tree
 	 */
-	void exitTablecolumnunit(HDBCDSParser.TablecolumnunitContext ctx);
+	void exitEntityname(HDBCDSParser.EntitynameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#tablecolumn}.
 	 * @param ctx the parse tree
@@ -167,6 +197,16 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitRegularcolumn(HDBCDSParser.RegularcolumnContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#columnname}.
+	 * @param ctx the parse tree
+	 */
+	void enterColumnname(HDBCDSParser.ColumnnameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#columnname}.
+	 * @param ctx the parse tree
+	 */
+	void exitColumnname(HDBCDSParser.ColumnnameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#association}.
 	 * @param ctx the parse tree
@@ -437,6 +477,16 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDatatype2(HDBCDSParser.Datatype2Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#datatype3}.
+	 * @param ctx the parse tree
+	 */
+	void enterDatatype3(HDBCDSParser.Datatype3Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#datatype3}.
+	 * @param ctx the parse tree
+	 */
+	void exitDatatype3(HDBCDSParser.Datatype3Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#quotedname}.
 	 * @param ctx the parse tree

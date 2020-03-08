@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE-edge" />
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+  <title>Show all Hana Users</title>
+  <script src="/openui5/resources/sap-ui-core.js"
+    id="sap-ui-bootstrap" data-sap-ui-libs="sap.m,sap.ui.table"
+    data-sap-ui-theme="sap_bluecrystal">
+  </script>
+  <script>
+    var oModel = new sap.ui.model.odata.v4.ODataModel( {
+    	"groupId": "$direct",
+    	synchronizationMode : "None",
+	    serviceUrl : "../../odata/SYS/USERS/"
+    } );
+    var oTable = new sap.ui.table.Table(
+        { title: "List all database users" }
+    );
+    oTable.addColumn(new sap.ui.table.Column(
+        { label: "Name", template: "USER_NAME" }
+    ));
+    oTable.setModel(oModel);
+    oTable.bindRows("/TABLE");
+    oTable.placeAt("uiArea");
+  </script>
+</head>
+<body class="sapUiBody">
+  <div id="uiArea"></div>
+</body>
+</html>

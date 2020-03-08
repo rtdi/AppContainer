@@ -41,6 +41,7 @@ import io.rtdi.hanaappcontainer.objects.table.subelements.PrimaryKeyDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableLoggingType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
+import io.rtdi.hanaappserver.DesignTimeParsingResult;
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.Util;
 
@@ -50,9 +51,11 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 	private HanaTable hdbtable;
 	private ColumnDefinition columndef;
 	private IndexDefinition indexdef;
+	private DesignTimeParsingResult parsingresult;
 
 	public ANTLRHDBTableSetter(HanaTable hdbtable) {
 		this.hdbtable = hdbtable;
+		this.parsingresult = new DesignTimeParsingResult();
 	}
 
 	@Override
@@ -67,7 +70,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			case "FALSE":
 				break;
 			default:
-				hdbtable.addCreationMessage("The value for \"table.temporary\" can only be \"true\" or \"false\" (" + t.getText() + "\"");	
+				parsingresult.addCreationMessage("The value for \"table.temporary\" can only be \"true\" or \"false\" (" + t.getText() + "\"");	
 			}
 		}
 	}
@@ -87,7 +90,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			try {
 				columndef.setLength(Integer.valueOf(t.getText()));
 			} catch (NumberFormatException e) {
-				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid length number (" + t.getText() + ")");
+				parsingresult.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid length number (" + t.getText() + ")");
 			}
 		}
 	}
@@ -116,7 +119,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			try {
 				columndef.setPrecision(Integer.valueOf(t.getText()));
 			} catch (NumberFormatException e) {
-				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid precision number (" + t.getText() + ")");
+				parsingresult.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid precision number (" + t.getText() + ")");
 			}
 		}
 	}
@@ -151,7 +154,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			case "FALSE":
 				break;
 			default:
-				hdbtable.addCreationMessage("The value for \"table.public\" can only be \"true\" or \"false\" (" + t.getText() + "\"");	
+				parsingresult.addCreationMessage("The value for \"table.public\" can only be \"true\" or \"false\" (" + t.getText() + "\"");	
 			}
 		}
 	}
@@ -169,7 +172,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 				indexdef.setOrder(Order.DESC);
 				break;
 			default:
-				hdbtable.addCreationMessage("The value for the index definition \"order\" can only be \"ASC\" or \"DSC\" (" + t.getText() + "\"");	
+				parsingresult.addCreationMessage("The value for the index definition \"order\" can only be \"ASC\" or \"DSC\" (" + t.getText() + "\"");	
 			}
 		}
 	}
@@ -205,7 +208,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 				indexdef.setUnique(Boolean.FALSE);
 				break;
 			default:
-				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid unique boolean value (" + t.getText() + ")");	
+				parsingresult.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid unique boolean value (" + t.getText() + ")");	
 			}
 		}
 	}
@@ -217,7 +220,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			try {
 				columndef.setScale(Integer.valueOf(t.getText()));
 			} catch (NumberFormatException e) {
-				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid scale number (" + t.getText() + ")");
+				parsingresult.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid scale number (" + t.getText() + ")");
 			}
 		}
 	}
@@ -235,7 +238,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 				columndef.setNullable(Boolean.FALSE);
 				break;
 			default:
-				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid nullable boolean value (" + t.getText() + ")");	
+				parsingresult.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid nullable boolean value (" + t.getText() + ")");	
 			}
 		}
 	}
@@ -296,7 +299,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 				indexdef.setIndexType(IndexType.CPBTREE);
 				break;
 			default:
-				hdbtable.addCreationMessage("The value for the index definition \"order\" can only be \"ASC\" or \"DSC\" (" + t.getText() + "\"");	
+				parsingresult.addCreationMessage("The value for the index definition \"order\" can only be \"ASC\" or \"DSC\" (" + t.getText() + "\"");	
 			}
 		}
 	}
@@ -316,7 +319,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 				hdbtable.getPrimaryKey().setIndexType(IndexType.CPBTREE);
 				break;
 			default:
-				hdbtable.addCreationMessage("The value for the index definition \"type\" can only be \"B_TREE\" or \"CPB_TREE\" (" + t.getText() + "\"");	
+				parsingresult.addCreationMessage("The value for the index definition \"type\" can only be \"B_TREE\" or \"CPB_TREE\" (" + t.getText() + "\"");	
 			}
 		}
 	}
@@ -334,7 +337,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 				columndef.setUnique(Boolean.FALSE);
 				break;
 			default:
-				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid unique boolean value (" + t.getText() + ")");	
+				parsingresult.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid unique boolean value (" + t.getText() + ")");	
 			}
 		}
 	}
@@ -360,7 +363,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 				hdbtable.setLoggingType(TableLoggingType.LOGGING);
 				break;
 			default:
-				hdbtable.addCreationMessage("The value for the table logging can only be \"LOGGING\" or \"NOLOGGING\" (" + t.getText() + "\"");	
+				parsingresult.addCreationMessage("The value for the table logging can only be \"LOGGING\" or \"NOLOGGING\" (" + t.getText() + "\"");	
 				break;
 			}
 		}
@@ -373,7 +376,7 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 			try {
 				columndef.setSqlType(HanaDataType.valueOf(t.getText()));
 			} catch (Exception e) {
-				hdbtable.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid sqlType value (" + t.getText() + ")");	
+				parsingresult.addCreationMessage("The column \"" + columndef.getName() + "\" has no valid sqlType value (" + t.getText() + ")");	
 			}
 		}
 	}
@@ -401,8 +404,12 @@ public class ANTLRHDBTableSetter extends HDBTableBaseListener {
 
 	@Override
 	public void visitErrorNode(ErrorNode node) {
-		hdbtable.addCreationMessage("Found the text \"" + node.getText() + "\" which cannot be parsed. The file is syntactically incorrect.");
-		hdbtable.addCreationMessage("Details: " + node.toStringTree());
+		parsingresult.addCreationMessage("Found the text \"" + node.getText() + "\" which cannot be parsed. The file is syntactically incorrect.");
+		parsingresult.addCreationMessage("Details: " + node.toStringTree());
+	}
+
+	public DesignTimeParsingResult getParsingresult() {
+		return parsingresult;
 	}
 
 }

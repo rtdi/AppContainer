@@ -22,11 +22,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.rtdi.hanaappcontainer.WebAppConstants;
+import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.HDBCDS;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
-import io.rtdi.hanaappcontainer.objects.ActivationStyle;
-import io.rtdi.hanaappcontainer.objects.HanaFileTypes;
-import io.rtdi.hanaappcontainer.objects.table.Actions;
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
+import io.rtdi.hanaappserver.ActivationResult;
+import io.rtdi.hanaappserver.ActivationStyle;
+import io.rtdi.hanaappserver.ActivationSuccess;
+import io.rtdi.hanaappserver.HanaActivationException;
+import io.rtdi.hanaappserver.HanaFileTypes;
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.rtdi.hanaappserver.utils.ErrorMessage;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
@@ -67,18 +70,23 @@ public class ActivationService {
 					String text = new String(Files.readAllBytes(file.toPath()));
 					switch (filetype) {
 					case HDBCDS:
-						break;
+						HDBCDS cds = HDBCDS.parseHBDCDSFile(text, schemaname);
+						ActivationResult cdsactivationresult = new ActivationResult("Activating the CDS file", null, ActivationSuccess.SUCCESS, null);
+						cds.valid(cdsactivationresult);
+						cds.activate(cdsactivationresult, conn, ActivationStyle.RECONCILE);
+						return Response.ok(cdsactivationresult).build();
 					case HDBPROCEDURE:
 						break;
 					case HDBTABLE:
 						String tablename = Util.fileToTablename(file, rootdir);
 						HanaTable table = HDBTable.parseHDBTableText(text, schemaname, tablename);
+						ActivationResult tableactivationresult = new ActivationResult("Activating the HDBTable file", null, ActivationSuccess.SUCCESS, table); 
 						try {
-							table.valid();
-							Actions.activate(conn, schemaname, table, ActivationStyle.RECONCILE);
-							return Response.ok(table.getCreationMessages()).build();
+							table.valid(tableactivationresult);
+							table.activate(tableactivationresult, conn, ActivationStyle.RECONCILE);
+							return Response.ok(tableactivationresult).build();
 						} catch (HanaSQLException e) {
-							throw new HanaSQLException(e, table.getCreationMessages(), "Activation failed");
+							throw new HanaActivationException(e, tableactivationresult, "Activation failed");
 						}
 					case HDBVIEW:
 						break;

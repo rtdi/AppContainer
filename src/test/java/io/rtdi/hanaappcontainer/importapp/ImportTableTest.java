@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
-import io.rtdi.hanaappcontainer.objects.table.Actions;
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 
 public class ImportTableTest {

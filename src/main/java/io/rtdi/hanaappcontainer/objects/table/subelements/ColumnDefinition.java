@@ -1,7 +1,8 @@
 package io.rtdi.hanaappcontainer.objects.table.subelements;
 
-import java.util.List;
-
+import io.rtdi.hanaappserver.ActivationResult;
+import io.rtdi.hanaappserver.ActivationSuccess;
+import io.rtdi.hanaappserver.HanaActivationException;
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.Util;
@@ -22,52 +23,28 @@ public class ColumnDefinition {
 	}
 	public void setDataType(String datatypename, int length, int scale, boolean nullable) throws HanaSQLException {
 		sqlType = HanaDataType.valueOf(datatypename);
-		switch (sqlType) {
-		case BIGINT:
-		case BINTEXT:
-		case BLOB:
-		case BOOLEAN:
-		case CLOB:
-		case DATE:
-		case DOUBLE:
-		case INTEGER:
-		case NCLOB:
-		case REAL:
-		case SECONDDATE:
-		case SMALLDECIMAL:
-		case SMALLINT:
-		case ST_GEOMETRY:
-		case ST_POINT:
-		case TEXT:
-		case TIME:
-		case TIMESTAMP:
-		case TINYINT:
+		switch (sqlType.getGroup()) {
+		case DECIMALPARAM:
+			this.precision = length;
+			this.scale = scale;
 			this.length = null;
-			this.scale = null;
-			this.precision = null;
 			break;
-		case ALPHANUM:
-		case BINARY:
-		case CHAR:
-		case NCHAR:
-		case NVARCHAR:
-		case SHORTTEXT:
-		case VARBINARY:
-		case VARCHAR:
+		case LENGTHPARAM:
 			this.length = length;
 			this.scale = null;
 			this.precision = null;
 			break;
-		case DECIMAL:
-			this.precision = length;
-			this.scale = scale;
+		case NOPARAM:
 			this.length = null;
+			this.scale = null;
+			this.precision = null;
 			break;
 		default:
 			throw new HanaSQLException("Unknown datatype, please file an issue", datatypename);
 		}
 		this.nullable = nullable;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -119,18 +96,14 @@ public class ColumnDefinition {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	@Override
-	public String toString() {
-		return (name!=null?name:"unknown name") + " " + (sqlType != null?sqlType.name():"unknown datatype");
-	}
-	public void validate(List<String> ret) throws HanaSQLException {
+	public void validate(ActivationResult result) throws HanaActivationException {
 		if (name == null || name.length() == 0) {
-			ret.add("Column has no name");
-			throw new HanaSQLException("The columns has no name", "Check return information");
+			result.addResult("Column has no name", null, ActivationSuccess.FAILED, result.getObject());
+			throw new HanaActivationException(result, "The column has no name");
 		}
 		if (sqlType == null) {
-			ret.add("Column \"" + name + "\" has no data type");
-			throw new HanaSQLException("The column has no data type", "Check return information");
+			result.addResult("Column \"" + name + "\" has no data type", null, ActivationSuccess.FAILED, result.getObject());
+			throw new HanaActivationException(result, "The column \"" + name + "\" has no data type");
 		}
 	}
 	
@@ -192,6 +165,17 @@ public class ColumnDefinition {
 		} else {
 			return name.hashCode(); // name is unique enough for the hash buckets
 		}
+	}
+	@Override
+	public String toString() {
+		return "Column [name=" + name + ", sqlType=" + sqlType + "]";
+	}
+
+	public void applyDataType(ColumnDefinition from) {
+		sqlType = from.getSqlType();
+		length = from.getLength();
+		precision = from.getPrecision();
+		scale = from.getScale();
 	}
 
 }

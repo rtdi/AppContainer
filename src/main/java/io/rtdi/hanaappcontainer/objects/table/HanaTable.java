@@ -1,22 +1,33 @@
 package io.rtdi.hanaappcontainer.objects.table;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.rtdi.hanaappcontainer.objects.HanaObjectWithColumn;
+import io.rtdi.hanaappcontainer.objects.HanaObjectWithColumns;
 import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.IndexDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.PrimaryKeyDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableLoggingType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
+import io.rtdi.hanaappserver.ActivationResult;
+import io.rtdi.hanaappserver.ActivationStyle;
+import io.rtdi.hanaappserver.ActivationSuccess;
+import io.rtdi.hanaappserver.HanaActivationException;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.Util;
 
-public class HanaTable extends HanaObjectWithColumn {
+public class HanaTable extends HanaObjectWithColumns {
+	private static final Object TRUE = "TRUE";
+
 	TemporaryType temporary;
 	TableType tableType;
 	Boolean hasPublicSynonym;
@@ -34,16 +45,17 @@ public class HanaTable extends HanaObjectWithColumn {
 	}
 
 	@Override
-	public void valid() throws HanaSQLException {
-		super.valid();
+	public ActivationResult valid(ActivationResult result) throws HanaActivationException {
+		super.valid(result);
 		if (columns == null || columns.size() == 0) {
-			creationmessages.add("Table has no columns defined");
-			throw new HanaSQLException("The table has no columns defined", "Check return information");
+			result.addResult("Table has no columns defined", null, ActivationSuccess.FAILED, this);
+			throw new HanaActivationException(result, "The table \"" + getObjectName() + "\" has no columns defined");
 		} else {
 			for (ColumnDefinition c : columns) {
-				c.validate(creationmessages);
+				c.validate(result);
 			}
 		}
+		return result;
 	}
 	
 	public String getTableName() {
@@ -101,12 +113,14 @@ public class HanaTable extends HanaObjectWithColumn {
 	}
 
 	public void diff(HanaTableDiffAction action) throws HanaSQLException {
-		HanaTable newtable = action.getTable();
+		HanaTable newtable = action.getObject();
 		boolean needrecreate = !Util.sameOrNull(temporary, newtable.getTemporary());
 		needrecreate |= !Util.sameOrNull(tableType, newtable.getTableType());
 		needrecreate |= !Util.sameOrNull(loggingType, newtable.getLoggingType());
 		if (needrecreate) {
-			newtable.addCreationMessage("Table has different settings for either temporary, tabletype or logging and needs to be recreated from scratch hence");
+			action.addCreationMessage(
+					"Table has different settings for either temporary, tabletype or logging and needs to be recreated from scratch hence", 
+					null, ActivationSuccess.WARNING);
 			action.dropTable();
 			action.createTable();
 		} else {
@@ -117,12 +131,12 @@ public class HanaTable extends HanaObjectWithColumn {
 					action.dropSynonym();
 				}
 			} else {
-				action.addCreationMessage("No change in public synonym setting");
+				action.addCreationMessage("No change in public synonym setting", null, ActivationSuccess.SUCCESS);
 			}
 			if (!Util.sameOrNull(description, newtable.getDescription())) {
 				action.setTableComment();
 			} else {
-				action.addCreationMessage("No change in the table comment");
+				action.addCreationMessage("No change in the table comment", null, ActivationSuccess.SUCCESS);
 			}
 			if (!(primaryKey == null && newtable.getPrimaryKey() == null)) {
 				primaryKey.diff(newtable.getPrimaryKey(), action);
@@ -133,7 +147,7 @@ public class HanaTable extends HanaObjectWithColumn {
 				Set<IndexDefinition> iadd = new HashSet<>(newtable.getIndexes());
 				iadd.removeAll(new HashSet<>(indexes));
 				if (iadd.size() == 0 && iremove.size() == 0) {
-					action.addCreationMessage("No change in the table index definitions");
+					action.addCreationMessage("No change in the table index definitions", null, ActivationSuccess.SUCCESS);
 				} else {
 					for (IndexDefinition remove : iremove) {
 						action.dropIndex(remove);
@@ -171,11 +185,122 @@ public class HanaTable extends HanaObjectWithColumn {
 		}
 	}
 	
+	@Override
+	public ActivationResult activate(ActivationResult result, Connection conn, ActivationStyle activation) throws HanaActivationException, HanaSQLException {
+		String tablename = getTableName();
+		HanaTableDiffAction action = new HanaTableDiffAction(conn, this, activation, result);
+		HanaTable currenttable = createDefinitionFromDatabase(conn, getSchemaName(), tablename);
+		if (currenttable == null) {
+			action.createTable();
+		} else {
+			action.addCreationMessage("Table exists already, applying changes if needed", null, ActivationSuccess.SUCCESS);
+			currenttable.diff(action);
+		}
+		return result; 
+	}
+
+	public static HanaTable createDefinitionFromDatabase(Connection conn, String schemaname, String tablename) throws HanaSQLException {
+		String sql = "select t.comments, t.is_logged, t.table_type, t.temporary_table_type, "
+				+ "t.partition_spec, t.is_preload, t.is_series_table, t.unload_priority, t.temporal_type, s.synonym_name "
+				+ "from tables t "
+				+ "left outer join synonyms s "
+				+ "on (s.schema_name = 'PUBLIC' and s.object_schema = t.schema_name and s.object_name = t.table_name) "
+				+ "where t.schema_name = ? and t.table_name = ?";
+		try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+			stmt.setString(1, schemaname);
+			stmt.setString(2, tablename);
+			try (ResultSet rs = stmt.executeQuery();) {
+				if (rs.next()) {
+					HanaTable table = new HanaTable();
+					table.setTableName(tablename);
+					table.setDescription(rs.getString(1));
+					table.setLoggingType(TRUE.equals(rs.getString(2))?TableLoggingType.LOGGING:TableLoggingType.NOLOGGING);
+					table.setTableType("COLUMN".equals(rs.getString(3))?TableType.COLUMN:TableType.ROW);
+					table.setTemporary("GLOBAL".equals(rs.getString(4))?TemporaryType.GLOBALTEMPORARY:null);
+					table.setHasPublicSynonym(tablename.equals(rs.getString(10))); // When there is a public synonym of same name, then its public property is set to true
+					table.setSchemaName(schemaname);
+					
+					sql = "select position, column_name, data_type_name, length, scale, is_nullable, default_value, "
+							+ "comments, preload, generated_always_as, is_masked, mask_expression "
+							+ "from table_columns "
+							+ "where schema_name = ? and table_name = ? order by position";
+					try (PreparedStatement stmtcol = conn.prepareStatement(sql);) {
+						stmtcol.setString(1, schemaname);
+						stmtcol.setString(2, tablename);
+						ArrayList<ColumnDefinition> cols = new ArrayList<>();
+						try (ResultSet rscol = stmtcol.executeQuery();) {
+							while (rscol.next()) {
+								ColumnDefinition coldef = new ColumnDefinition();
+								coldef.setName(rscol.getString(2));
+								coldef.setDataType(rscol.getString(3), rscol.getInt(4), rscol.getInt(5), TRUE.equals(rscol.getString(6)));
+								coldef.setDefaultValue(rscol.getString(7));
+								coldef.setComment(rscol.getString(8));
+								cols.add(coldef);
+							}
+						}
+						table.setColumns(cols);
+					}
+
+					sql = "select index_name, index_type, constraint from indexes where schema_name = ? and table_name = ?";
+					try (PreparedStatement stmtcol = conn.prepareStatement(sql);) {
+						stmtcol.setString(1, schemaname);
+						stmtcol.setString(2, tablename);
+						ArrayList<IndexDefinition> indexes = new ArrayList<>();
+						try (ResultSet rsidx = stmtcol.executeQuery();) {
+							while (rsidx.next()) {
+								String indexname = rsidx.getString(1);
+								List<String> indexcolumns = new ArrayList<>();
+								sql = "select position, column_name, ascending_order from index_columns where schema_name = ? and index_name = ? order by position";
+								try (PreparedStatement stmtidxcol = conn.prepareStatement(sql);) {
+									stmtidxcol.setString(1, schemaname);
+									stmtidxcol.setString(2, indexname);
+									try (ResultSet rsidxcols = stmtidxcol.executeQuery();) {
+										while (rsidxcols.next()) {
+											indexcolumns.add(rsidxcols.getString(2));
+										}
+									}
+								}
+								if ("PRIMARY KEY".equals(rsidx.getString(3))) {
+									PrimaryKeyDefinition pkdef = new PrimaryKeyDefinition();
+									pkdef.setPkcolumns(indexcolumns);
+									table.setPrimaryKey(pkdef);
+								} else {
+									IndexDefinition idxdef = new IndexDefinition();
+									idxdef.setName(indexname);
+									idxdef.setUnique("NOT NULL UNIQUE".equals(rsidx.getString(3)) || "UNIQUE".equals(rsidx.getString(3)));
+									idxdef.setIndexColumns(indexcolumns);
+									indexes.add(idxdef);
+								}
+							}
+						}
+						table.setIndexes(indexes);
+					}
+
+					return table;
+				} else {
+					return null;
+				}
+			}
+		} catch (SQLException e) {
+			throw new HanaSQLException(e, sql, "Please file an issue");
+		}
+	}
+
 	public static Map<String, ColumnDefinition> getAsMap(List<ColumnDefinition> columns) {
 		Map<String, ColumnDefinition> colmap = new HashMap<>();
 		for (ColumnDefinition c : columns) {
 			colmap.put(c.getName(), c);
 		}
 		return colmap;
+	}
+
+	public void addPrimaryKey(String columnname) {
+		if (primaryKey == null) {
+			primaryKey = new PrimaryKeyDefinition();
+		}
+		if (primaryKey.getPkcolumns() == null) {
+			primaryKey.setPkcolumns(new ArrayList<>());
+		}
+		primaryKey.getPkcolumns().add(columnname);
 	}
 }

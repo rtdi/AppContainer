@@ -3,6 +3,7 @@ package io.rtdi.hanaappcontainer.objects.table.subelements;
 import java.util.List;
 
 import io.rtdi.hanaappcontainer.objects.table.HanaTableDiffAction;
+import io.rtdi.hanaappserver.ActivationSuccess;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.Util;
 
@@ -64,7 +65,7 @@ public class PrimaryKeyDefinition {
 			action.dropPK();
 			action.createPK();
 		} else {
-			action.addCreationMessage("No change in public synonym setting");
+			action.addCreationMessage("No change in public synonym setting", null, ActivationSuccess.SUCCESS);
 		}
 
 	}

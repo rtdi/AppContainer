@@ -18,12 +18,13 @@ import io.rtdi.hanaappcontainer.objects.table.subelements.IndexDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.Order;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
 import io.rtdi.hanaappcontainer.objects.table.subelements.TemporaryType;
+import io.rtdi.hanaappserver.HanaParsingException;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.Util;
 
 public class HDBTable {	
 
-	public static HanaTable parseHDBTableText(String text, String schemaname, String tablename) {
+	public static HanaTable parseHDBTableText(String text, String schemaname, String tablename) throws HanaParsingException {
 		CharStream input = CharStreams.fromString(text);;
 		HDBTableLexer lexer = new HDBTableLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -31,10 +32,13 @@ public class HDBTable {
 		ParseTree tree = parser.keyvaluepairs();
 		ParseTreeWalker walker = new ParseTreeWalker();
 		HanaTable table = new HanaTable();
-		ANTLRHDBTableSetter listener= new ANTLRHDBTableSetter(table);
+		ANTLRHDBTableSetter listener = new ANTLRHDBTableSetter(table);
 		walker.walk(listener, tree);
 		table.setSchemaName(schemaname); // ignore the schema name in the file
 		table.setTableName(tablename);
+		if (listener.getParsingresult().getParsingErrors() != null) {
+			throw new HanaParsingException(text, listener.getParsingresult());
+		}
 		return table;
 	}
 	
