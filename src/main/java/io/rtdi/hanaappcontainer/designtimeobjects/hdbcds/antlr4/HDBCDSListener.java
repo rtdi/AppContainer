@@ -218,15 +218,65 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 */
 	void exitAssociation(HDBCDSParser.AssociationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HDBCDSParser#joinclause}.
+	 * Enter a parse tree produced by {@link HDBCDSParser#associationfromcardinality}.
 	 * @param ctx the parse tree
 	 */
-	void enterJoinclause(HDBCDSParser.JoinclauseContext ctx);
+	void enterAssociationfromcardinality(HDBCDSParser.AssociationfromcardinalityContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link HDBCDSParser#joinclause}.
+	 * Exit a parse tree produced by {@link HDBCDSParser#associationfromcardinality}.
 	 * @param ctx the parse tree
 	 */
-	void exitJoinclause(HDBCDSParser.JoinclauseContext ctx);
+	void exitAssociationfromcardinality(HDBCDSParser.AssociationfromcardinalityContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#associationtocardinality}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssociationtocardinality(HDBCDSParser.AssociationtocardinalityContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#associationtocardinality}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssociationtocardinality(HDBCDSParser.AssociationtocardinalityContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#associationreferenceto}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssociationreferenceto(HDBCDSParser.AssociationreferencetoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#associationreferenceto}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssociationreferenceto(HDBCDSParser.AssociationreferencetoContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#associationjoinclause}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssociationjoinclause(HDBCDSParser.AssociationjoinclauseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#associationjoinclause}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssociationjoinclause(HDBCDSParser.AssociationjoinclauseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#associationjoinclauseleft}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssociationjoinclauseleft(HDBCDSParser.AssociationjoinclauseleftContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#associationjoinclauseleft}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssociationjoinclauseleft(HDBCDSParser.AssociationjoinclauseleftContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#associationjoinclauseright}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssociationjoinclauseright(HDBCDSParser.AssociationjoinclauserightContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#associationjoinclauseright}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssociationjoinclauseright(HDBCDSParser.AssociationjoinclauserightContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#associatedcols}.
 	 * @param ctx the parse tree
@@ -237,6 +287,16 @@ public interface HDBCDSListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssociatedcols(HDBCDSParser.AssociatedcolsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HDBCDSParser#associatedcolname}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssociatedcolname(HDBCDSParser.AssociatedcolnameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HDBCDSParser#associatedcolname}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssociatedcolname(HDBCDSParser.AssociatedcolnameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HDBCDSParser#generated}.
 	 * @param ctx the parse tree

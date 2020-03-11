@@ -268,13 +268,73 @@ public class HDBCDSBaseListener implements HDBCDSListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterJoinclause(HDBCDSParser.JoinclauseContext ctx) { }
+	@Override public void enterAssociationfromcardinality(HDBCDSParser.AssociationfromcardinalityContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitJoinclause(HDBCDSParser.JoinclauseContext ctx) { }
+	@Override public void exitAssociationfromcardinality(HDBCDSParser.AssociationfromcardinalityContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssociationtocardinality(HDBCDSParser.AssociationtocardinalityContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssociationtocardinality(HDBCDSParser.AssociationtocardinalityContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssociationreferenceto(HDBCDSParser.AssociationreferencetoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssociationreferenceto(HDBCDSParser.AssociationreferencetoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssociationjoinclause(HDBCDSParser.AssociationjoinclauseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssociationjoinclause(HDBCDSParser.AssociationjoinclauseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssociationjoinclauseleft(HDBCDSParser.AssociationjoinclauseleftContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssociationjoinclauseleft(HDBCDSParser.AssociationjoinclauseleftContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssociationjoinclauseright(HDBCDSParser.AssociationjoinclauserightContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssociationjoinclauseright(HDBCDSParser.AssociationjoinclauserightContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -287,6 +347,18 @@ public class HDBCDSBaseListener implements HDBCDSListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAssociatedcols(HDBCDSParser.AssociatedcolsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssociatedcolname(HDBCDSParser.AssociatedcolnameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssociatedcolname(HDBCDSParser.AssociatedcolnameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

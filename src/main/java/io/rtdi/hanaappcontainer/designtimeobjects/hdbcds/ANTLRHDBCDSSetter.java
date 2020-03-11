@@ -79,7 +79,7 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 		table.setTableName(tablename);
 		table.setSchemaName(schemaname);
 		table.setDescription(getCommentAndClear());
-		table.setTypeDictionary(typedirectory);
+		table.setTypeDictionary(typedirectory, objectdirectory);
 		objectdirectory.put(tablename, table);
 		currentobject = table;
 	}
@@ -273,6 +273,53 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 
 	public Map<String, HanaObject> getTypes() {
 		return typedirectory;
+	}
+
+	@Override
+	public void enterAssociation(AssociationContext ctx) {
+		currentcolumndefinition.createCDSAssociation();
+	}
+
+	@Override
+	public void enterAssociationfromcardinality(AssociationfromcardinalityContext ctx) {
+		currentcolumndefinition.getCDSAssociation().setSourcecardinality(ctx.getChild(0).getText());
+	}
+
+	@Override
+	public void enterAssociationtocardinality(AssociationtocardinalityContext ctx) {
+		currentcolumndefinition.getCDSAssociation().setTargetcardinality(ctx.getChild(0).getText());
+	}
+
+	@Override
+	public void enterAssociationreferenceto(AssociationreferencetoContext ctx) {
+		currentcolumndefinition.getCDSAssociation().setReferencedobject(ctx.getChild(0).getText());
+	}
+
+	@Override
+	public void enterAssociatedcols(AssociatedcolsContext ctx) {
+	}
+
+	@Override
+	public void enterAssociationjoinclause(AssociationjoinclauseContext ctx) {
+	}
+
+	@Override
+	public void enterAssociationjoinclauseleft(AssociationjoinclauseleftContext ctx) {
+		JoinCondition join = currentcolumndefinition.getCDSAssociation().addJoincondition();
+		join.setLeftcolumn(ctx.getChild(1).getText());
+	}
+
+	@Override
+	public void enterAssociationjoinclauseright(AssociationjoinclauserightContext ctx) {
+		List<JoinCondition> joins = currentcolumndefinition.getCDSAssociation().getJoinconditions();
+		JoinCondition join = joins.get(joins.size()-1);
+		join.setRightcolumn(ctx.getChild(1).getText());
+	}
+
+	@Override
+	public void enterAssociatedcolname(AssociatedcolnameContext ctx) {
+		JoinCondition join = currentcolumndefinition.getCDSAssociation().addJoincondition();
+		join.setLeftcolumn(currentcolumndefinition.getName() + "." + ctx.getChild(0).getText());
 	}
 
 }

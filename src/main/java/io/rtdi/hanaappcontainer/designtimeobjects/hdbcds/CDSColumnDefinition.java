@@ -6,6 +6,7 @@ import io.rtdi.hanaappserver.HanaActivationException;
 
 public class CDSColumnDefinition extends ColumnDefinition {
 	private String cdstype;
+	private CDSAssociation cdsassociation;
 	
 	public String getCDSType() {
 		return cdstype;
@@ -21,6 +22,19 @@ public class CDSColumnDefinition extends ColumnDefinition {
 	@Override
 	public void validate(ActivationResult result) throws HanaActivationException {
 		super.validate(result);
+	}
+	
+	public CDSAssociation getCDSAssociation() {
+		return cdsassociation;
+	}
+
+	public void setCDSAssociation(CDSAssociation cdsassociation) {
+		this.cdsassociation = cdsassociation;
+	}
+
+	public CDSAssociation createCDSAssociation() {
+		cdsassociation = new CDSAssociation();
+		return cdsassociation;
 	}
 
 }
