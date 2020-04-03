@@ -65,7 +65,7 @@ public class PrimaryKeyDefinition {
 			action.dropPK();
 			action.createPK();
 		} else {
-			action.addCreationMessage("No change in public synonym setting", null, ActivationSuccess.SUCCESS);
+			action.addCreationMessage("No change in primary keys", null, ActivationSuccess.SUCCESS);
 		}
 
 	}

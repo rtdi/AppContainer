@@ -5,6 +5,16 @@
 		{"name" : "Importer", "description" : "Import existing database objects into your repository", "tooltip" : null, "href" : "protected/importapp", "icon" : null},
 		{"name" : "DockerHub", "description" : "A link to the DockerHub entry of this project", "tooltip" : null, "href" : "https://hub.docker.com/repository/docker/rtdi/hanaappcontainer", "icon" : null},
 		{"name" : "File Issues", "description" : "The central point for all problems and requests", "tooltip" : null, "href" : "https://github.com/rtdi/HanaAppContainer/issues", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "User Permissions", "description" : "Provides the permissions for a given directory", "tooltip" : null, "href" : "http://localhost:8080/HanaAppContainer/protected/rest/permissions/RTDI/RTDI", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
+		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
 		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null}
 	]
 }

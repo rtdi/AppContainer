@@ -1,8 +1,9 @@
 package io.rtdi.hanaappcontainer.objects.table.subelements;
 
+import java.util.Map;
+
 import io.rtdi.hanaappserver.ActivationResult;
 import io.rtdi.hanaappserver.ActivationSuccess;
-import io.rtdi.hanaappserver.HanaActivationException;
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.Util;
@@ -17,6 +18,7 @@ public class ColumnDefinition {
 	Integer precision;
 	String defaultValue;
 	String comment;
+	private Map<String, ColumnDefinition> typecolumns;
 	
 	public String getName() {
 		return name;
@@ -96,14 +98,14 @@ public class ColumnDefinition {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public void validate(ActivationResult result) throws HanaActivationException {
+	public void validate(ActivationResult result) throws HanaSQLException {
 		if (name == null || name.length() == 0) {
 			result.addResult("Column has no name", null, ActivationSuccess.FAILED, result.getObject());
-			throw new HanaActivationException(result, "The column has no name");
+			throw new HanaSQLException("The column has no name", null);
 		}
 		if (sqlType == null) {
 			result.addResult("Column \"" + name + "\" has no data type", null, ActivationSuccess.FAILED, result.getObject());
-			throw new HanaActivationException(result, "The column \"" + name + "\" has no data type");
+			throw new HanaSQLException("The column \"" + name + "\" has no data type", null);
 		}
 	}
 	
@@ -139,23 +141,27 @@ public class ColumnDefinition {
 		}
 	}
 	public String getColumnDefinition() throws HanaSQLException {
-		StringBuffer b = new StringBuffer();
-		b.append('"').append(name).append("\" ");
-		b.append(Util.getDataTypeString(getSqlType(), getLength(), getPrecision(), getScale()));
-		if (getNullable() != null && !getNullable().booleanValue()) {
-			b.append(" not null");
-		}
-		if (getDefaultValue() != null) {
-			if (getSqlType().isStringType()) {
-				b.append(" default '").append(getDefaultValue()).append("'");
-			} else {
-				b.append(" default ").append(getDefaultValue());
+		if (getSqlType() != null) {
+			StringBuffer b = new StringBuffer();
+			b.append('"').append(name).append("\" ");
+			b.append(Util.getDataTypeString(getSqlType(), getLength(), getPrecision(), getScale()));
+			if (getNullable() != null && !getNullable().booleanValue()) {
+				b.append(" not null");
 			}
+			if (getDefaultValue() != null) {
+				if (getSqlType().isStringType()) {
+					b.append(" default '").append(getDefaultValue()).append("'");
+				} else {
+					b.append(" default ").append(getDefaultValue());
+				}
+			}
+			if (getComment() != null) {
+				b.append(" comment '").append(getComment()).append("'");
+			}
+			return b.toString();
+		} else {
+			return null;
 		}
-		if (getComment() != null) {
-			b.append(" comment '").append(getComment()).append("'");
-		}
-		return b.toString();
 	}
 
 	@Override
@@ -177,5 +183,21 @@ public class ColumnDefinition {
 		precision = from.getPrecision();
 		scale = from.getScale();
 	}
-
+	/**
+	 * One column might be a synonym of a set of columns, e.g. when the column has as data type a complex type
+	 * 
+	 * @param source a list of columns this column has created
+	 */
+	public void setTypeColumns(Map<String, ColumnDefinition> source) {
+		this.typecolumns = source;
+	}
+	public Map<String, ColumnDefinition> getTypeColumns() {
+		return typecolumns;
+	}
+	public void applyComment(ColumnDefinition t) {
+		if (comment == null) {
+			comment = t.getComment();
+		}
+	}
+	
 }

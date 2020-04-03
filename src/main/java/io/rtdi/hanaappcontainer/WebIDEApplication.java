@@ -27,10 +27,7 @@ public class WebIDEApplication extends JerseyApplication {
 	@Override
 	protected String[] getPackages() {
 		String [] packages = {
-				"io.rtdi.hanaappcontainer.importapp", 
-				"io.rtdi.hanaappcontainer.browseapp", 
-				"io.rtdi.hanaappcontainer.customapp", 
-				"io.rtdi.hanaappcontainer.editorapp"};
+				"io.rtdi.hanaappcontainer"};
 		return packages;
 	}
 	

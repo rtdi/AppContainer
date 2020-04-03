@@ -5,6 +5,14 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 	return Controller.extend("io.rtdi.hanappcontainer.importapp.Controller", {
 
 		onInit : function() {
+			var oModel = new ODataModel({
+		        serviceUrl : "../odata/SYS/SCHEMAS/",
+				autoExpandSelect: true,
+				operationMode: "Server",
+				groupId: "$direct",
+		        synchronizationMode : "None"
+		    });
+			this.getView().setModel(oModel, "ObjectOwner");
 		},
 		onImport : function(oEvent) {
 			var cOwner = this.getView().byId("idOwner");

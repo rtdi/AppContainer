@@ -9,12 +9,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.antlr4.HDBCDSLexer;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.antlr4.HDBCDSParser;
+import io.rtdi.hanaappcontainer.antlr.sql.HDBCDSLexer;
+import io.rtdi.hanaappcontainer.antlr.sql.HDBCDSParser;
 import io.rtdi.hanaappserver.ActivationResult;
 import io.rtdi.hanaappserver.ActivationStyle;
 import io.rtdi.hanaappserver.ActivationSuccess;
-import io.rtdi.hanaappserver.HanaActivationException;
 import io.rtdi.hanaappserver.HanaObject;
 import io.rtdi.hanaappserver.HanaParsingException;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
@@ -44,10 +43,13 @@ public class HDBCDS {
 			throw new HanaParsingException(text, listener.getParsingresult());
 		}
 		HDBCDS cdsobject = new HDBCDS(listener.getObjects(), listener.getTypes());
+		
+		System.out.println(tree.toStringTree(parser));
+		
 		return cdsobject;
 	}
 
-	public void valid(ActivationResult result) throws HanaActivationException {
+	public void valid(ActivationResult result) throws HanaSQLException {
 		if (cdstypes != null) {
 			for (HanaObject o : cdstypes.values()) {
 				o.valid(result.addResult("Validating Types " + o.getObjectName(), null, ActivationSuccess.SUCCESS, o));
@@ -60,7 +62,7 @@ public class HDBCDS {
 		}
 	}
 
-	public void activate(ActivationResult result, Connection conn, ActivationStyle reconcile) throws HanaSQLException, HanaActivationException {
+	public void activate(ActivationResult result, Connection conn, ActivationStyle reconcile) throws HanaSQLException {
 		if (cdsobjects != null) {
 			for (HanaObject o : cdsobjects.values()) {
 				o.activate(result.addResult("Activating " + o.getObjectName(), null, ActivationSuccess.SUCCESS, o), conn, reconcile);

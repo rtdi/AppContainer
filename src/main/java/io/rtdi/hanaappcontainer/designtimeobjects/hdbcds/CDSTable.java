@@ -1,32 +1,29 @@
 package io.rtdi.hanaappcontainer.designtimeobjects.hdbcds;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
 import io.rtdi.hanaappserver.ActivationResult;
-import io.rtdi.hanaappserver.HanaActivationException;
 import io.rtdi.hanaappserver.HanaObject;
 import io.rtdi.hanaappserver.utils.HanaDataType;
+import io.rtdi.hanaappserver.utils.HanaSQLException;
 
 public class CDSTable extends HanaTable {
 	private Map<String, HanaObject> typedirectory;
 	private Map<String, HanaObject> objectdirectory;
 
-	public CDSTable() {
-		super();
-	}
-
-	public CDSTable(String schemaname, String tablename) {
+	public CDSTable(String schemaname, String tablename) throws HanaSQLException {
 		super(schemaname, tablename);
 	}
 
 	@Override
-	public ActivationResult valid(ActivationResult result) throws HanaActivationException {
-		Iterator<ColumnDefinition> iter = getColumns().iterator();
-		int j = 0;
+	public ActivationResult valid(ActivationResult result) throws HanaSQLException {
+		ListIterator<ColumnDefinition> iter = getColumns().listIterator();
 		while (iter.hasNext()) {
 			ColumnDefinition coldef = iter.next();
 			if (coldef.getSqlType() == null) {
@@ -39,37 +36,61 @@ public class CDSTable extends HanaTable {
 							HanaObject referenced = objectdirectory.get(association.getReferencedobject());
 							if (cdscoldef.getCDSAssociation().getJoinconditions() != null && referenced != null && referenced instanceof CDSTable) {
 								CDSTable referencedtable = (CDSTable) referenced;
+								Map<String, ColumnDefinition> source = new HashMap<>();
 								for ( JoinCondition condition : association.getJoinconditions()) {
 									ColumnDefinition referencedcolumn = findByName(referencedtable.getColumns(), condition.getRightcolumn());
-									ColumnDefinition n = new ColumnDefinition();
-									n.setName(condition.getLeftcolumn());
-									n.applyDataType(referencedcolumn);
-									getColumns().add(n);
+									if (referencedcolumn != null) {
+										ColumnDefinition n = new ColumnDefinition();
+										n.setName(condition.getLeftcolumn());
+										n.applyDataType(referencedcolumn);
+										n.applyComment(referencedcolumn);
+										iter.add(n);
+										source.put(n.getName(), n);
+									}
 								}
+								coldef.setTypeColumns(source);
 							}
 						}
+						coldef.setSqlType(HanaDataType.IGNORE);
 					} else {
 						HanaObject type = typedirectory.get(cdscoldef.getCDSType());
 						if (type == null) {
-							throw new HanaActivationException(result, "The column \"" + cdscoldef.getName() + "\" has a CDS type called \"" + cdscoldef.getCDSType() + "\" which is not known");
+							throw new HanaSQLException("The column \"" + cdscoldef.getName() + "\" has a CDS type called \"" + cdscoldef.getCDSType() + "\" which is not known", null);
 						} else if (type instanceof ColumnType) {
 							ColumnType c = (ColumnType) type;
 							cdscoldef.applyDataType(c.getDataType());
 						} else if (type instanceof ComplexType) {
 							ComplexType c = (ComplexType) type;
+							Map<String, ColumnDefinition> source = new HashMap<>();
 							for (int i=c.getColumns().size()-1; i >= 0; i--) {
 								ColumnDefinition t = c.getColumns().get(i);
 								ColumnDefinition n = new ColumnDefinition();
 								n.setName(coldef.getName() + "." + t.getName());
 								n.applyDataType(t);
-								getColumns().add(j++, n);
+								n.applyComment(t);
+								iter.add(n);
+								source.put(n.getName(), n);
 							}
+							coldef.setSqlType(HanaDataType.IGNORE);
+							coldef.setTypeColumns(source);
 						}
 					}
-					coldef.setSqlType(HanaDataType.IGNORE);
 				}
 			}
-			j++;
+		}
+		if (getPrimaryKey() != null && getPrimaryKey().getPkcolumns() != null) {
+			Map<String, ColumnDefinition> columnnameindex = getAsMap(getColumns(), true);
+			List<String> pkcolumns = new ArrayList<>();
+			for (String p : getPrimaryKey().getPkcolumns()) {
+				CDSColumnDefinition pkcolumn = (CDSColumnDefinition) columnnameindex.get(p);
+				Map<String, ColumnDefinition> t = pkcolumn.getTypeColumns();
+				if (t == null) {
+					pkcolumns.add(p);
+				} else {
+					pkcolumns.addAll(t.keySet());
+				}
+			}
+			getPrimaryKey().setPkcolumns(pkcolumns);
 		}
 		
 		return super.valid(result);

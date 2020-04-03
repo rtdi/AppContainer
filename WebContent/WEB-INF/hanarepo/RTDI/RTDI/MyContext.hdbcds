@@ -1,0 +1,33 @@
+context MyContext {
+  const MyIntConst      : Integer      = 7;
+  const MyStringConst   : String(10)   = 'bright';
+  const MyDecConst      : Decimal(4,2) = 3.14;
+  const MyDateTimeConst : UTCDateTime  = '2015-09-30 14:33'; 
+
+  entity MyEntity {
+    key id : Integer;
+    a : Integer;
+    b : String(100);
+    c : Decimal(20,10);
+    d : UTCDateTime;
+    your : Association[1] to YourEntity on your.a - a < MyIntConst;
+  };
+
+  entity YourEntity {
+    key id : Integer;
+    a : Integer;    
+  };
+
+  entity HerEntity {
+    key id : Integer;
+    t : String(20);
+  };
+
+  view MyView as select from MyEntity 
+           inner join HerEntity on locate (b, :MyStringConst) > 0
+  {
+    a + :MyIntConst as x,
+    b || ' is ' || :MyStringConst as y,
+    c * sin(:MyDecConst) as z    
+  } where d < :MyContext.MyDateTimeConst; 
+};

@@ -10,8 +10,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableLexer;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser;
+import io.rtdi.hanaappcontainer.antlr.sql.HDBTableLexer;
+import io.rtdi.hanaappcontainer.antlr.sql.HDBTableParser;
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
 import io.rtdi.hanaappcontainer.objects.table.subelements.IndexDefinition;
@@ -24,18 +24,16 @@ import io.rtdi.hanaappserver.utils.Util;
 
 public class HDBTable {	
 
-	public static HanaTable parseHDBTableText(String text, String schemaname, String tablename) throws HanaParsingException {
+	public static HanaTable parseHDBTableText(String text, String schemaname, String tablename) throws HanaParsingException, HanaSQLException {
 		CharStream input = CharStreams.fromString(text);;
 		HDBTableLexer lexer = new HDBTableLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		HDBTableParser parser = new HDBTableParser(tokens);
 		ParseTree tree = parser.keyvaluepairs();
 		ParseTreeWalker walker = new ParseTreeWalker();
-		HanaTable table = new HanaTable();
+		HanaTable table = new HanaTable(schemaname, tablename); // ignore the schema name in the file
 		ANTLRHDBTableSetter listener = new ANTLRHDBTableSetter(table);
 		walker.walk(listener, tree);
-		table.setSchemaName(schemaname); // ignore the schema name in the file
-		table.setTableName(tablename);
 		if (listener.getParsingresult().getParsingErrors() != null) {
 			throw new HanaParsingException(text, listener.getParsingresult());
 		}

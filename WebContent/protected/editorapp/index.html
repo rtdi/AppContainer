@@ -84,7 +84,7 @@
 		    const queryString = window.location.search;
 		    const urlParams = new URLSearchParams(queryString);
 		    const sFilename = urlParams.get('filename');
-		    xhttp.open("GET", "../rest/editorapp/activate/" + sFilename, true); 
+		    xhttp.open("GET", "../rest/activationapp/activate/" + sFilename, true); 
 		    xhttp.setRequestHeader("Content-type", "application/json");
 		    xhttp.send(sContent);
 		}

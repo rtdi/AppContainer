@@ -1,6 +1,8 @@
 package io.rtdi.hanaappcontainer.objects.table;
 
 import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
@@ -10,6 +12,7 @@ import io.rtdi.hanaappserver.ActivationResult;
 import io.rtdi.hanaappserver.ActivationStyle;
 import io.rtdi.hanaappserver.ActivationSuccess;
 import io.rtdi.hanaappserver.DiffAction;
+import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.Util;
 
@@ -26,17 +29,17 @@ public class HanaTableDiffAction extends DiffAction<HanaTable> {
 	}
 
 	public void createPK() throws HanaSQLException {
-		executeSQL(
-				"alter table " + getObject().getIdentifier() + " add constraint primary key (" + Util.writeStringList(getObject().getPrimaryKey().getPkcolumns()) + ")",
-				"Failed creating the primary key for the table"
-				);
+		if (getObject().getPrimaryKey() != null && getObject().getPrimaryKey().getPkcolumns() != null && getObject().getPrimaryKey().getPkcolumns().size() != 0) {
+			executeSQL(
+					"alter table " + getObject().getIdentifier() + " add primary key (" + Util.getColumnList(getObject().getPrimaryKey().getPkcolumns()) + ")",
+					"Failed creating the primary key for the table");
+		}
 	}
 
 	public void dropIndex(IndexDefinition idx) throws HanaSQLException {
 		executeSQL(
 				"drop index \"" + getObject().getSchemaName() + "\".\"" + idx.getName() + "\"",
-				"Failed dropping the index"
-				);
+				"Failed dropping the index");
 	}
 
 	public void createIndex(IndexDefinition idx) throws HanaSQLException {
@@ -68,8 +71,7 @@ public class HanaTableDiffAction extends DiffAction<HanaTable> {
 			}
 			executeSQL(
 					b.toString(),
-					"Create index \"" + idx.getName() + "\" failed"
-					);
+					"Create index \"" + idx.getName() + "\" failed");
 		}
 	}
 
@@ -98,26 +100,46 @@ public class HanaTableDiffAction extends DiffAction<HanaTable> {
 		.append("table ").append(getObject().getIdentifier());
 		b.append("(\n");
 		boolean first = true;
+		Map<String, ColumnDefinition> columnnameindex = new HashMap<>();
 		for (ColumnDefinition c : getObject().getColumns()) {
-			if (first) {
-				first = false;
-			} else {
-				b.append(",\n");
+			columnnameindex.put(c.getName(), c); // needed later to lookup the PK columns
+			if (c.getSqlType() != HanaDataType.IGNORE) {
+				if (first) {
+					first = false;
+				} else {
+					b.append(",\n");
+				}
+				b.append("    ").append(c.getColumnDefinition());
 			}
-			b.append("    ").append(c.getColumnDefinition());
 		}
 		if (getObject().getPrimaryKey() != null) {
 			if (getObject().getPrimaryKey().getPkcolumns() != null) {
+				StringBuffer pkcolumnlist = new StringBuffer();
 				b.append(",\n    primary key (");
-				first = true;
 				for (String p : getObject().getPrimaryKey().getPkcolumns()) {
-					if (first) {
-						first = false;
+					ColumnDefinition pkcolumn = columnnameindex.get(p);
+					if (pkcolumn != null) {
+						if (pkcolumn.getSqlType() == HanaDataType.IGNORE) {
+							// This is not a real column but a synonym for a list of columns
+							Map<String, ColumnDefinition> type = pkcolumn.getTypeColumns();
+							if (type != null) {
+								for (String t : type.keySet()) {
+									addPKColumn(pkcolumnlist, t);
+								}
+							} else {
+								failingCreationMessage(
+										"Primary key column \"" + p + 
+										"\" is a column with data type ComplexType but its type cannot be found", 
+										null);
+							}
+						} else {
+							addPKColumn(pkcolumnlist, p);
+						}
 					} else {
-						b.append(", ");
+						failingCreationMessage("Specified primary key column \"" + p + "\" is no existing column of the table", null);
 					}
-					b.append('"').append(p).append("\"");
 				}
+				b.append(pkcolumnlist);
 				b.append(')');
 			}
 		}
@@ -142,6 +164,14 @@ public class HanaTableDiffAction extends DiffAction<HanaTable> {
 				createSynonym();
 			}
 		}
+	}
+	
+	private StringBuffer addPKColumn(StringBuffer pkcolumnlist, String columnname) {
+		if (pkcolumnlist.length() != 0) {
+			pkcolumnlist.append(", ");
+		}
+		pkcolumnlist.append('"').append(columnname).append("\"");
+		return pkcolumnlist;
 	}
 
 	public void dropTable() throws HanaSQLException {

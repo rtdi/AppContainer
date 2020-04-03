@@ -2,7 +2,7 @@ package io.rtdi.hanaappcontainer.designtimeobjects.hdbcds;
 
 import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
 import io.rtdi.hanaappserver.ActivationResult;
-import io.rtdi.hanaappserver.HanaActivationException;
+import io.rtdi.hanaappserver.utils.HanaSQLException;
 
 public class CDSColumnDefinition extends ColumnDefinition {
 	private String cdstype;
@@ -20,8 +20,8 @@ public class CDSColumnDefinition extends ColumnDefinition {
 	}
 	
 	@Override
-	public void validate(ActivationResult result) throws HanaActivationException {
-		super.validate(result);
+	public void validate(ActivationResult result) throws HanaSQLException {
+		// super.validate(result);
 	}
 	
 	public CDSAssociation getCDSAssociation() {

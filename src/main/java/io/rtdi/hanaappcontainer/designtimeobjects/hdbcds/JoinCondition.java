@@ -28,4 +28,10 @@ public class JoinCondition {
 	public void setRightcolumn(String rightcolumn) {
 		this.rightcolumn = rightcolumn;
 	}
+
+	@Override
+	public String toString() {
+		return leftcolumn + " = " + rightcolumn;
+	}
+	
 }

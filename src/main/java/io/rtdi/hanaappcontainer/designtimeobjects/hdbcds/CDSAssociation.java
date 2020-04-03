@@ -42,4 +42,10 @@ public class CDSAssociation {
 		joinconditions.add(j);
 		return j;
 	}
+	
+	@Override
+	public String toString() {
+		return "CDSAssociation [referencedobject=" + referencedobject + ", joinconditions=" + joinconditions + "]";
+	}
+	
 }

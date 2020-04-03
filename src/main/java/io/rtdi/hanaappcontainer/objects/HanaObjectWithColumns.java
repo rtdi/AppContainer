@@ -5,15 +5,13 @@ import java.util.List;
 
 import io.rtdi.hanaappcontainer.objects.table.subelements.ColumnDefinition;
 import io.rtdi.hanaappserver.HanaObject;
+import io.rtdi.hanaappserver.utils.HanaSQLException;
 
 public class HanaObjectWithColumns extends HanaObject {
 	protected List<ColumnDefinition> columns;
+	private String description;
 
-	public HanaObjectWithColumns() {
-		super();
-	}
-
-	public HanaObjectWithColumns(String schemaname, String objectname) {
+	public HanaObjectWithColumns(String schemaname, String objectname) throws HanaSQLException {
 		super(schemaname, objectname);
 	}
 
@@ -32,7 +30,14 @@ public class HanaObjectWithColumns extends HanaObject {
 
 	@Override
 	public String toString() {
-		return "HanaObjectWithColumns [columns=" + columns + ", objectname=" + objectname + "]";
+		return "HanaObjectWithColumns [columns=" + columns + ", objectname=" + getObjectName() + "]";
+	}
+
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

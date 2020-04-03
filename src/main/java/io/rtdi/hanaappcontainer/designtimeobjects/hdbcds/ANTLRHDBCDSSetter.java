@@ -7,14 +7,17 @@ import java.util.Map;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.antlr4.HDBCDSBaseListener;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.antlr4.HDBCDSParser.*;
+import io.rtdi.hanaappcontainer.antlr.sql.HDBCDSParser.*;
+import io.rtdi.hanaappcontainer.antlr.sql.HDBCDSParserBaseListener;
+import io.rtdi.hanaappcontainer.designtimeobjects.SQLParser;
 import io.rtdi.hanaappcontainer.objects.HanaObjectWithColumns;
+import io.rtdi.hanaappcontainer.objects.table.subelements.TableType;
 import io.rtdi.hanaappserver.DesignTimeParsingResult;
 import io.rtdi.hanaappserver.HanaObject;
 import io.rtdi.hanaappserver.utils.HanaDataType;
+import io.rtdi.hanaappserver.utils.HanaSQLException;
 
-public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
+public class ANTLRHDBCDSSetter extends HDBCDSParserBaseListener {
 	private List<String> currentcontext = new ArrayList<>();
 	private String namespace = null;
 	private HanaObject currentobject;
@@ -62,7 +65,9 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 
 	@Override
 	public void enterComment(CommentContext ctx) {
-		this.currentcomment = ctx.getChild(2).getText();
+		String comment = ctx.getChild(2).getText();
+		int l = comment.length();
+		this.currentcomment = comment.substring(1, l-1);
 	}
 	
 	private String getCommentAndClear() {
@@ -74,14 +79,16 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 	@Override
 	public void enterEntityname(EntitynameContext ctx) {
 		ParseTree t = ctx.getChild(0);
-		CDSTable table = new CDSTable();
 		String tablename = getTablePrefix() + t.getText();
-		table.setTableName(tablename);
-		table.setSchemaName(schemaname);
-		table.setDescription(getCommentAndClear());
-		table.setTypeDictionary(typedirectory, objectdirectory);
-		objectdirectory.put(tablename, table);
-		currentobject = table;
+		try {
+			CDSTable table = new CDSTable(schemaname, tablename);
+			table.setDescription(getCommentAndClear());
+			table.setTypeDictionary(typedirectory, objectdirectory);
+			objectdirectory.put(tablename, table);
+			currentobject = table;
+		} catch (HanaSQLException e) {
+			
+		}
 	}
 
 	private String getTablePrefix() {
@@ -112,7 +119,7 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 	}
 
 	@Override
-	public void enterColumnname(ColumnnameContext ctx) {
+	public void enterEntitycolumnname(EntitycolumnnameContext ctx) {
 		ParseTree t = ctx.getChild(0);
 		if (currentobject instanceof CDSTable) {
 			HanaObjectWithColumns cur = (HanaObjectWithColumns) currentobject;
@@ -138,12 +145,16 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 	public void enterTypenameprimitive(TypenameprimitiveContext ctx) {
 		ParseTree t = ctx.getChild(0);
 		String typename = getTablePrefix() + t.getText();
-		ColumnType ct = new ColumnType(schemaname, typename);
-		currentobject = ct;
-		typedirectory.put(typename, ct);
-		currentcolumndefinition = new CDSColumnDefinition();
-		currentcolumndefinition.setName(t.getText());
-		ct.setDataType(currentcolumndefinition);
+		try {
+			ColumnType ct = new ColumnType(schemaname, typename);
+			currentobject = ct;
+			typedirectory.put(typename, ct);
+			currentcolumndefinition = new CDSColumnDefinition();
+			currentcolumndefinition.setName(t.getText());
+			ct.setDataType(currentcolumndefinition);
+		} catch (HanaSQLException e) {
+			
+		}
 		currentcolumndefinition.setComment(getCommentAndClear());
 	}
 
@@ -151,19 +162,22 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 	public void enterTypenamecomplex(TypenamecomplexContext ctx) {
 		ParseTree t = ctx.getChild(0);
 		String typename = getTablePrefix() + t.getText();
-		ComplexType ct = new ComplexType(schemaname, typename);
-		ct.setTypeDictionary(typedirectory);
-		getCommentAndClear();
-		currentobject = ct;
-		typedirectory.put(typename, ct);
+		try {
+			ComplexType ct = new ComplexType(schemaname, typename);
+			ct.setTypeDictionary(typedirectory);
+			getCommentAndClear();
+			currentobject = ct;
+			typedirectory.put(typename, ct);
+		} catch (HanaSQLException e) {
+			
+		}
 	}
 
 	@Override
 	public void enterTypecolumnname(TypecolumnnameContext ctx) {
 		ParseTree t = ctx.getChild(0);
-		String typename = getTablePrefix() + t.getText();
 		currentcolumndefinition = new CDSColumnDefinition();
-		currentcolumndefinition.setName(typename);
+		currentcolumndefinition.setName(t.getText());
 		currentcolumndefinition.setComment(getCommentAndClear());
 		((ComplexType) currentobject).addColumn(currentcolumndefinition);
 	}
@@ -292,7 +306,7 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 
 	@Override
 	public void enterAssociationreferenceto(AssociationreferencetoContext ctx) {
-		currentcolumndefinition.getCDSAssociation().setReferencedobject(ctx.getChild(0).getText());
+		currentcolumndefinition.getCDSAssociation().setReferencedobject(getTablePrefix() + ctx.getChild(0).getText());
 	}
 
 	@Override
@@ -300,26 +314,77 @@ public class ANTLRHDBCDSSetter extends HDBCDSBaseListener {
 	}
 
 	@Override
-	public void enterAssociationjoinclause(AssociationjoinclauseContext ctx) {
-	}
-
-	@Override
-	public void enterAssociationjoinclauseleft(AssociationjoinclauseleftContext ctx) {
-		JoinCondition join = currentcolumndefinition.getCDSAssociation().addJoincondition();
-		join.setLeftcolumn(ctx.getChild(1).getText());
-	}
-
-	@Override
-	public void enterAssociationjoinclauseright(AssociationjoinclauserightContext ctx) {
-		List<JoinCondition> joins = currentcolumndefinition.getCDSAssociation().getJoinconditions();
-		JoinCondition join = joins.get(joins.size()-1);
-		join.setRightcolumn(ctx.getChild(1).getText());
-	}
-
-	@Override
 	public void enterAssociatedcolname(AssociatedcolnameContext ctx) {
 		JoinCondition join = currentcolumndefinition.getCDSAssociation().addJoincondition();
 		join.setLeftcolumn(currentcolumndefinition.getName() + "." + ctx.getChild(0).getText());
+		join.setRightcolumn(ctx.getChild(0).getText());
+	}
+
+	@Override
+	public void enterTabletype(TabletypeContext ctx) {
+		ParseTree t = ctx.getChild(0);
+		if (t instanceof Tabletype1Context) {
+			CDSTable cdstable = (CDSTable) currentobject;
+			cdstable.setTableType(TableType.COLUMN);
+		} else if (t instanceof Tabletype2Context) {
+			CDSTable cdstable = (CDSTable) currentobject;
+			cdstable.setTableType(TableType.ROW);
+		}
+	}
+
+	@Override
+	public void enterViewname(ViewnameContext ctx) {
+		ParseTree t = ctx.getChild(0);
+		String viewname = getTablePrefix() + t.getText();
+		try {
+			CDSView cdsview = new CDSView(schemaname, viewname);
+			cdsview.setDescription(getCommentAndClear());
+			cdsview.setTypeDictionary(typedirectory, objectdirectory);
+			objectdirectory.put(viewname, cdsview);
+			currentobject = cdsview;
+		} catch (HanaSQLException e) {
+			
+		}
+	}
+
+	@Override
+	public void enterViewoptions(ViewoptionsContext ctx) {
+	}
+
+	@Override
+	public void enterFromClause(FromClauseContext ctx) {
+		if (currentobject instanceof CDSView) {
+			CDSView cdsview = (CDSView) currentobject;
+			// cdsview.addFrom(getTablePrefix() + t.getText());
+			cdsview.addFrom(SQLParser.getFromClause(ctx));
+		}
+	}
+
+	@Override
+	public void enterSelectItem(SelectItemContext ctx) {
+		ParseTree t = ctx.getChild(0);
+		HanaObjectWithColumns cur = (HanaObjectWithColumns) currentobject;
+		CDSViewColumn viewcolumn = new CDSViewColumn();
+		String projectionformula = t.getText(); 
+		viewcolumn.setProjection(projectionformula);
+		viewcolumn.setName(projectionformula);
+		currentcolumndefinition = viewcolumn;
+		cur.addColumn(currentcolumndefinition);
+	}
+
+	@Override
+	public void enterViewprivcheck(ViewprivcheckContext ctx) {
+		if (currentobject instanceof CDSView) {
+			CDSView cdsview = (CDSView) currentobject;
+			cdsview.setStructuredPrivCheck(true);
+		}
+	}
+
+	@Override
+	public void enterConstantname(ConstantnameContext ctx) {
+		ParseTree t = ctx.getChild(0);
+		currentcolumndefinition = new CDSColumnDefinition();
+		currentcolumndefinition.setName(t.getText());
 	}
 
 }

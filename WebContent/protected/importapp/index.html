@@ -14,21 +14,20 @@
 		data-sap-ui-resourceroots='{
 			"io.rtdi.hanaappcontainer.importapp": "./"
 		}'
-		data-sap-ui-async="true"
-		data-sap-ui-compatVersion="edge"
-		data-sap-ui-frameOptions="trusted"
-		data-sap-ui-oninit="module:sap/ui/core/ComponentSupport" >
+		data-sap-ui-async="true" >
+	</script>
+	<script>
+		sap.ui.getCore().attachInit(function () {
+			document.body.innerHTML=''
+			new sap.ui.xmlview({
+				viewName: "io.rtdi.hanaappcontainer.importapp.View"
+				}).placeAt("content");
+			});
 	</script>
 </head>
 
-<body class="sapUiBody" id="content" >
-	<div data-sap-ui-component
-		data-name="io.rtdi.hanaappcontainer.importapp"
-		data-height="100%"
-		data-id="container"
-		data-settings='{"id" : "io.rtdi.hanaappcontainer.importapp"}'
-		style="height: 100%;">
-	</div>
+<body class="sapUiBody" id="content" style="height: 100%;">
+	<p>Loading OpenUI5 from <a href="/openui5/resources/sap-ui-core.js">here</a></p>
 </body>
 </html>
 

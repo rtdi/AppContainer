@@ -4,9 +4,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import io.rtdi.hanaappcontainer.antlr.sql.HDBTableLexer;
+import io.rtdi.hanaappcontainer.antlr.sql.HDBTableParser;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.ANTLRHDBTableSetter;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableLexer;
-import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.antlr4.HDBTableParser;
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
 
 public class HDBTableTest {
@@ -33,7 +33,7 @@ public class HDBTableTest {
 		HDBTableParser parser = new HDBTableParser(tokens);
 		ParseTree tree = parser.keyvaluepairs(); // begin parsing at rule 'r'
 		ParseTreeWalker walker = new ParseTreeWalker();
-		HanaTable table = new HanaTable();
+		HanaTable table = new HanaTable("s", "t");
 		ANTLRHDBTableSetter listener= new ANTLRHDBTableSetter(table);
 		walker.walk(listener, tree);
 		
