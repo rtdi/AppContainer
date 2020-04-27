@@ -1,0 +1,54 @@
+{
+	"sap.app": {
+		"id": "UsersApp",
+		"type": "application",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "List all Hana Users",
+		"dataSources": {
+			"userds": {
+				"uri": "/HanaAppContainer/protected/odata/SYS/USERS/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "4.0"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5"
+	},
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "ui5.app.Users",
+			"type": "XML",
+			"async": true,
+			"id": "userview"
+		},
+		"dependencies": {
+			"libs": {
+				"sap.ui.core": {
+					
+				},
+				"sap.m": {
+					
+				},
+				"sap.ui.layout": {
+					
+				}
+			}
+		},
+		"models": {
+			"": {
+				"dataSource": "userds",
+				"settings": {
+					"autoExpandSelect": true,
+					"operationMode": "Server",
+					"groupId": "$direct",
+					"synchronizationMode": "None"
+				}
+			}
+		}
+	}
+}

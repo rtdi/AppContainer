@@ -33,6 +33,12 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.rtdi.hanaappserver.utils.ErrorMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/permissions")
 public class PermissionService {
@@ -51,7 +57,45 @@ public class PermissionService {
 	@GET
 	@Path("{user}/{schema}")
 	@Produces(MediaType.APPLICATION_JSON)
-    public Response getPermissionObject(@PathParam("user") String user, @PathParam("schema") String schema) {
+	@Operation(
+			summary = "Produce the permission tree",
+			description = "In the Hana repository each user has its own objects organized by schemas. "
+					+ "The USER1 might have cloned the files for schema XYZ and the "
+					+ "currently requesting user might or might not have access.",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "A Json object with all directories the current user has access to",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = Permissions.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Information")
+    public Response getPermissionObject(
+    		@PathParam("user") 
+    	    @Parameter(
+    	    		description = "Hana repository owner",
+    	    		example = "<currently logged in user to see his own files>"
+    	    		)
+    		String user, 
+    		@PathParam("schema") 
+    	    @Parameter(
+    	    		description = "Hana repository schema",
+    	    		example = "SCHEMAXYZ"
+    	    		)
+    		String schema) {
 		try {
 			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 			String schemapath = user + File.separatorChar + schema;
@@ -90,6 +134,7 @@ public class PermissionService {
 		return permissions;
 	}
 
+	@Schema(description="Permission information for the current user")
 	public static class Permissions {
 		private String[] roles;
 		private Set<String> directories = new HashSet<>();
@@ -107,12 +152,27 @@ public class PermissionService {
 			} else if (!requestedpath.toFile().isDirectory()) {
 				throw new IOException("The path \"" + requestedpath.toString() + "\" is not a directory");
 			} else {
-				addDirectories(requestedpath, directories, assignedroles, requestedpath, user.equals(hanauser.getHanaUser()));
+				addDirectories(requestedpath, directories, assignedroles, requestedpath, user.equals(hanauser.getHanaUser()), false);
 			}
 		}
 
-		private void addDirectories(java.nio.file.Path dirpath, Set<String> directories, Set<String> assignedroles, java.nio.file.Path requestedpath, boolean own) throws IOException {
+		/**
+		 * A directory is added as allowed if either
+		 * 1. The directory is within the same user
+		 * 2. There is an allow file with at least one group the user has assigned in Hana
+		 * 3. There is no allow file but the parent directory allowed the user
+		 * 
+		 * @param dirpath
+		 * @param directories
+		 * @param assignedroles
+		 * @param requestedpath
+		 * @param own
+		 * @param parentallowed
+		 * @throws IOException
+		 */
+		private void addDirectories(java.nio.file.Path dirpath, Set<String> directories, Set<String> assignedroles, java.nio.file.Path requestedpath, boolean own, boolean parentallowed) throws IOException {
 			File dir = dirpath.toFile();
+			boolean allow = parentallowed | own;
 			if (!own) { // this is not within the user's own directory
 				File allowfile = new File(dir, "allow");
 				if (allowfile.isFile()) {
@@ -120,26 +180,20 @@ public class PermissionService {
 		    		HashSet<String> allowedroles = new HashSet<>();
 		    		allowedroles.addAll(allowed);
 		    		allowedroles.retainAll(assignedroles);
-		    		if (allowedroles.size() > 0) {
-						directories.add(getRestUri(requestedpath.relativize(dirpath)));
-		    		}
+		    		allow = allowedroles.size() > 0;
 				}
-			} else {
-				directories.add(getRestUri(requestedpath.relativize(dirpath)));
+			}
+			if (allow) {
+				directories.add(getRestUri(requestedpath.relativize(dirpath)));				
 			}
 			File[] subdirs = dir.listFiles(new DirectoryFilter());
 			if (subdirs != null) {
 				for (File subdir : subdirs) {
-					addDirectories(subdir.toPath(), directories, assignedroles, requestedpath, own);
+					addDirectories(subdir.toPath(), directories, assignedroles, requestedpath, own, allow);
 				}
 			}
 		}
 		
-		private String getRestUri(java.nio.file.Path p) {
-			String r = p.toString().replace('\\', '/');
-			return '/' + r;
-		}
-
 		public String[] getRoles() {
 			return roles;
 		}
@@ -150,6 +204,11 @@ public class PermissionService {
 
 	}
 	
+	public static String getRestUri(java.nio.file.Path p) {
+		String r = p.toString().replace('\\', '/');
+		return '/' + r;
+	}
+
 	private static class DirectoryFilter implements FileFilter {
 
 		@Override

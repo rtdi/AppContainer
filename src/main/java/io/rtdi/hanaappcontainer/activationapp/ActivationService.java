@@ -35,6 +35,12 @@ import io.rtdi.hanaappserver.utils.ErrorMessage;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.SessionHandler;
 import io.rtdi.hanaappserver.utils.Util;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/activationapp")
 public class ActivationService {
@@ -52,7 +58,37 @@ public class ActivationService {
 	@GET
 	@Path("activate/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response activateSingle(@PathParam("path") String path) {
+	@Operation(
+			summary = "Activate file",
+			description = "Activate a single design time object",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "The detailed information what was activited and how",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = ActivationResult.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response activateSingle(
+    		@PathParam("path") 
+    	    @Parameter(
+    	    		description = "The location of a single file in the repository",
+    	    		example = "USER1/SCHEMA1/dir1/dir2/mytable.hdbtable"
+    	    		)
+    		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {
 			String username = user.getHanaUser();
@@ -79,6 +115,30 @@ public class ActivationService {
 	@GET
 	@Path("activateall/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Activate all files in a directory",
+			description = "Activates all files in a directory recursively",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "The detailed information what was activited and how",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = ActivationResult.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
     public Response activateAll(@PathParam("path") String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {

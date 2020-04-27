@@ -4,7 +4,9 @@ import java.util.List;
 
 import io.rtdi.hanaappserver.DesignTimeParsingResult;
 import io.rtdi.hanaappserver.HanaParsingException;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description="Detailed error information from the server")
 public class ErrorMessage {
 	private Exception exception;
 

@@ -30,6 +30,12 @@ import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.rtdi.hanaappserver.utils.ErrorMessage;
 import io.rtdi.hanaappserver.utils.SuccessMessage;
 import io.rtdi.hanaappserver.utils.Util;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/browseapp")
 public class BrowseService {
@@ -48,6 +54,30 @@ public class BrowseService {
 	@GET
 	@Path("browse")
     @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "All directories of the user",
+			description = "Returns a tree of all schemas and their directories of the currently logged in user",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "The directory tree",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = Directory.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
     public Response browse() {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
@@ -69,7 +99,37 @@ public class BrowseService {
 	@GET
 	@Path("files/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listFiles(@PathParam("path") String path) {
+	@Operation(
+			summary = "All files in a user directory",
+			description = "Returns a list of all files of the user in a given schema and directory",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "The directory content",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = DirectoryContent.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response listFiles(
+    		 @PathParam("path") 
+    		 @Parameter(
+    	    		description = "Path in the format SCHEMA/dir1/dir2",
+    	    		example = "SCHEMAXYZ/dir1/subdirA"
+    	    		)
+    		 String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
 		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
@@ -95,7 +155,37 @@ public class BrowseService {
 	@GET
 	@Path("touchfile/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response touchFile(@PathParam("path") String path) {
+	@Operation(
+			summary = "Create file",
+			description = "Creates a file in the current users workspace at the given schema and directory location",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the file metadata",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = FileData.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown, e.g. file exists already",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response touchFile(
+    		@PathParam("path")
+   		 	@Parameter(
+ 	    		description = "Path in the format SCHEMA/dir1/dir2/fileX",
+ 	    		example = "SCHEMAXYZ/dir1/subdirA/fileX"
+ 	    		)
+    		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
 		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
@@ -118,7 +208,37 @@ public class BrowseService {
 	@GET
 	@Path("mkdir/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response mkDir(@PathParam("path") String path) {
+	@Operation(
+			summary = "Create directory",
+			description = "Creates a directory in the current users workspace at the given path",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown, e.g. path exists already",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response mkDir(
+    		@PathParam("path") 
+   		 	@Parameter(
+   	 	    		description = "Path in the format SCHEMA/dir1/dir2",
+   	 	    		example = "SCHEMAXYZ/dir1/subdirA"
+   	 	    		)
+    		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
 		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
@@ -144,7 +264,37 @@ public class BrowseService {
 	@GET
 	@Path("rmdir/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response rmDir(@PathParam("path") String path) {
+	@Operation(
+			summary = "Remove directory",
+			description = "Removes a directory in the current users workspace at the given path",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown, e.g. path does not exist",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response rmDir(
+    		@PathParam("path")
+   		 	@Parameter(
+   	 	    		description = "Path in the format SCHEMA/dir1/dir2",
+   	 	    		example = "SCHEMAXYZ/dir1/subdirA"
+   	 	    		)
+    		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
 		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
@@ -164,7 +314,37 @@ public class BrowseService {
 	@GET
 	@Path("rmfile/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response rmFile(@PathParam("path") String path) {
+	@Operation(
+			summary = "Delete file",
+			description = "Removes a file in the current users workspace specified by the path",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown, e.g. path exists already",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response rmFile(
+    		@PathParam("path")
+   		 	@Parameter(
+   	 	    		description = "Path in the format SCHEMA/dir1/dir2/fileA",
+   	 	    		example = "SCHEMAXYZ/dir1/subdirA/fileX"
+   	 	    		)
+    		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
 		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
@@ -185,7 +365,42 @@ public class BrowseService {
 	@Path("mvfile/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response mvFile(@PathParam("path") String path, FileData target) {
+	@Operation(
+			summary = "Move file",
+			description = "Moves a file from path to target location",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown, e.g. file at path does not exist",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response mvFile(
+    		@PathParam("path")
+   		 	@Parameter(
+   	 	    		description = "Path in the format SCHEMA/dir1/dir2/fileA",
+   	 	    		example = "SCHEMAXYZ/dir1/subdirA/fileX"
+   	 	    		)
+    		String path,
+   		 	@Parameter(
+   	 	    		description = "Json with the target location",
+   	 	    		example = "{ path: \"SCHEMAXYZ/dir1/subdirA/fileY\" }"
+   	 	    		)
+    		FileData target) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
 		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
@@ -208,6 +423,7 @@ public class BrowseService {
 		}
 	}
 
+	@Schema(description="All files within a given directory")
 	public static class DirectoryContent {
 		List<FileData> directorylist = new ArrayList<>();
 		String path;
@@ -240,6 +456,7 @@ public class BrowseService {
 		}
 	}
 	
+	@Schema(description="Tree of directories and sub directories")
 	public static class Directory extends Folder {
 		private String username;
 
@@ -328,6 +545,7 @@ public class BrowseService {
 		
 	}
 
+	@Schema(description="Metadata of a single file")
 	public static class FileData implements Comparable<FileData> {
 		private String name;
 		private String extension;
@@ -362,6 +580,10 @@ public class BrowseService {
 		@Override
 		public int compareTo(FileData o) {
 			return name.compareTo(o.name);
+		}
+
+		public void setPath(String path) {
+			this.path = path;
 		}
 	}
 	

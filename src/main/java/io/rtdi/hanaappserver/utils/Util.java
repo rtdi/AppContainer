@@ -7,9 +7,9 @@ import java.util.List;
 public class Util {
 
 	public static String getDataTypeString(String datatypename, Integer length, Integer scale) throws HanaSQLException {
-		
 		return getDataTypeString(datatypename, length, length, scale);
 	}
+	
 	public static String getDataTypeString(String datatypename, Integer length, Integer precision, Integer scale) throws HanaSQLException {
 		HanaDataType d = HanaDataType.valueOf(datatypename);
 		return getDataTypeString(d, length, precision, scale);
@@ -49,6 +49,14 @@ public class Util {
 	public static String decodeURIfull(String input) {
 		if (input != null) {
 			return input.replace("%2f", "/");
+		} else {
+			return input;
+		}
+	}
+
+	public static String encodeURIfull(String input) {
+		if (input != null) {
+			return input.replace("/", "%2f");
 		} else {
 			return input;
 		}

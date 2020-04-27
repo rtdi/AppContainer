@@ -34,6 +34,12 @@ import io.rtdi.hanaappserver.utils.ErrorMessage;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.SessionHandler;
 import io.rtdi.hanaappserver.utils.Util;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/importapp")
 public class ImportService {
@@ -51,6 +57,30 @@ public class ImportService {
 	@GET
 	@Path("{schema}")
     @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Generate designtime artifacts",
+			description = "Scans a schema for tables, views and other objects and generates the design time files (reverse engineering)",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "The directory content",
+	                    content = {
+	                            @Content(
+	                            		array = @ArraySchema(schema = @Schema(type = "string"))
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "500", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
     public Response runImport(@PathParam("schema") String schemaraw, @QueryParam("type") ImportType importtype) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();

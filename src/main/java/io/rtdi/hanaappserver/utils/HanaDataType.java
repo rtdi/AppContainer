@@ -1,44 +1,44 @@
 package io.rtdi.hanaappserver.utils;
 
 public enum HanaDataType {
-	TINYINT(false, HanaDataTypeGroup.NOPARAM),
-	SMALLINT(false, HanaDataTypeGroup.NOPARAM),
-	INTEGER(false, HanaDataTypeGroup.NOPARAM),
-	BIGINT(false, HanaDataTypeGroup.NOPARAM),
-	DECIMAL(false, HanaDataTypeGroup.DECIMALPARAM),
-	REAL(false, HanaDataTypeGroup.NOPARAM),
-	DOUBLE(false, HanaDataTypeGroup.NOPARAM),
-	CHAR(true, HanaDataTypeGroup.LENGTHPARAM),
-	VARCHAR(true, HanaDataTypeGroup.LENGTHPARAM),
-	BINARY(true, HanaDataTypeGroup.LENGTHPARAM),
-	VARBINARY(true, HanaDataTypeGroup.LENGTHPARAM),
-	DATE(false, HanaDataTypeGroup.NOPARAM),
-	TIME(false, HanaDataTypeGroup.NOPARAM),
-	TIMESTAMP(false, HanaDataTypeGroup.NOPARAM),
-	CLOB(true, HanaDataTypeGroup.NOPARAM),
-	BLOB(false, HanaDataTypeGroup.NOPARAM),
-	NCHAR(true, HanaDataTypeGroup.LENGTHPARAM),
-	NVARCHAR(true, HanaDataTypeGroup.LENGTHPARAM),
-	ALPHANUM(true, HanaDataTypeGroup.LENGTHPARAM),
-	NCLOB(true, HanaDataTypeGroup.NOPARAM),
-	SMALLDECIMAL(false, HanaDataTypeGroup.NOPARAM),
-	TEXT(true, HanaDataTypeGroup.NOPARAM),
-	BINTEXT(true, HanaDataTypeGroup.NOPARAM),
-	SHORTTEXT(true, HanaDataTypeGroup.LENGTHPARAM),
-	SECONDDATE(false, HanaDataTypeGroup.NOPARAM),
-	ST_POINT(false, HanaDataTypeGroup.NOPARAM),
-	ST_GEOMETRY(false, HanaDataTypeGroup.NOPARAM),
-	BOOLEAN(false, HanaDataTypeGroup.NOPARAM),
+	TINYINT(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
+	SMALLINT(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
+	INTEGER(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
+	BIGINT(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
+	DECIMAL(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.DECIMALPARAM),
+	REAL(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
+	DOUBLE(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
+	CHAR(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.LENGTHPARAM),
+	VARCHAR(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.LENGTHPARAM),
+	BINARY(HanaDataTypeValueGroup.BINARY, HanaDataTypeGroup.LENGTHPARAM),
+	VARBINARY(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.LENGTHPARAM),
+	DATE(HanaDataTypeValueGroup.DATE, HanaDataTypeGroup.NOPARAM),
+	TIME(HanaDataTypeValueGroup.TIME, HanaDataTypeGroup.NOPARAM),
+	TIMESTAMP(HanaDataTypeValueGroup.TIMESTAMP, HanaDataTypeGroup.NOPARAM),
+	CLOB(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.NOPARAM),
+	BLOB(HanaDataTypeValueGroup.BINARY, HanaDataTypeGroup.NOPARAM),
+	NCHAR(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.LENGTHPARAM),
+	NVARCHAR(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.LENGTHPARAM),
+	ALPHANUM(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.LENGTHPARAM),
+	NCLOB(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.NOPARAM),
+	SMALLDECIMAL(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
+	TEXT(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.NOPARAM),
+	BINTEXT(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.NOPARAM),
+	SHORTTEXT(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.LENGTHPARAM),
+	SECONDDATE(HanaDataTypeValueGroup.DATETIME, HanaDataTypeGroup.NOPARAM),
+	ST_POINT(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.NOPARAM),
+	ST_GEOMETRY(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.NOPARAM),
+	BOOLEAN(HanaDataTypeValueGroup.NUMBER, HanaDataTypeGroup.NOPARAM),
 	/**
 	 * Pseudocolumn, do not add to the table 
 	 */
-	IGNORE(false, HanaDataTypeGroup.NOPARAM);
+	IGNORE(HanaDataTypeValueGroup.STRING, HanaDataTypeGroup.NOPARAM);
 
-	private boolean stringtype;
+	private HanaDataTypeValueGroup valuegroup;
 	private HanaDataTypeGroup group;
 
-	HanaDataType(boolean stringtype, HanaDataTypeGroup group) {
-		this.stringtype = stringtype;
+	HanaDataType(HanaDataTypeValueGroup valuegroup, HanaDataTypeGroup group) {
+		this.valuegroup = valuegroup;
 		this.group = group;
 	}
 
@@ -47,6 +47,11 @@ public enum HanaDataType {
 	}
 
 	public boolean isStringType() {
-		return stringtype;
+		return valuegroup == HanaDataTypeValueGroup.STRING;
 	}
+	
+	public HanaDataTypeValueGroup getValueGroup() {
+		return valuegroup;
+	}
+	
 }

@@ -4,9 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +11,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -30,6 +28,12 @@ import io.rtdi.hanaappserver.utils.ErrorMessage;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.SessionHandler;
 import io.rtdi.hanaappserver.utils.Util;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/")
 public class HanaRecordLookup {
@@ -47,30 +51,72 @@ public class HanaRecordLookup {
 	@GET
 	@Path("lookup/{schema}/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response lookupRecord(@PathParam("schema") String schemaraw, @PathParam("name") String nameraw) {
+	@Operation(
+			summary = "Lookup a single record",
+			description = "Returns a single record from a table/view usng $where and $select parameters",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "A json object representing the table row",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(type = "object")
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "500", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "ReadHana")
+    public Response lookupRecord(
+    		@PathParam("schema")
+   		 	@Parameter(
+ 	    		description = "Schema of the object to lookup data from",
+ 	    		example = "SYS"
+ 	    		)
+    		String schemaraw,
+    		@PathParam("name")
+   		 	@Parameter(
+   	 	    		description = "Object name",
+   	 	    		example = "USERS"
+   	 	    		)
+    		String nameraw,
+    		@QueryParam("$select")
+   		 	@Parameter(
+   	 	    		description = "Comma separated list of columns",
+   	 	    		example = "USER_NAME, CREATE_TIME"
+   	 	    		)
+    		String select,
+    		@QueryParam("$where")
+   		 	@Parameter(
+   	 	    		description = "A where condition to be added",
+   	 	    		example = "USER_NAME = 'SYSTEM'"
+   	 	    		)
+			String where) {
 		String schema = Util.decodeURIfull(schemaraw);
 		String name = Util.decodeURIfull(nameraw);
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
-			Map<String, String[]> parameters = request.getParameterMap();
 			StringBuffer sql = new StringBuffer();
-			sql.append("select");
-			if (parameters.containsKey("$select")) {
-				String[] p = parameters.get("$select");
-				if (p.length == 1) {
-					String[] projections = p[0].split("\\,");
-					boolean first = true;
-					for (String s : projections) {
-						if (first) {
-							first = false;
-						} else {
-							sql.append(",");
-						}
-						sql.append(" \"")
-							.append(s.trim())
-							.append("\"");
+			sql.append("select top 1 ");
+			if (select != null) {
+				String[] projections = select.split("\\,");
+				boolean first = true;
+				for (String s : projections) {
+					if (first) {
+						first = false;
+					} else {
+						sql.append(",");
 					}
-				} else {
-					throw new HanaSQLException("More than a single select list passed in via URL parameter $select", parameters.toString());
+					sql.append(" \"")
+						.append(s.trim())
+						.append("\"");
 				}
 			} else {
 				sql.append(" *");
@@ -79,49 +125,13 @@ public class HanaRecordLookup {
 				.append(schema)
 				.append("\".\"")
 				.append(name)
-				.append("\" where");
+				.append("\" ");
 			
-			List<String> params = new ArrayList<String>();
-			boolean firstcondition = true;
-			for (String f : parameters.keySet()) {
-				if (!f.equals("$select")) {
-					if (firstcondition) {
-						firstcondition = false;
-					} else {
-						sql.append(" AND");
-					}
-					sql.append(" \"")
-						.append(f)
-						.append("\"");
-					String[] values = parameters.get(f);
-					if (values.length == 0) {
-						sql.append(" is null");
-					} else if (values.length == 1) {
-						sql.append(" = ?");
-						params.add(values[0]);
-					} else {
-						sql.append(" in (");
-						boolean first = true;
-						for (int i=0; i<values.length; i++) {
-							if (first) {
-								first = false;
-							} else {
-								sql.append(",");
-							}
-							sql.append(" ?");
-							params.add(values[i]);
-						}
-						sql.append(")");
-					}
-				}
+			if (where != null && where.length() != 0) {
+				sql.append("where ").append(where);
 			}
-			
 
 			try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
-				int c = 1;
-				for (String f : params) {
-					stmt.setString(c++, f);
-				}
 				ObjectMapper objectMapper = new ObjectMapper();
 				ObjectNode rootnode = objectMapper.createObjectNode();
 				try (ResultSet rs = stmt.executeQuery(); ) {

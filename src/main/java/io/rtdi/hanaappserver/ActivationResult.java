@@ -3,6 +3,9 @@ package io.rtdi.hanaappserver;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description="Feedback about the activated objects")
 public class ActivationResult {
 
 	private List<ActivationResult> children;

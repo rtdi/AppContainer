@@ -22,10 +22,10 @@ import org.apache.olingo.server.api.ServiceMetadata;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
-import io.rtdi.hanaappserver.rest.ODataEdm;
-import io.rtdi.hanaappserver.rest.ODataEntityProcessor;
-import io.rtdi.hanaappserver.rest.ODataPrimitiveProcessor;
-import io.rtdi.hanaappserver.rest.ODataCollectionProcessor;
+import io.rtdi.hanaappserver.rest.odata.hanatable.ODataCollectionProcessor;
+import io.rtdi.hanaappserver.rest.odata.hanatable.ODataEdm;
+import io.rtdi.hanaappserver.rest.odata.hanatable.ODataEntityProcessor;
+import io.rtdi.hanaappserver.rest.odata.hanatable.ODataPrimitiveProcessor;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.SessionHandler;
 import io.rtdi.hanaappserver.utils.Util;
@@ -59,8 +59,8 @@ public class ODataServlet extends HttpServlet {
 			}
 			ODataHttpHandler handler = odata.createHandler(edm);
 			handler.setSplit(2); // remove the schemaname and viewname from the odata considered URI path elements
-			handler.register(new ODataCollectionProcessor(conn, schemaname, viewname));
-			handler.register(new ODataEntityProcessor(conn, schemaname, viewname));
+			handler.register(new ODataCollectionProcessor(conn, schemaname, viewname, edm));
+			handler.register(new ODataEntityProcessor(conn, schemaname, viewname, edm));
 			handler.register(new ODataPrimitiveProcessor(conn, schemaname, viewname));
 			handler.process(req, resp);
 		} catch (RuntimeException | SQLException | HanaSQLException e) {

@@ -1,20 +1,67 @@
 {
 	"apps": [
-		{"name" : "OpenUI5", "description" : "An installation of the SAP OpenUI5 library", "tooltip" : null, "href" : "../openui5", "icon" : null},
-		{"name" : "Design Time Browser", "description" : "Browse all objects in your repository", "tooltip" : null, "href" : "protected/browseapp", "icon" : null},
-		{"name" : "Importer", "description" : "Import existing database objects into your repository", "tooltip" : null, "href" : "protected/importapp", "icon" : null},
-		{"name" : "DockerHub", "description" : "A link to the DockerHub entry of this project", "tooltip" : null, "href" : "https://hub.docker.com/repository/docker/rtdi/hanaappcontainer", "icon" : null},
-		{"name" : "File Issues", "description" : "The central point for all problems and requests", "tooltip" : null, "href" : "https://github.com/rtdi/HanaAppContainer/issues", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "User Permissions", "description" : "Provides the permissions for a given directory", "tooltip" : null, "href" : "http://localhost:8080/HanaAppContainer/protected/rest/permissions/RTDI/RTDI", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null},
-		{"name" : "SAP Blogs", "description" : "All SAP Blogs related to this project", "tooltip" : null, "href" : "https://blogs.sap.com/tag/hanaappcontainer/", "icon" : null}
+		{
+			"name": "README",
+			"description": "The central point for all problems and requests",
+			"tooltip": null,
+			"href": "https://github.com/rtdi/HanaAppContainer",
+			"icon": "sap-icon://document-text"
+		},
+		{
+			"name": "Design Time Browser",
+			"description": "Browse all objects in your repository and modify them",
+			"tooltip": null,
+			"href": "protected/browseapp",
+			"icon": "sap-icon://sap-box"
+		},
+		{
+			"name": "Importer",
+			"description": "Import existing database objects into your repository",
+			"tooltip": null,
+			"href": "protected/importapp",
+			"icon": "sap-icon://action"
+		},
+		{
+			"name": "Swagger",
+			"description": "Swagger Definitions of all APIs",
+			"tooltip": null,
+			"href": "protected/swagger-ui/",
+			"image": "./public/media/swagger_logo.svg"
+		},
+		{
+			"name": "Sample UI5 App",
+			"description": "A first UI5 sample application",
+			"tooltip": null,
+			"href": "protected/hanarepo/PUBLIC/SCHEMA1/Users.html",
+			"icon": "sap-icon://employee-pane"
+		},
+		{
+			"name": "OpenUI5",
+			"description": "A local installation of the SAP OpenUI5 library",
+			"tooltip": null,
+			"href": "../openui5",
+			"image": "./public/media/logo_ui5.png"
+		},
+		{
+			"name": "DockerHub",
+			"description": "A link to the DockerHub entry of this project",
+			"tooltip": null,
+			"href": "https://hub.docker.com/repository/docker/rtdi/hanaappcontainer",
+			"image": "./public/media/dockerhub_logo.png"
+		},
+		{
+			"name": "File Issues",
+			"description": "The central point for all problems and requests",
+			"tooltip": null,
+			"href": "https://github.com/rtdi/HanaAppContainer/issues",
+			"image": "./public/media/github_issues.png"
+		},
+		{
+			"name": "SAP Blogs",
+			"description": "All SAP Blogs related to this project",
+			"tooltip": null,
+			"href": "https://blogs.sap.com/tag/hanaappcontainer/",
+			"image": "./public/media/sap_blogs.png"
+		}
 	]
 }

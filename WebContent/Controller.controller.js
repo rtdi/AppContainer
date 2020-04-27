@@ -8,6 +8,13 @@ sap.ui.define([ "sap/ui/core/mvc/Controller"], function(Controller) {
 			var oModel = new sap.ui.model.json.JSONModel();
 			oModel.loadData("./public/apps.json");
 			this.getView().setModel(oModel);
+		},
+		visibleFormatter: function(sPath) {
+			if (sPath) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 	});

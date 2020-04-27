@@ -88,7 +88,14 @@
 						<t:Column width="70%">
 							<Label text="Filename" />
 							<t:template>
-								<Link text="{name}" target="_blank" href="../editorapp/index.html?filename={path}" />
+								<HBox>
+									<Link text="{name}" target="_blank" href="{ path: 'path', formatter: '.formatterTextEditorLink' }" />
+									<Link 
+										text="(Editor)" 
+										target="_blank" 
+										visible="{ path: 'path', formatter: '.formatterEnableEditor' }" 
+										href="{ path: 'path', formatter: '.formatterEditorLink' }" />
+								</HBox>
 							</t:template>
 						</t:Column>
 						<t:Column hAlign="Right">

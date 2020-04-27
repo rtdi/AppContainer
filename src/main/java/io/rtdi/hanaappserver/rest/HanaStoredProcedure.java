@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,9 +42,21 @@ import io.rtdi.hanaappserver.utils.ErrorMessage;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 import io.rtdi.hanaappserver.utils.SessionHandler;
 import io.rtdi.hanaappserver.utils.Util;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/")
 public class HanaStoredProcedure {
+	private static int invocations = 0;
+	private static long starttime = System.currentTimeMillis();
+	private static long lastprocessedtime = 0;
+
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
 
 	private static Cache<String, ProcedureMetadata> cache = Caffeine.newBuilder()
@@ -62,6 +75,22 @@ public class HanaStoredProcedure {
 
 	@GET
 	@Path("procedures")
+	@Operation(
+			summary = "All available procedures",
+			description = "Returns the list of all procedures the user has access to",
+				responses = {
+						@ApiResponse(
+		                    responseCode = "200",
+		                    description = "The list of all Hana Stored Procedures the user has access to",
+		                    content = {
+		                            @Content(
+		                                    array = @ArraySchema(schema = @Schema(implementation = HanaProcedure.class))
+		                            )
+		                    }
+	                    ),
+						@ApiResponse(responseCode = "500", description = "Any exception thrown")
+			})
+	@Tag(name = "Information")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProcedures() {
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
@@ -109,7 +138,47 @@ public class HanaStoredProcedure {
 	@Path("procedures/{schema}/{procedurename}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response callProcedure(@PathParam("schema") String schemaraw, @PathParam("procedurename") String procedurenameraw, JsonNode data) {
+	@Operation(
+			summary = "Invoke this procedure",
+			description = "Calls the named stored procedure with input and output data",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "A Json object with all output parameters being nodes",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(type = "object")
+	                            )
+	                    }
+                    ),
+					@ApiResponse(responseCode = "500", description = "Any exception thrown")
+            })
+	@Tag(name = "ReadHana")
+	@Tag(name = "WriteHana")
+    public Response callProcedure(
+    		@PathParam("schema") 
+    	    @Parameter(
+    	    		description = "Schema of the object",
+    	    		example = "SYS"
+    	    		)
+    		String schemaraw, 
+    		@PathParam("procedurename") 
+    	    @Parameter(
+    	    		description = "Name of the procedure",
+    	    		example = "IS_VALID_USER_NAME"
+    	    		)
+    		String procedurenameraw, 
+    		@RequestBody(
+    				description = "JSON object with all used input parameters", 
+    				required = true,
+    				content = @Content(
+    						schema = @Schema(
+    								type = "object",
+    								example = "{\"USER_NAME\" : \"$$$\"}"
+    						)
+    				)
+    		)
+    		JsonNode data) {
 		String schema = Util.decodeURIfull(schemaraw);
 		String procedurename = Util.decodeURIfull(procedurenameraw);
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
@@ -120,28 +189,20 @@ public class HanaStoredProcedure {
 				metadata = new ProcedureMetadata();
 				setcache = true;
 				// Output parameters
-				StringBuffer outputparams = new StringBuffer();
-				String paramsql = "select parameter_name from procedure_parameters " + 
+				String paramsql = "select parameter_name, data_type_name from procedure_parameters " + 
 						"where schema_name = ? and procedure_name = ? and parameter_type = 'OUT' " + 
 						"order by position";
 				try (PreparedStatement stmt = conn.prepareStatement(paramsql);) {
 					stmt.setString(1, schema);
 					stmt.setString(2, procedurename);
 					try (ResultSet rs = stmt.executeQuery(); ) {
-						boolean first = true;
 						while (rs.next()) {
-							if (first) {
-								first = false;
-							} else {
-								outputparams.append(", ");
-							}
-							outputparams.append('"').append(rs.getString(1)).append("\" => ?");
+							metadata.putOutputParameter(rs.getString(1), rs.getString(2));
 						}
 					}
 				} catch (SQLException e) {
 					throw new HanaSQLException(e, paramsql, "Executed SQL statement threw an error");
 				}
-				metadata.setOutputParameters(outputparams.toString());
 			}
 			
 			/*
@@ -168,7 +229,7 @@ public class HanaStoredProcedure {
 				}
 			}
 
-			String outparams = metadata.getOutputParameters();
+			String outparams = metadata.getOutputParameterString();
 			if (outparams != null && outparams.length() != 0) {
 				if (first) {
 					first = false;
@@ -195,11 +256,25 @@ public class HanaStoredProcedure {
 						stmt.setString(counter++, data.get(fieldname).textValue());
 					}
 				}
+				/*
+				 * Scalar output parameters are prepared
+				 */
+				for ( String outputparameter : metadata.getOutputParameters().keySet()) {
+					String datatype = metadata.getOutputParameters().get(outputparameter);
+					if (datatype != null) {
+						stmt.registerOutParameter(outputparameter, Types.NVARCHAR);
+					}
+				}
 				boolean hasrs = stmt.execute();
+				invocations++;
+				lastprocessedtime = System.currentTimeMillis();
+				ObjectMapper objectMapper = new ObjectMapper();
+				ObjectNode rootnode = objectMapper.createObjectNode();
+				/*
+				 * Table Output Parameters read via this method
+				 */
 				if (hasrs) {
 					int rscount = 1;
-					ObjectMapper objectMapper = new ObjectMapper();
-					ObjectNode rootnode = objectMapper.createObjectNode();
 					while (hasrs) {
 						ObjectNode rsnode = objectMapper.createObjectNode();
 					    try (ResultSet rs = stmt.getResultSet();) {
@@ -217,10 +292,17 @@ public class HanaStoredProcedure {
 					    	hasrs = stmt.getMoreResults();
 					    }
 					}
-					return Response.ok(rootnode).build();
-				} else {
-					return Response.ok().build();
 				}
+				/*
+				 * Scalar output parameters are read
+				 */
+				for ( String outputparameter : metadata.getOutputParameters().keySet()) {
+					String datatype = metadata.getOutputParameters().get(outputparameter);
+					if (datatype != null) {
+						rootnode.put(outputparameter, stmt.getString(outputparameter));
+					}
+				}
+				return Response.ok(rootnode).build();
 			} catch (SQLException e) {
 				throw new HanaSQLException(e, sql.toString(), "Executed SQL statement threw an error");
 			}
@@ -236,10 +318,10 @@ public class HanaStoredProcedure {
 		} catch (SQLException e) {
 			System.out.println("Exception " + e.getMessage());
 		}
-		TableParameterMetadata tablemetadata = metadata.getTableParameter(fieldname);
+		TableParameterMetadata tablemetadata = metadata.getTableInputParameter(fieldname);
 		if (tablemetadata == null) {
 			tablemetadata = new TableParameterMetadata();
-			metadata.putTableParameter(fieldname, tablemetadata);
+			metadata.putTableInputParameter(fieldname, tablemetadata);
 			StringBuffer sql = new StringBuffer();
 			StringBuffer columnlist = new StringBuffer();
 			StringBuffer parameterlist = new StringBuffer();
@@ -308,14 +390,20 @@ public class HanaStoredProcedure {
 		return tablename;
 	}
 
+	@Schema(description="Hana Stored Procedure information")
 	public static class HanaProcedure {
 		private String schemaname;
 		private String procedurename;
+		private String endpoint;
 		
 		public HanaProcedure(String schemaname, String procedurename) {
 			super();
 			this.schemaname = schemaname;
 			this.procedurename = procedurename;
+			this.endpoint = "HanaAppContainer/rest/procedure/" 
+					+ Util.encodeURIfull(schemaname) 
+					+ "/" 
+					+ Util.encodeURIfull(procedurename);
 		}
 
 		public HanaProcedure() {
@@ -334,26 +422,44 @@ public class HanaStoredProcedure {
 		public void setSchemaname(String schemaname) {
 			this.schemaname = schemaname;
 		}
+
+		public String getEndpoint() {
+			return endpoint;
+		}
+
+		public void setEndpoint(String endpoint) {
+			this.endpoint = endpoint;
+		}
 	}
 	
 	public static class ProcedureMetadata {
 
 		private String outputparameterstring;
 		private Map<String, TableParameterMetadata> tableparameters = new HashMap<>();
+		private Map<String, String> outparameters = new HashMap<>();
 
-		public void setOutputParameters(String string) {
-			this.outputparameterstring = string;
+		public void putOutputParameter(String parametername, String datatypename) {
+			if (outparameters.size() == 0) {
+				outputparameterstring = "\"" + parametername + "\"  => ?";
+			} else {
+				outputparameterstring = outputparameterstring + ", \"" + parametername + "\" => ?";
+			}
+			outparameters.put(parametername, datatypename);
 		}
 
-		public void putTableParameter(String fieldname, TableParameterMetadata tablemetadata) {
+		public void putTableInputParameter(String fieldname, TableParameterMetadata tablemetadata) {
 			tableparameters.put(fieldname, tablemetadata);
 		}
 
-		public TableParameterMetadata getTableParameter(String fieldname) {
+		public TableParameterMetadata getTableInputParameter(String fieldname) {
 			return tableparameters.get(fieldname);
 		}
 
-		public String getOutputParameters() {
+		public Map<String, String> getOutputParameters() {
+			return outparameters;
+		}
+
+		public String getOutputParameterString() {
 			return outputparameterstring;
 		}
 		
@@ -388,6 +494,18 @@ public class HanaStoredProcedure {
 		public String getCreateTableSQL() {
 			return createtablestring;
 		}
-		
 	}
+	
+    public static int getInvocations() {
+    	return invocations;
+    }
+
+    public static long getStarttime() {
+    	return starttime;
+    }
+
+    public static long getLastProcessedtime() {
+    	return lastprocessedtime;
+    }
+
 }

@@ -7,6 +7,30 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 		onInit : function() {
 			this.onDirectoryRefresh();
 		},
+		formatterEditorLink: function(spath) {
+			if (!spath) {
+				return "";
+			} else if (spath.endsWith(".view.xml")) {
+				return "../editorapp/UIEditor.html?filename=" + encodeURI(spath);
+			} else {
+				return "../editorapp/index.html?filename=" + encodeURI(spath);
+			}
+		},
+		formatterEnableEditor: function(spath) {
+			var seditorlink = this.formatterEditorLink(spath);
+			if (seditorlink && seditorlink.length > 0 && !seditorlink.startsWith("../editorapp/index.html")) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+		formatterTextEditorLink: function(spath) {
+			if (!spath) {
+				return "";
+			} else {
+				return "../editorapp/index.html?filename=" + encodeURI(spath);
+			}
+		},
 		onAddDirectory : function() {
 			var that = this;
 			var oModel = this.getView().getModel();

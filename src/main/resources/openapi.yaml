@@ -1,0 +1,9 @@
+prettyPrint: true
+cacheTTL: 0
+openAPI:
+  info:
+    version: '1.0'
+    title: HanaAppContainer
+servers:
+- url: /HanaAppContainer
+- url: http://locahost:8080/HanaAppContainer

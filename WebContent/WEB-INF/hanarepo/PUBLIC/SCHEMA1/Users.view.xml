@@ -1,0 +1,24 @@
+<mvc:View
+	controllerName="ui5.app.Users"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc">
+	<Table
+		headerText="List all database users"
+		id="usertable"
+		items="{
+			path: '/TABLE'
+		}">
+		<columns>
+			<Column>
+				<Text text="Name"/>
+			</Column>
+		</columns>
+		<items>
+			<ColumnListItem>
+				<cells>
+					<Text text="{USER_NAME}"/>
+				</cells>
+			</ColumnListItem>
+		</items>
+	</Table>
+</mvc:View>

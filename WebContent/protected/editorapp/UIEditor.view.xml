@@ -1,0 +1,236 @@
+<mvc:View height="100%" class="sapUiSizeCompact"
+	controllerName="io.rtdi.hanaappcontainer.editorapp.UIEditorController"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:dnd="sap.ui.core.dnd" 
+	xmlns:rtdi="io.rtdi.hanaappcontainer.editorapp.uieditorcontrols" 
+	xmlns:core="sap.ui.core">
+	<l:DynamicSideContent
+		id="DynamicSideContent">
+		<Panel height="100%" id="editor">
+			<dragDropConfig>
+				<dnd:DragInfo
+					groupName="controls"/>
+				<dnd:DropInfo
+					groupName="controls"
+					dropPosition="On"
+					drop="onDropControl" />
+			</dragDropConfig>
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="Drag and Drop Controls below" />
+					<rtdi:ToolPaletteButton id="save" text="Save" icon="sap-icon://save" tooltip="Save" press=".saveAsXmlView" />
+					<Link text="Open File" target="_blank" id="openfile" />
+					<ToolbarSpacer />
+					<rtdi:ToolPaletteButton id="delete" text="Drop to delete" icon="sap-icon://delete" tooltip="Drop Elements to remove" />
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+			</content>
+		</Panel>
+		<l:sideContent>
+			<Title text="Tool Palette" />
+			<Panel expandable="true" headerText="Simple Controls" expanded="true" class="sapUiResponsiveMargin" id="toolbarSimpleControls" >
+				<rtdi:ToolPaletteImage src="images/TP-Button.png" alt="Button" tooltip="Button" controlType="sap.m.Button"/>
+				<rtdi:ToolPaletteImage src="images/TP-CheckBox.png" alt="Check Box" tooltip="Check Box" controlType="sap.m.CheckBox" />
+				<rtdi:ToolPaletteImage src="images/TP-ComboBox.png" alt="Combo Box" tooltip="Combo Box" controlType="sap.m.ComboBox" />
+				<rtdi:ToolPaletteImage src="images/TP-FormattedText.png" alt="Formatted Text" tooltip="Formatted Text" controlType="sap.m.FormattedText" />
+				<rtdi:ToolPaletteImage src="images/TP-Icon.png" alt="Icon" tooltip="Icon" controlType="sap.ui.core.Icon" />
+				<rtdi:ToolPaletteImage src="images/TP-Image.png" alt="Image" tooltip="Image" controlType="sap.m.Image" />
+				<rtdi:ToolPaletteImage src="images/TP-Input.png" alt="Input" tooltip="Input" controlType="sap.m.Input" />
+				<rtdi:ToolPaletteImage src="images/TP-Label.png" alt="Label" tooltip="Label" controlType="sap.m.Label" />
+				<rtdi:ToolPaletteImage src="images/TP-Link.png" alt="Link" tooltip="Link" controlType="sap.m.Link" />
+				<rtdi:ToolPaletteImage src="images/TP-List.png" alt="List" tooltip="List" controlType="sap.m.List" />
+				<rtdi:ToolPaletteImage src="images/TP-MaskInput.png" alt="Mask Input" tooltip="Mask Input" controlType="sap.m.MaskInput" />
+				<rtdi:ToolPaletteImage src="images/TP-MultiComboBox.png" alt="Multi Combo Box" tooltip="Multi Combo Box" controlType="sap.m.MultiComboBox" />
+				<rtdi:ToolPaletteImage src="images/TP-MultiInput.png" alt="Multi Input" tooltip="Multi Input" controlType="sap.m.MultiInput" />
+				<rtdi:ToolPaletteImage src="images/TP-SearchField.png" alt="Search Field" tooltip="Search Field" controlType="sap.m.SearchField" />
+				<rtdi:ToolPaletteImage src="images/TP-SegmentedButton.png" alt="Segmented Button" tooltip="Segmented Button" controlType="sap.m.SegmentedButton" />
+				<rtdi:ToolPaletteImage src="images/TP-Select.png" alt="Select" tooltip="Select" controlType="sap.m.Select" />
+				<rtdi:ToolPaletteImage src="images/TP-SelectList.png" alt="Select List" tooltip="Select List" controlType="sap.m.SelectList" />
+				<rtdi:ToolPaletteImage src="images/TP-Table.png" alt="Table" tooltip="Table" controlType="sap.m.Table" />
+				<rtdi:ToolPaletteImage src="images/TP-Table.png" alt="Tree Table" tooltip="Tree Table" controlType="sap.m.Tree" />
+				<rtdi:ToolPaletteImage src="images/TP-Text.png" alt="Text" tooltip="Text" controlType="sap.m.Text"/>
+				<rtdi:ToolPaletteImage src="images/TP-TextArea.png" alt="Text Area" tooltip="Text Area" controlType="sap.m.TextArea" />
+				<rtdi:ToolPaletteImage src="images/TP-Title.png" alt="Title" tooltip="Title" controlType="sap.m.Title" />
+			</Panel>
+			<Panel expandable="true" headerText="Value Input" expanded="false" class="sapUiResponsiveMargin">
+				<FlexBox
+					alignItems="Start"
+					justifyContent="Start"
+					id="toolbarValueInput"
+					wrap="Wrap">
+					<items>
+						<rtdi:ToolPaletteButton text="Calendar" />
+						<rtdi:ToolPaletteButton text="Calendar Interval" />
+						<rtdi:ToolPaletteButton text="Color Palette" />
+						<rtdi:ToolPaletteButton text="Color Picker" />
+						<rtdi:ToolPaletteButton text="Currency" />
+						<rtdi:ToolPaletteButton text="Date Picker" />
+						<rtdi:ToolPaletteButton text="Date Range Selection" />
+						<rtdi:ToolPaletteButton text="Date Time Input" />
+						<rtdi:ToolPaletteButton text="Date Time Picker" />
+						<rtdi:ToolPaletteButton text="File Uploader" />
+						<rtdi:ToolPaletteButton text="Input" controlType="Input" />
+						<rtdi:ToolPaletteButton text="Label" controlType="Label" />
+						<rtdi:ToolPaletteButton text="Planning Calendar" />
+						<rtdi:ToolPaletteButton text="Radio Button" />
+						<rtdi:ToolPaletteButton text="Range Slider" />
+						<rtdi:ToolPaletteButton text="Rating Indicator" />
+						<rtdi:ToolPaletteButton text="Single Planning Calendar" />
+						<rtdi:ToolPaletteButton text="Slider" />
+						<rtdi:ToolPaletteButton text="Step Input" />
+						<rtdi:ToolPaletteButton text="Switch" />
+						<rtdi:ToolPaletteButton text="Text" controlType="Text"/>
+						<rtdi:ToolPaletteButton text="Title" controlType="Title" />
+						<rtdi:ToolPaletteButton text="Time Picker" />
+						<rtdi:ToolPaletteButton text="Time Picker Sliders" />
+						<rtdi:ToolPaletteButton text="Upload" />
+					</items>
+				</FlexBox>
+			</Panel>
+
+			<Panel expandable="true" headerText="Menu" expanded="false" class="sapUiResponsiveMargin">
+				<FlexBox
+					alignItems="Start"
+					justifyContent="Start"
+					id="toolbarMenu"
+					wrap="Wrap">
+					<items>
+						<rtdi:ToolPaletteButton text="Action Select" />
+						<rtdi:ToolPaletteButton text="Action Sheet" />
+						<rtdi:ToolPaletteButton text="Breadcrumbs" />
+						<rtdi:ToolPaletteButton text="Generic Tag" />
+						<rtdi:ToolPaletteButton text="Info Label" />
+						<rtdi:ToolPaletteButton text="Menu" />
+						<rtdi:ToolPaletteButton text="Menu Button" />
+						<rtdi:ToolPaletteButton text="Navigation" />
+						<rtdi:ToolPaletteButton text="Message View" />
+						<rtdi:ToolPaletteButton text="Tool Header" />
+					</items>
+				</FlexBox>
+			</Panel>
+			<Panel expandable="true" headerText="Container" expanded="false" class="sapUiResponsiveMargin">
+				<FlexBox
+					alignItems="Start"
+					justifyContent="Start"
+					id="toolbarContainer"
+					wrap="Wrap">
+					<items>
+						<rtdi:ToolPaletteButton text="Block Layout" />
+						<rtdi:ToolPaletteButton text="Carousel" />
+						<rtdi:ToolPaletteButton text="CSS Grid" />
+						<rtdi:ToolPaletteButton text="Dynamic Side Content" />
+						<rtdi:ToolPaletteButton text="FixFlex" />
+						<rtdi:ToolPaletteButton text="Flex Box" />
+						<rtdi:ToolPaletteButton text="Form" />
+						<rtdi:ToolPaletteButton text="Grid" />
+						<rtdi:ToolPaletteButton text="Grid Container" />
+						<rtdi:ToolPaletteButton text="HBox" controlType="HBox" />
+						<rtdi:ToolPaletteButton text="Panel" />
+						<rtdi:ToolPaletteButton text="Responsive Splitter" />
+						<rtdi:ToolPaletteButton text="Semantic Page" />
+						<rtdi:ToolPaletteButton text="Slide Tile" />
+						<rtdi:ToolPaletteButton text="Tab Container" />
+						<rtdi:ToolPaletteButton text="Tree" />
+						<rtdi:ToolPaletteButton text="VBox" />
+						<rtdi:ToolPaletteButton text="Wizard" />
+					</items>
+				</FlexBox>
+			</Panel>
+			<Panel expandable="true" headerText="Object" expanded="false" class="sapUiResponsiveMargin">
+				<FlexBox
+					alignItems="Start"
+					justifyContent="Start"
+					id="toolbarObject"
+					wrap="Wrap">
+					<items>
+						<rtdi:ToolPaletteButton text="Avatar" />
+						<rtdi:ToolPaletteButton text="AvatarGroup" />
+						<rtdi:ToolPaletteButton text="Card" />
+						<rtdi:ToolPaletteButton text="Code Editor" />
+						<rtdi:ToolPaletteButton text="Feed Input" />
+						<rtdi:ToolPaletteButton text="Object Page" />
+						<rtdi:ToolPaletteButton text="Object Attribute" />
+						<rtdi:ToolPaletteButton text="Object Header" />
+						<rtdi:ToolPaletteButton text="Object Identifier" />
+						<rtdi:ToolPaletteButton text="Object Marker" />
+						<rtdi:ToolPaletteButton text="Object Number" />
+						<rtdi:ToolPaletteButton text="Object Status" />
+					</items>
+				</FlexBox>
+			</Panel>
+			<Panel expandable="true" headerText="Models" id="toolbarModel" expanded="false" class="sapUiResponsiveMargin">
+				<ComboBox 
+					id="odatamodelschema"
+					items="{/TABLE}"
+					width="70%"
+					selectionChange=".onmodelsearch">
+					<items>
+						<core:Item text="{SCHEMA_NAME}" key="{SCHEMA_NAME}" />
+					</items>
+				</ComboBox>
+			    <SearchField liveChange=".onmodelsearch" id="odatamodelsearch" width="70%" />
+			    <Table 
+					id="odatamodels"
+					items="{/TABLE}"
+					>
+					<dragDropConfig>
+						<dnd:DragInfo
+							groupName="model"
+							sourceAggregation="items" />
+					</dragDropConfig>
+					<columns>
+						<Column>
+							<Text text="Schema" />
+						</Column>
+						<Column>
+							<Text text="Object" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<customData>
+								<core:CustomData key="ENDPOINT" value="{ENDPOINT}" />
+							</customData>
+							<cells>
+								<Text text="{SCHEMA_NAME}" />
+								<Text text="{OBJECT_NAME}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+			</Table>
+			    
+			</Panel>
+			<Title text="Properties" />
+			<Table 
+				id="properties"
+				headerText="Class: {/classname}"
+				items="{/list}"
+				>
+				<columns>
+					<Column>
+						<Text text="Property" />
+					</Column>
+					<Column>
+						<Text text="Value" />
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Text text="{propertyname}" />
+							<rtdi:PropertyInputControl 
+								objectValue="{propertyvalue}" 
+								datatype="{propertydatatype}" 
+								showModelColumns="{showmodelcolumns}"
+								showBindingColumns="{showbindingcolumns}" />
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+			<Button text="Update" press=".updateProperties" />
+		</l:sideContent>
+	</l:DynamicSideContent>
+</mvc:View>
