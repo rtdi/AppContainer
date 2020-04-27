@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.rtdi.hanaappserver</groupId>
 	<artifactId>HanaAppContainer</artifactId>
-	<version>0.8.8</version>
+	<version>0.8.9</version>
 	<packaging>war</packaging>
 	<scm>
 		<connection>scm:git:git://github.com/rtdi/HanaAppContainer.git</connection>
@@ -49,12 +49,6 @@
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>
 			<version>4.8-1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.rtdi.hanaappserver</groupId>
-			<artifactId>hanarealm</artifactId>
-			<version>0.8.5</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.tomcat</groupId>
