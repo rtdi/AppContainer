@@ -28,6 +28,9 @@ sap.ui.define(
 					case "int":
 						this.setProperty("objectValue", Number(fValue), true);
 						break;
+					case "float":
+						this.setProperty("objectValue", parseFloat(fValue), true);
+						break;
 					case "boolean":
 						this.setProperty("objectValue", fValue === "true", true);
 						break;

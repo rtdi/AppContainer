@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
@@ -23,19 +24,22 @@ import org.apache.olingo.commons.api.edm.provider.CsdlTerm;
 import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpression;
 import org.apache.olingo.commons.api.ex.ODataException;
 
+import io.rtdi.hanaappserver.rest.odata.ODataUtils;
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 
 public class ODataEdm extends CsdlAbstractEdmProvider {
+	public static final String namespace = "HANAOBJECT";
 	public static final String ENTITY_SET_NAME = "TABLE";
+	public static final String HANA_COLUMNNAME_ANNOTATION = namespace + "." + ENTITY_SET_NAME + "." + "columnname";
 	private CsdlEntityType entitytype;
-	private FullQualifiedName objectfqn = new FullQualifiedName(namespace, "ROW");
-	private FullQualifiedName containerfqn = new FullQualifiedName(namespace, "CONTAINER");
+	public static final FullQualifiedName objectfqn = new FullQualifiedName(namespace, "ROW");
+	public static final FullQualifiedName containerfqn = new FullQualifiedName(namespace, "CONTAINER");
+	public static final FullQualifiedName columnnamefqn = new FullQualifiedName(HANA_COLUMNNAME_ANNOTATION);
 	private CsdlEntitySet entityset;
 	private CsdlEntityContainer container;
 	private List<CsdlSchema> schemas;
 	private CsdlEntityContainerInfo containerinfo;
-	public static final String namespace = "HANAOBJECT";
 
 	public ODataEdm(Connection conn, String schemaname, String objectname) throws HanaSQLException {
 		String sql = "select column_name, data_type_name, length, scale, comments, is_primary_key from (" +
@@ -57,8 +61,21 @@ public class ODataEdm extends CsdlAbstractEdmProvider {
 				List<CsdlProperty> columns = new ArrayList<CsdlProperty>();
 				List<CsdlPropertyRef> keys = new ArrayList<CsdlPropertyRef>();
 				while (rs.next()) {
+					String columnname = rs.getString(1);
+					/*
+					 * Some column names cannot be expressed as xml tag names, hence need to be encoded.
+					 * To find the way back, from column name to property name, these properties are annotated
+					 * with the original column name.
+					 */
+					String propertyname = ODataUtils.escapeXmlTag(columnname);
 					CsdlProperty c = new CsdlProperty()
-							.setName(rs.getString(1));
+							.setName(propertyname);
+					if (!propertyname.equals(columnname)) {
+						CsdlAnnotation annotationcolname = new CsdlAnnotation()
+					            .setTerm(HANA_COLUMNNAME_ANNOTATION)
+					            .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String, columnname));
+						c.setAnnotations(Collections.singletonList(annotationcolname));
+					}
 					setODataType(c, rs.getString(2), rs.getInt(3), rs.getInt(4));
 					columns.add(c);
 					if (rs.getString(6) != null) {

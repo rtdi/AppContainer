@@ -26,6 +26,25 @@ sap.ui.define([
 	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Title", 
 	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Table",
 	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/HBox", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/VBox", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/FlexBox", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/BlockLayout", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Carousel", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Panel", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ColorPalette", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ColorPicker", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Currency", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/DatePicker", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/DateRangeSelection", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/DateTimePicker", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/RadioButton", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/RangeSlider", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Slider", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/RatingIndicator", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Switch", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/TimePicker", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/TimePickerSliders", 
+	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/StepInput", 
 	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/PropertyInputControl"
 	], function(Controller, DataType, XMLTemplateProcessor, XMLFormatter) {
 	"use strict";
@@ -207,19 +226,23 @@ sap.ui.define([
 				// oControl = oView.getController()._controlMapping(oSourceControl.getControlType(), true);
 				var cClass = oView.getController()._getClass(oSourceControl.getControlType());
 				var oSettings = oView.getController()._getControlDefault(oSourceControl.getControlType());
-				oControl = new cClass(oSettings);
-				if (oControl != null) {
-					if ('attachEvent' in oControl) {
-						oControl.attachEvent("showProperties", oView.getController().showProperties);
+				if (cClass) {
+					oControl = new cClass(oSettings);
+					if (oControl != null) {
+						if ('attachEvent' in oControl) {
+							oControl.attachEvent("showProperties", oView.getController().showProperties);
+						}
+						if ("addContent" in oTargetControl) {
+							oTargetControl.addContent(oControl);
+						} else if (oTargetControl instanceof sap.m.Column) {
+							var oTable = oTargetControl.getParent();
+							var index = oTable.indexOfColumn(oTargetControl);
+							oTable.insertContent(oSourceControl, index);
+						}
+						oView.getController()._triggerRebind(oTargetControl);
 					}
-					if ("addContent" in oTargetControl) {
-						oTargetControl.addContent(oControl);
-					} else if (oTargetControl instanceof sap.m.Column) {
-						var oTable = oTargetControl.getParent();
-						var index = oTable.indexOfColumn(oTargetControl);
-						oTable.insertContent(oSourceControl, index);
-					}
-					oView.getController()._triggerRebind(oTargetControl);
+				} else {
+					sap.m.MessageToast.show("Control not yet supported");
 				}
 			} else {
 				var itemcontainer = oSourceControl.getParent();
@@ -422,22 +445,16 @@ sap.ui.define([
 				return {"text": "New Button"};
 			case "sap.m.CheckBox":
 				return { text: "CheckBox" };
-			case "sap.m.ComboBox":
-				return undefined;
 			case "sap.m.FormattedText":
 				return { htmlText: "<pre>HTML Text</pre>"};
 			case "sap.ui.core.Icon":
 				return { src: "sap-icon://add-photo"};
 			case "sap.m.Image":
 				return { src: "./images/TP-Image.png"};
-			case "sap.m.Input":
-				return undefined;
 			case "sap.m.Label":
 				return settings = { text: "Label" };
 			case "sap.m.Link":
 				return settings = { text: "Link" };
-			case "sap.m.List":
-				return undefined;
 			case "sap.m.MaskInput":
 				return { 
 						placeholder:"Mask Input", 
@@ -448,10 +465,6 @@ sap.ui.define([
 					};
 			case "sap.m.MultiComboBox":
 				return { oDataURL: "", itemText: "Item" };
-			case "sap.m.MultiInput":
-				return undefined;
-			case "sap.m.SearchField":
-				return undefined;
 			case "sap.m.SegmentedButton":
 				return { buttonCount: 3 };
 			case "sap.m.Select":
@@ -466,7 +479,7 @@ sap.ui.define([
 				return { value: "New Text"};
 			case "sap.m.Title":
 				return { text: "New Title" };
-			case "sap.m.HBox":
+			default:
 				return undefined;
 			}
 		},
@@ -516,6 +529,46 @@ sap.ui.define([
 				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Title;
 			case "sap.m.HBox":
 				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.HBox;
+			case "sap.m.VBox":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.VBox;
+			case "sap.m.FlexBox":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.FlexBox;
+			case "sap.ui.layout.BlockLayout":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.BlockLayout;
+			case "sap.m.Carousel":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Carousel;
+			case "sap.m.Panel":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Panel;
+			case "sap.m.ColorPalette":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ColorPalette;
+			case "sap.ui.unified.ColorPicker":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ColorPicker;
+			case "sap.ui.unified.Currency":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Currency;
+			case "sap.m.DatePicker":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DatePicker;
+			case "sap.m.DateRangeSelection":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DateRangeSelection;
+			case "sap.m.DateTimePicker":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DateTimePicker;
+			case "sap.m.RadioButton":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RadioButton;
+			case "sap.m.RangeSlider":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RangeSlider;
+			case "sap.m.Slider":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Slider;
+			case "sap.m.RatingIndicator":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RatingIndicator;
+			case "sap.m.Switch":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Switch;
+			case "sap.m.TimePicker":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TimePicker;
+			case "sap.m.TimePickerSliders":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TimePickerSliders;
+			case "sap.m.StepInput":
+				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.StepInput;
+			default:
+				return undefined;
 			}
 
 		}

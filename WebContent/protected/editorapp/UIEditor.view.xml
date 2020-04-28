@@ -50,11 +50,12 @@
 				<rtdi:ToolPaletteImage src="images/TP-Select.png" alt="Select" tooltip="Select" controlType="sap.m.Select" />
 				<rtdi:ToolPaletteImage src="images/TP-SelectList.png" alt="Select List" tooltip="Select List" controlType="sap.m.SelectList" />
 				<rtdi:ToolPaletteImage src="images/TP-Table.png" alt="Table" tooltip="Table" controlType="sap.m.Table" />
-				<rtdi:ToolPaletteImage src="images/TP-Table.png" alt="Tree Table" tooltip="Tree Table" controlType="sap.m.Tree" />
+				<!-- <rtdi:ToolPaletteImage src="images/TP-Table.png" alt="Tree Table" tooltip="Tree Table" controlType="sap.m.Tree" />  -->
 				<rtdi:ToolPaletteImage src="images/TP-Text.png" alt="Text" tooltip="Text" controlType="sap.m.Text"/>
 				<rtdi:ToolPaletteImage src="images/TP-TextArea.png" alt="Text Area" tooltip="Text Area" controlType="sap.m.TextArea" />
 				<rtdi:ToolPaletteImage src="images/TP-Title.png" alt="Title" tooltip="Title" controlType="sap.m.Title" />
 			</Panel>
+			
 			<Panel expandable="true" headerText="Value Input" expanded="false" class="sapUiResponsiveMargin">
 				<FlexBox
 					alignItems="Start"
@@ -62,105 +63,78 @@
 					id="toolbarValueInput"
 					wrap="Wrap">
 					<items>
-						<rtdi:ToolPaletteButton text="Calendar" />
-						<rtdi:ToolPaletteButton text="Calendar Interval" />
-						<rtdi:ToolPaletteButton text="Color Palette" />
-						<rtdi:ToolPaletteButton text="Color Picker" />
-						<rtdi:ToolPaletteButton text="Currency" />
-						<rtdi:ToolPaletteButton text="Date Picker" />
-						<rtdi:ToolPaletteButton text="Date Range Selection" />
-						<rtdi:ToolPaletteButton text="Date Time Input" />
-						<rtdi:ToolPaletteButton text="Date Time Picker" />
-						<rtdi:ToolPaletteButton text="File Uploader" />
-						<rtdi:ToolPaletteButton text="Input" controlType="Input" />
-						<rtdi:ToolPaletteButton text="Label" controlType="Label" />
-						<rtdi:ToolPaletteButton text="Planning Calendar" />
-						<rtdi:ToolPaletteButton text="Radio Button" />
-						<rtdi:ToolPaletteButton text="Range Slider" />
-						<rtdi:ToolPaletteButton text="Rating Indicator" />
-						<rtdi:ToolPaletteButton text="Single Planning Calendar" />
-						<rtdi:ToolPaletteButton text="Slider" />
-						<rtdi:ToolPaletteButton text="Step Input" />
-						<rtdi:ToolPaletteButton text="Switch" />
-						<rtdi:ToolPaletteButton text="Text" controlType="Text"/>
-						<rtdi:ToolPaletteButton text="Title" controlType="Title" />
-						<rtdi:ToolPaletteButton text="Time Picker" />
-						<rtdi:ToolPaletteButton text="Time Picker Sliders" />
-						<rtdi:ToolPaletteButton text="Upload" />
+						<rtdi:ToolPaletteImage src="images/TP-ColorPalette.png" alt="ColorPalette" tooltip="Color Palette" controlType="sap.m.ColorPalette"/>
+						<rtdi:ToolPaletteImage src="images/TP-ColorPicker.png" alt="ColorPicker" tooltip="Color Picker" controlType="sap.ui.unified.ColorPicker"/>
+						<rtdi:ToolPaletteImage src="images/TP-Currency.png" alt="Currency" tooltip="Currency" controlType="sap.ui.unified.Currency"/>
+						<rtdi:ToolPaletteImage src="images/TP-DatePicker.png" alt="DatePicker" tooltip="Date Picker" controlType="sap.m.DatePicker"/>
+						<rtdi:ToolPaletteImage src="images/TP-DateRangeSelection.png" alt="DateRangeSelection" tooltip="Date Range Selection" controlType="sap.m.DateRangeSelection"/>
+						<rtdi:ToolPaletteImage src="images/TP-DateTimePicker.png" alt="DateTimePicker" tooltip="Date Time Picker" controlType="sap.m.DateTimePicker"/>
+						<!-- <rtdi:ToolPaletteButton text="File Uploader" />  -->
+						<rtdi:ToolPaletteImage src="images/TP-Input.png" alt="Input" tooltip="Input" controlType="sap.m.Input" />
+						<rtdi:ToolPaletteImage src="images/TP-Label.png" alt="Label" tooltip="Label" controlType="sap.m.Label" />
+						<!-- <rtdi:ToolPaletteButton text="Planning Calendar" />  -->
+						<rtdi:ToolPaletteImage src="images/TP-RadioButton.png" alt="RadioButton" tooltip="Radio Button" controlType="sap.m.RadioButton"/>
+						<rtdi:ToolPaletteImage src="images/TP-RangeSlider.png" alt="RangeSlider" tooltip="Range Slider" controlType="sap.m.RangeSlider"/>
+						<rtdi:ToolPaletteImage src="images/TP-RatingIndicator.png" alt="RatingIndicator" tooltip="Rating Indicator" controlType="sap.m.RatingIndicator"/>
+						<!-- <rtdi:ToolPaletteButton text="Single Planning Calendar" />  -->
+						<rtdi:ToolPaletteImage src="images/TP-Slider.png" alt="Slider" tooltip="Slider" controlType="sap.m.Slider"/>
+						<rtdi:ToolPaletteImage src="images/TP-StepInput.png" alt="StepInput" tooltip="Step Input" controlType="sap.m.StepInput"/>
+						<rtdi:ToolPaletteImage src="images/TP-Switch.png" alt="Switch" tooltip="Switch" controlType="sap.m.Switch"/>
+						<rtdi:ToolPaletteImage src="images/TP-Text.png" alt="Text" tooltip="Text" controlType="sap.m.Text"/>
+						<rtdi:ToolPaletteImage src="images/TP-Title.png" alt="Title" tooltip="Title" controlType="sap.m.Title" />
+						<rtdi:ToolPaletteImage src="images/TP-TimePicker.png" alt="TimePicker" tooltip="Time Picker" controlType="sap.m.TimePicker"/>
+						<rtdi:ToolPaletteImage src="images/TP-TimePickerSliders.png" alt="TimePickerSliders" tooltip="Time Picker Sliders" controlType="sap.m.TimePickerSliders"/>
+						<!-- <rtdi:ToolPaletteButton text="Upload" />  -->
 					</items>
 				</FlexBox>
 			</Panel>
 
-			<Panel expandable="true" headerText="Menu" expanded="false" class="sapUiResponsiveMargin">
-				<FlexBox
-					alignItems="Start"
-					justifyContent="Start"
-					id="toolbarMenu"
-					wrap="Wrap">
-					<items>
-						<rtdi:ToolPaletteButton text="Action Select" />
-						<rtdi:ToolPaletteButton text="Action Sheet" />
-						<rtdi:ToolPaletteButton text="Breadcrumbs" />
-						<rtdi:ToolPaletteButton text="Generic Tag" />
-						<rtdi:ToolPaletteButton text="Info Label" />
-						<rtdi:ToolPaletteButton text="Menu" />
-						<rtdi:ToolPaletteButton text="Menu Button" />
-						<rtdi:ToolPaletteButton text="Navigation" />
-						<rtdi:ToolPaletteButton text="Message View" />
-						<rtdi:ToolPaletteButton text="Tool Header" />
-					</items>
-				</FlexBox>
+			<Panel expandable="true" headerText="Menu" id="toolbarMenu" expanded="false" class="sapUiResponsiveMargin">
+				<rtdi:ToolPaletteButton text="Action Select" />
+				<rtdi:ToolPaletteButton text="Action Sheet" />
+				<rtdi:ToolPaletteButton text="Breadcrumbs" />
+				<rtdi:ToolPaletteButton text="Generic Tag" />
+				<rtdi:ToolPaletteButton text="Info Label" />
+				<rtdi:ToolPaletteButton text="Menu" />
+				<rtdi:ToolPaletteButton text="Menu Button" />
+				<rtdi:ToolPaletteButton text="Navigation" />
+				<rtdi:ToolPaletteButton text="Message View" />
+				<rtdi:ToolPaletteButton text="Tool Header" />
 			</Panel>
-			<Panel expandable="true" headerText="Container" expanded="false" class="sapUiResponsiveMargin">
-				<FlexBox
-					alignItems="Start"
-					justifyContent="Start"
-					id="toolbarContainer"
-					wrap="Wrap">
-					<items>
-						<rtdi:ToolPaletteButton text="Block Layout" />
-						<rtdi:ToolPaletteButton text="Carousel" />
-						<rtdi:ToolPaletteButton text="CSS Grid" />
-						<rtdi:ToolPaletteButton text="Dynamic Side Content" />
-						<rtdi:ToolPaletteButton text="FixFlex" />
-						<rtdi:ToolPaletteButton text="Flex Box" />
-						<rtdi:ToolPaletteButton text="Form" />
-						<rtdi:ToolPaletteButton text="Grid" />
-						<rtdi:ToolPaletteButton text="Grid Container" />
-						<rtdi:ToolPaletteButton text="HBox" controlType="HBox" />
-						<rtdi:ToolPaletteButton text="Panel" />
-						<rtdi:ToolPaletteButton text="Responsive Splitter" />
-						<rtdi:ToolPaletteButton text="Semantic Page" />
-						<rtdi:ToolPaletteButton text="Slide Tile" />
-						<rtdi:ToolPaletteButton text="Tab Container" />
-						<rtdi:ToolPaletteButton text="Tree" />
-						<rtdi:ToolPaletteButton text="VBox" />
-						<rtdi:ToolPaletteButton text="Wizard" />
-					</items>
-				</FlexBox>
+			<Panel expandable="true" headerText="Container" id="toolbarContainer" expanded="false" class="sapUiResponsiveMargin">
+				<rtdi:ToolPaletteImage src="images/TP-BlockLayout.png" alt="BlockLayout" tooltip="BlockLayout" controlType="sap.ui.layout.BlockLayout"/>
+				<rtdi:ToolPaletteImage src="images/TP-Carousel.png" alt="Carousel" tooltip="Carousel" controlType="sap.m.Carousel"/>
+				<!-- <rtdi:ToolPaletteButton text="CSS Grid" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Dynamic Side Content" />  -->
+				<!-- <rtdi:ToolPaletteButton text="FixFlex" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Form" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Grid" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Grid Container" />  -->
+				<rtdi:ToolPaletteImage src="images/TP-HBox.png" alt="HBox" tooltip="HBox" controlType="sap.m.HBox"/>
+				<rtdi:ToolPaletteImage src="images/TP-VBox.png" alt="VBox" tooltip="VBox" controlType="sap.m.VBox"/>
+				<rtdi:ToolPaletteImage src="images/TP-FlexBox.png" alt="FlexBox" tooltip="FlexBox" controlType="sap.m.FlexBox"/>
+				<rtdi:ToolPaletteImage src="images/TP-Panel.png" alt="Panel" tooltip="Panel" controlType="sap.m.Panel"/>
+				<!-- <rtdi:ToolPaletteButton text="Responsive Splitter" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Semantic Page" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Slide Tile" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Tab Container" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Tree" />  -->
+				<!-- <rtdi:ToolPaletteButton text="Wizard" />  -->
 			</Panel>
-			<Panel expandable="true" headerText="Object" expanded="false" class="sapUiResponsiveMargin">
-				<FlexBox
-					alignItems="Start"
-					justifyContent="Start"
-					id="toolbarObject"
-					wrap="Wrap">
-					<items>
-						<rtdi:ToolPaletteButton text="Avatar" />
-						<rtdi:ToolPaletteButton text="AvatarGroup" />
-						<rtdi:ToolPaletteButton text="Card" />
-						<rtdi:ToolPaletteButton text="Code Editor" />
-						<rtdi:ToolPaletteButton text="Feed Input" />
-						<rtdi:ToolPaletteButton text="Object Page" />
-						<rtdi:ToolPaletteButton text="Object Attribute" />
-						<rtdi:ToolPaletteButton text="Object Header" />
-						<rtdi:ToolPaletteButton text="Object Identifier" />
-						<rtdi:ToolPaletteButton text="Object Marker" />
-						<rtdi:ToolPaletteButton text="Object Number" />
-						<rtdi:ToolPaletteButton text="Object Status" />
-					</items>
-				</FlexBox>
-			</Panel>
+			<!-- <Panel expandable="true" headerText="Object" id="toolbarObject" expanded="false" class="sapUiResponsiveMargin">
+				<rtdi:ToolPaletteButton text="Avatar" />
+				<rtdi:ToolPaletteButton text="AvatarGroup" />
+				<rtdi:ToolPaletteButton text="Card" />
+				<rtdi:ToolPaletteButton text="Code Editor" />
+				<rtdi:ToolPaletteButton text="Feed Input" />
+				<rtdi:ToolPaletteButton text="Object Page" />
+				<rtdi:ToolPaletteButton text="Object Attribute" />
+				<rtdi:ToolPaletteButton text="Object Header" />
+				<rtdi:ToolPaletteButton text="Object Identifier" />
+				<rtdi:ToolPaletteButton text="Object Marker" />
+				<rtdi:ToolPaletteButton text="Object Number" />
+				<rtdi:ToolPaletteButton text="Object Status" />
+			</Panel>  -->
 			<Panel expandable="true" headerText="Models" id="toolbarModel" expanded="false" class="sapUiResponsiveMargin">
 				<ComboBox 
 					id="odatamodelschema"

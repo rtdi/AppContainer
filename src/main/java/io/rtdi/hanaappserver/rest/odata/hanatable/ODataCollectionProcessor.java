@@ -6,8 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.olingo.commons.api.data.ContextURL;
@@ -16,12 +18,16 @@ import org.apache.olingo.commons.api.data.EntityCollection;
 import org.apache.olingo.commons.api.data.Property;
 import org.apache.olingo.commons.api.data.ValueType;
 import org.apache.olingo.commons.api.edm.Edm;
+import org.apache.olingo.commons.api.edm.EdmAnnotation;
 import org.apache.olingo.commons.api.edm.EdmElement;
 import org.apache.olingo.commons.api.edm.EdmEntitySet;
 import org.apache.olingo.commons.api.edm.EdmEntityType;
+import org.apache.olingo.commons.api.edm.EdmTerm;
+import org.apache.olingo.commons.api.edm.annotation.EdmConstantExpression;
 import org.apache.olingo.commons.api.format.ContentType;
 import org.apache.olingo.commons.api.http.HttpHeader;
 import org.apache.olingo.commons.api.http.HttpStatusCode;
+import org.apache.olingo.commons.core.edm.EdmPropertyImpl;
 import org.apache.olingo.server.api.OData;
 import org.apache.olingo.server.api.ODataApplicationException;
 import org.apache.olingo.server.api.ODataLibraryException;
@@ -64,12 +70,14 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 	private String schemaname;
 	private String viewname;
 	private Edm edm;
+	private EdmTerm columnnameterm;
 
 	public ODataCollectionProcessor(Connection conn, String schemaname, String viewname, ServiceMetadata edm) {
 		this.conn = conn;
 		this.schemaname = schemaname;
 		this.viewname = viewname;
 		this.edm = edm.getEdm();
+		this.columnnameterm = edm.getEdm().getTerm(ODataEdm.columnnamefqn);
 	}
 
 	@Override
@@ -171,60 +179,96 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 			EntityCollection entitycollection = new EntityCollection();
 			List<Entity> entitylist = entitycollection.getEntities();
 			EdmEntityType entitytype = edm.getEntityContainer().getEntitySet(ODataEdm.ENTITY_SET_NAME).getEntityType();
+			
+			/*
+			 * The columnname does not need to match the propertyname, e.g. because the column name is "/BIC/COL1" and
+			 * that is not an allowed xml token name. Therefore the EDM does add a columnname annotation to every property.
+			 * In many cases they are identical but not always.
+			 */
+			Map<String, String> columnnameindex = new HashMap<>();
+			for (String propertyname : entitytype.getPropertyNames()) {
+				EdmElement element = entitytype.getProperty(propertyname);
+				if (element != null && element instanceof EdmPropertyImpl) {
+					EdmPropertyImpl prop = (EdmPropertyImpl) element;
+					EdmAnnotation annotation = prop.getAnnotation(columnnameterm, null);
+					if (annotation != null) {
+						EdmConstantExpression columnname = annotation.getExpression().asConstant();
+						if (columnname != null && !columnname.getValueAsString().equals(propertyname)) {
+							/*
+							 * Only entries with differences are put into the map to speed up processing.
+							 * In best case, this is an empty map now.
+							 */
+							columnnameindex.put(columnname.getValueAsString(), propertyname);
+						}
+					}
+				}
+			}
 			try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
 				try (ResultSet rs = stmt.executeQuery(); ) {
 					while (rs.next()) {
 						Entity row = new Entity();
 						for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
 							String columnname = rs.getMetaData().getColumnName(i+1);
-							EdmElement element = entitytype.getProperty(columnname);
+							String propertyname = columnnameindex.get(columnname);
+							if (propertyname == null) {
+								/*
+								 * As said above, the map has entries for different names only. 
+								 */
+								propertyname = columnname;
+							}
+							EdmElement element = entitytype.getProperty(propertyname);
 							HanaDataType datatype = ODataUtils.getHanaDataType(element.getType());
 							Object value;
-							switch (datatype) {
-							case ALPHANUM:
-							case BINARY:
-							case BINTEXT:
-							case BLOB:
-							case CHAR:
-							case CLOB:
-							case NCHAR:
-							case NCLOB:
-							case NVARCHAR:
-							case SHORTTEXT:
-							case ST_GEOMETRY:
-							case ST_POINT:
-							case TEXT:
-							case VARBINARY:
-							case VARCHAR:
-							case BIGINT:
-							case DECIMAL:
-							case DOUBLE:
-							case INTEGER:
-							case REAL:
-							case SMALLDECIMAL:
-							case SMALLINT:
-							case TINYINT:
-							case BOOLEAN:
-							default:
-								value = rs.getObject(i+1);
-								row.addProperty(new Property(null, columnname, ValueType.PRIMITIVE, value));
-								break;
-							case DATE: // 2010-01-01
-								value = rs.getDate(i+1);
-								row.addProperty(new Property(null, columnname, ValueType.PRIMITIVE, value));
-								break;
-							case TIME: // 10:00:00
-								value = rs.getTime(i+1);
-								row.addProperty(new Property(null, columnname, ValueType.PRIMITIVE, value));
-								break;
-							case SECONDDATE: // 2009-12-31T23:00:00Z
-							case TIMESTAMP:
-								value = rs.getTimestamp(i+1, cal); // would love to get the Instant directly but the driver does not allow for that
-								row.addProperty(new Property(null, columnname, ValueType.PRIMITIVE, value));
-								break;
-							}
-							if (columnname.equalsIgnoreCase("id")) {
-								row.setId(ODataUtils.createId(edmEntitySet.getName(), value));
+							if (datatype != null) {
+								switch (datatype) {
+								case ALPHANUM:
+								case BINARY:
+								case BINTEXT:
+								case BLOB:
+								case CHAR:
+								case CLOB:
+								case NCHAR:
+								case NCLOB:
+								case NVARCHAR:
+								case SHORTTEXT:
+								case ST_GEOMETRY:
+								case ST_POINT:
+								case TEXT:
+								case VARBINARY:
+								case VARCHAR:
+								case BIGINT:
+								case DECIMAL:
+								case DOUBLE:
+								case INTEGER:
+								case REAL:
+								case SMALLDECIMAL:
+								case SMALLINT:
+								case TINYINT:
+								case BOOLEAN:
+								default:
+									value = rs.getObject(i+1);
+									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+									break;
+								case DATE: // 2010-01-01
+									value = rs.getDate(i+1);
+									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+									break;
+								case TIME: // 10:00:00
+									value = rs.getTime(i+1);
+									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+									break;
+								case SECONDDATE: // 2009-12-31T23:00:00Z
+								case TIMESTAMP:
+									value = rs.getTimestamp(i+1, cal); // would love to get the Instant directly but the driver does not allow for that
+									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+									break;
+								}
+								/* if (columnname.equalsIgnoreCase("id")) {
+									row.setId(ODataUtils.createId(edmEntitySet.getName(), value));
+								} */
+							} else {
+								throw new HanaSQLException("No data type found for oData element \"" + columnname + 
+										"\" with type \"" + element.getType().getName() + "\"", null);
 							}
 						}
 						entitylist.add(row);
@@ -270,6 +314,8 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 			lastprocessedtime = System.currentTimeMillis();
 		} catch (HanaSQLException e) {
 			throw new ODataApplicationException("SQL Error: " + e.getMessage(), 500, Locale.ENGLISH, e);
+		} catch (Exception e) {
+			throw new ODataApplicationException("Exception: " + e.getMessage(), 500, Locale.ENGLISH, e);
 		}
 	}
 	
