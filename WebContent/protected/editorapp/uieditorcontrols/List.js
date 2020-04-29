@@ -112,8 +112,9 @@ sap.ui.define(
 				this.setProperty("propertiesModel", oModel, true);
 
 				this.attachBrowserEvent("dblclick", function(event) {
-				    this.fireEvent("showProperties", undefined, true, false);
 				    event.stopPropagation();
+				    this.fireEvent("showProperties", undefined, true, false);
+				    return false;
 				}, this);			
 			},
 			_updateAllItems : function(sSetterName, value) {

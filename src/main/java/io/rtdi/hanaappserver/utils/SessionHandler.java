@@ -66,7 +66,7 @@ public class SessionHandler {
 	          "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
 	        datasource = new DataSource();
 	        datasource.setPoolProperties(p);
-			session.setAttribute("datasource", datasource);
+			session.setAttribute("io.rtdi.datasource", datasource);
 			// This is used as failsafe for shutting down the server, as the shutdown does not trigger a session.destroy event normally
 			@SuppressWarnings("unchecked")
 			Map<HttpSession, DataSource> pools = (Map<HttpSession, DataSource>) session.getServletContext().getAttribute("io.rtdi.sessionpools");

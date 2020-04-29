@@ -53,8 +53,9 @@ sap.ui.define(
 				this.insertDragDropConfig(draginfo);
 				this.insertDragDropConfig(dropinfo);
 				this.attachBrowserEvent("dblclick", function(event) {
-				    this.fireEvent("showProperties", undefined, true, false);
 				    event.stopPropagation();
+				    this.fireEvent("showProperties", undefined, true, false);
+				    return false;
 				}, this);			
 			},
 			reorderContent : function(oSourceControl, oTargetControl) {

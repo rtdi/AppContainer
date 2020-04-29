@@ -76,8 +76,9 @@ sap.ui.define(
 				this.insertDragDropConfig(dropinfo1);
 				this.insertDragDropConfig(dropinfo2);
 				this.attachBrowserEvent("dblclick", function(event) {
-				    this.fireEvent("showProperties", undefined, true, false);
 				    event.stopPropagation();
+				    this.fireEvent("showProperties", undefined, true, false);
+				    return false;
 				}, this);			
 			},
 			_updateItems : function() {

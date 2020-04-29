@@ -44,8 +44,9 @@ sap.ui.define(
 				this.addStyleClass("uieditor");
 				this.insertDragDropConfig(dropinfo);
 				this.attachBrowserEvent("dblclick", function(event) {
-				    this.fireEvent("showProperties", undefined, true, false);
 				    event.stopPropagation();
+				    this.fireEvent("showProperties", undefined, true, false);
+				    return false;
 				}, this);			
 			},
 			getParentProperties : function() {

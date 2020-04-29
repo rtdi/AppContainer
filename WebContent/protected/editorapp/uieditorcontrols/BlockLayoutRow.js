@@ -16,7 +16,7 @@ sap.ui.define(
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
 					controlid: { type: "string", defaultValue: "" },
-					columns: { type: "int", defaultValue: "2" }
+					columns: { type: "int", defaultValue: 2 }
 				},
 				events : {
 					showProperties : {}
@@ -29,20 +29,25 @@ sap.ui.define(
 				var oModel = new JSONModel();
 				oModel.setData({ "list": [
 					{ "propertyname": "controlid" },
-					{ "propertyname": "background" },
-					{ "propertyname": "rows" }
+					{ "propertyname": "columns" },
+					{ "propertyname": "rowColorSet" },
+					{ "propertyname": "scrollable" }
 				] });
 				this.setProperty("propertiesModel", oModel, true);
 
 				this.addStyleClass("uieditor");
 				this.addStyleClass("uieditorbox");
+				this.addStyleClass("uieditorhandle");
 				this.attachBrowserEvent("dblclick", function(event) {
-				    this.fireEvent("showProperties", undefined, true, false);
 				    event.stopPropagation();
-				}, this);			
+				    this.fireEvent("showProperties", undefined, true, false);
+				    return false;
+				}, this);
+				this.setColumns(this.getColumns());
 			},
 			setColumns : function(value) {
 				if (value > 1) {
+					var oView = sap.ui.getCore().byId("mainview");
 					this.setProperty("columns", value, true);
 					var count = 0;
 					if (!!this.getContent()) {
@@ -50,6 +55,7 @@ sap.ui.define(
 					}
 					while (count < value) {
 						var oRow = new BlockLayoutCell();
+						oRow.attachEvent("showProperties", oView.getController().showProperties);
 						this.addContent(oRow);
 						count++;
 					}

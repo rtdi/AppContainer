@@ -350,19 +350,23 @@ sap.ui.define([
 					oModel.setProperty("/classname", oSourceControl.getParentClassName());
 					var aProps = oModel.getProperty("/list");
 					aProps.forEach( function(oItem, index) {
-						var method = oAllProperties[oItem.propertyname]._sGetter;
-						/*
-						 * When the property is bound, this has preference over the literal value
-						 */
-						var value = oSourceControl.getBindingPath(oItem.propertyname);
-						if (value) {
-							value = "{" + value + "}";
+						if (oAllProperties[oItem.propertyname]) {
+							var method = oAllProperties[oItem.propertyname]._sGetter;
+							/*
+							 * When the property is bound, this has preference over the literal value
+							 */
+							var value = oSourceControl.getBindingPath(oItem.propertyname);
+							if (value) {
+								value = "{" + value + "}";
+							} else {
+								value = oSourceControl[method].call(oSourceControl);
+							}
+							var datatype = oAllProperties[oItem.propertyname].getType();
+							oModel.setProperty("/list/" + index + "/propertyvalue", value);
+							oModel.setProperty("/list/" + index + "/propertydatatype", datatype);
 						} else {
-							value = oSourceControl[method].call(oSourceControl);
+							console.log(oSourceControl.getParentClassName() + " does not have a getter for property " + oItem.propertyname);
 						}
-						var datatype = oAllProperties[oItem.propertyname].getType();
-						oModel.setProperty("/list/" + index + "/propertyvalue", value);
-						oModel.setProperty("/list/" + index + "/propertydatatype", datatype);
 					});
 					oPropertiesTable.setModel(oModel);
 				} else {
@@ -390,7 +394,7 @@ sap.ui.define([
 							 * value of "{name}" is not sufficient to trigger a binding creation.
 							 */
 							oSourceControl[sSetter].call(oSourceControl, newvalue);
-							if (newvalue.startsWith("{")) {
+							if ((typeof newvalue === 'string' || newvalue instanceof String) && newvalue.startsWith("{")) {
 								// TODO: reuse control creation code
 								oSourceControl.bindProperty(oItem.propertyname, { path: newvalue.substring(1, newvalue.length-1) } );
 							} else {

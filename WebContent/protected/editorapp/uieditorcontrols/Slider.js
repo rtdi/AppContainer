@@ -42,11 +42,13 @@ sap.ui.define(
 				this.setProperty("propertiesModel", oModel, true);
 
 				this.addStyleClass("uieditor");
+				this.addStyleClass("uieditorhandle");
 				this.insertDragDropConfig(draginfo);
 				this.insertDragDropConfig(dropinfo);
 				this.attachBrowserEvent("dblclick", function(event) {
-				    this.fireEvent("showProperties", undefined, true, false);
 				    event.stopPropagation();
+				    this.fireEvent("showProperties", undefined, true, false);
+				    return false;
 				}, this);			
 			},
 			getParentProperties : function() {

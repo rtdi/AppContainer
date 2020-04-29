@@ -52,8 +52,9 @@ sap.ui.define(
 				this.attachEvent('press', this._donothing);
 				this.attachBrowserEvent("dblclick", function(event) {
 					event.preventDefault();
-				    this.fireEvent("showProperties", undefined, true, false);
 				    event.stopPropagation();
+				    this.fireEvent("showProperties", undefined, true, false);
+				    return false;
 				}, this);			
 			},
 			_donothing : function() {
