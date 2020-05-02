@@ -53,7 +53,7 @@ sap.ui.define(
 				 */
 				var that = this;
 				var oCurrentControl = this.getParent().getParent().data("control");
-				var oModelColumns = oCurrentControl.getProperty("_modelColumns");
+				var oModelColumns = oCurrentControl.getProperty("modelColumns");
 				if (oModelColumns) {
 					oModelColumns.forEach(function(sItem) {
 						that.addItem(new sap.ui.core.Item( {text: "\\{" + sItem + "\\}", key: sItem} ) );
@@ -83,12 +83,12 @@ sap.ui.define(
 						oParentControl = oParentControl.getParent();
 					}
 				}
-				if (oParentControl) {
+				if (oParentControl && "getModelColumns" in oParentControl) {
 					/*
 					 * Okay, so we found a model, hence need to show all columns of the model
 					 */
 					var that = this;
-					var oModelColumns = oParentControl.getProperty("_modelColumns");
+					var oModelColumns = oParentControl.getProperty("modelColumns");
 					if (oModelColumns) {
 						oModelColumns.forEach(function(sItem) {
 							that.addItem(new sap.ui.core.Item( {text: "\\{" + sItem + "\\}", key: sItem} ) );

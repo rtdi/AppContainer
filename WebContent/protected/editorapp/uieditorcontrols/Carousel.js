@@ -15,7 +15,7 @@ sap.ui.define(
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
 					controlid: { type: "string", defaultValue: "" },
-					pages: { type: "int", defaultValue: "" }
+					pageCount: { type: "int", defaultValue: 3 }
 				},
 				events : {
 					showProperties : {}
@@ -51,17 +51,20 @@ sap.ui.define(
 				    event.stopPropagation();
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
-				}, this);			
+				}, this);
+				this.setPageCount(this.getPageCount());
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
-			setPages : function(value) {
+			setPageCount : function(value) {
 				if (value > 1) {
-					this.setProperty("pages", value, true);
+					// var oView = sap.ui.getCore().byId("mainview");
+					this.setProperty("pageCount", value, true);
 					var count = 0;
 					if (!!this.getPages()) {
 						count = this.getPages().length;
 					}
 					while (count < value) {
-						var oRow = new dHbox();
+						var oRow = new dHBox( { height: "100%", width: "100%" } );
 						this.addPage(oRow);
 						count++;
 					}

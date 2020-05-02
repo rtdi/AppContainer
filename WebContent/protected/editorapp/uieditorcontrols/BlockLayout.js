@@ -16,7 +16,7 @@ sap.ui.define(
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
 					controlid: { type: "string", defaultValue: "" },
-					rows: { type: "int", defaultValue: "2" }
+					rows: { type: "int", defaultValue: 2 }
 				},
 				events : {
 					showProperties : {}
@@ -52,11 +52,11 @@ sap.ui.define(
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
 				}, this);
-				this.setRows(getRows());
+				this.setRows(this.getRows());
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			setRows : function(value) {
 				if (value > 1) {
-					var oView = sap.ui.getCore().byId("mainview");
 					this.setProperty("rows", value, true);
 					var count = 0;
 					if (!!this.getContent()) {
@@ -64,7 +64,6 @@ sap.ui.define(
 					}
 					while (count < value) {
 						var oRow = new BlockLayoutRow();
-						oRow.attachEvent("showProperties", oView.getController().showProperties);
 						this.addContent(oRow);
 						count++;
 					}

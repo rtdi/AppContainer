@@ -214,32 +214,39 @@ sap.ui.define([
 			var oView = sap.ui.getCore().byId("mainview");
 			
 			var oControl = null;
-			
+			var istemplate = false;
 			/*
 			 * When the controls are part of a template, not the controls themselves
 			 * are modified but their template structure.
 			 */
 			oSourceControl = oView.getController().findTemplate(oSourceControl);
-			oTargetControl = oView.getController().findTemplate(oTargetControl);
+			var oTargetControlTemplate = oView.getController().findTemplate(oTargetControl);
+			if (oTargetControlTemplate !== oTargetControl) {
+				oTargetControl = oTargetControlTemplate;
+				istemplate = true;
+			}
 			
 			if (oSourceControl.getParent().getId().startsWith("mainview--toolbar")) { // an element of the toolbar
-				// oControl = oView.getController()._controlMapping(oSourceControl.getControlType(), true);
 				var cClass = oView.getController()._getClass(oSourceControl.getControlType());
 				var oSettings = oView.getController()._getControlDefault(oSourceControl.getControlType());
 				if (cClass) {
 					oControl = new cClass(oSettings);
 					if (oControl != null) {
-						if ('attachEvent' in oControl) {
-							oControl.attachEvent("showProperties", oView.getController().showProperties);
-						}
 						if ("addContent" in oTargetControl) {
 							oTargetControl.addContent(oControl);
 						} else if (oTargetControl instanceof sap.m.Column) {
 							var oTable = oTargetControl.getParent();
 							var index = oTable.indexOfColumn(oTargetControl);
-							oTable.insertContent(oSourceControl, index);
+							oTable.insertContent(oControl, index);
+						} else {
+							sap.m.MessageToast.show("Drop Target does not allow adding children");
 						}
-						oView.getController()._triggerRebind(oTargetControl);
+						if (istemplate) {
+							/*
+							 * Rebind only if template was modified
+							 */
+							oView.getController()._triggerRebind(oTargetControl);
+						}
 					}
 				} else {
 					sap.m.MessageToast.show("Control not yet supported");
@@ -264,6 +271,8 @@ sap.ui.define([
 					if ("removeContent" in itemcontainer) {
 						itemcontainer.removeContent(oSourceControl);
 					}
+				} else {
+					sap.m.MessageToast.show("Not a valid drop target");
 				}
 				oView.getController()._triggerRebind(itemcontainer);
 			}
@@ -287,7 +296,10 @@ sap.ui.define([
 				oLastControl = oParent;
 				oParent = oParent.getParent();
 			}
-			if (oParent && aIndex.length > 0) {
+			if (oParent && aIndex.length > 0 && oParent.indexOfTemplate(oLastControl) != -1) {
+				/*
+				 * Yes, there is a template and the control is part of the template and not e.g. a toolbar control
+				 */
 				var oTemplate = oParent.getTemplate();
 				if (oTemplate) {
 					for (var i=aIndex.length-1; i>=0; i--) {
@@ -297,7 +309,14 @@ sap.ui.define([
 							oTemplate = oTemplate.getCells()[aIndex[i]];
 						}
 					}
-					return oTemplate;
+					if (oTemplate) {
+						return oTemplate;
+					} else {
+						/*
+						 * The control is part of the table but not a template
+						 */
+						return oControl;
+					}
 				}
 			}
 			return oControl;
@@ -456,9 +475,9 @@ sap.ui.define([
 			case "sap.m.Image":
 				return { src: "./images/TP-Image.png"};
 			case "sap.m.Label":
-				return settings = { text: "Label" };
+				return { text: "Label" };
 			case "sap.m.Link":
-				return settings = { text: "Link" };
+				return { text: "Link" };
 			case "sap.m.MaskInput":
 				return { 
 						placeholder:"Mask Input", 

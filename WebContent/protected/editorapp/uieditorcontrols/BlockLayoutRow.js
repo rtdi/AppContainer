@@ -44,10 +44,10 @@ sap.ui.define(
 				    return false;
 				}, this);
 				this.setColumns(this.getColumns());
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			setColumns : function(value) {
 				if (value > 1) {
-					var oView = sap.ui.getCore().byId("mainview");
 					this.setProperty("columns", value, true);
 					var count = 0;
 					if (!!this.getContent()) {
@@ -55,7 +55,6 @@ sap.ui.define(
 					}
 					while (count < value) {
 						var oRow = new BlockLayoutCell();
-						oRow.attachEvent("showProperties", oView.getController().showProperties);
 						this.addContent(oRow);
 						count++;
 					}

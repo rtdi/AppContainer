@@ -13,13 +13,13 @@ sap.ui.define(
 				},
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "String", defaultValue: "" },
-					oDataURL: { type: "String", defaultValue: "" },
-					oDataItemPath: { type: "String", defaultValue: "" },
-					itemIcon: { type: "String", defaultValue: "" },
-					itemText: { type: "String", defaultValue: "" },
-					itemAdditionalText: { type: "String", defaultValue: "" },
-					_modelColumns: { type: "Object", defaultValue: undefined }
+					controlid: { type: "string", defaultValue: "" },
+					oDataURL: { type: "string", defaultValue: "" },
+					oDataItemPath: { type: "string", defaultValue: "" },
+					itemIcon: { type: "string", defaultValue: "" },
+					itemText: { type: "string", defaultValue: "" },
+					itemAdditionalText: { type: "string", defaultValue: "" },
+					modelColumns: { type: "object", defaultValue: undefined }
 				},
 				events : {
 					showProperties : {}
@@ -72,6 +72,7 @@ sap.ui.define(
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
 				}, this);			
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			_updateItems : function() {
 				/*
@@ -187,7 +188,7 @@ sap.ui.define(
 										oColumns.push(item);
 									}
 								} );
-								that.setProperty("_modelColumns", oColumns, true);
+								that.setProperty("modelColumns", oColumns, true);
 								if (oColumns.length > 0) {
 									that.setItemText("{" + oColumns[0] + "}");
 								}

@@ -16,9 +16,9 @@ sap.ui.define(
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
 					controlid: { type: "string", defaultValue: "" },
 					buttonCount: { type: "int", defaultValue: "3" },
-					buttonIcon: { type: "String", defaultValue: "" },
-					buttonKey: { type: "String", defaultValue: "" },
-					buttonText: { type: "String", defaultValue: "" }
+					buttonIcon: { type: "string", defaultValue: "" },
+					buttonKey: { type: "string", defaultValue: "" },
+					buttonText: { type: "string", defaultValue: "" }
 				},
 				events : {
 					showProperties : {}
@@ -53,9 +53,17 @@ sap.ui.define(
 				this.insertDragDropConfig(dropinfo);
 				this.attachBrowserEvent("dblclick", function(event) {
 				    event.stopPropagation();
+				    var sItem = this.getSelectedItem();
+				    if (sItem) {
+				    	var oItem = Element.registry.get(sItem);
+				    	this.setButtonIcon(oItem.getIcon());
+				    	this.setButtonKey(oItem.getKey());
+				    	this.setButtonText(oItem.getText());
+				    }
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
 				}, this);			
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			setButtonCount : function(value) {
 				if (value > 1) {
