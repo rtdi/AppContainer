@@ -26,6 +26,13 @@ jobs:
         export MVN_PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "::set-env name=MVN_PROJECT_VERSION::$MVN_PROJECT_VERSION"
         mvn -DskipTests=true --no-transfer-progress clean package
+        
+    - name: Upload war
+      uses: actions/upload-artifact@master
+      with:
+        name: HanaAppContainer.war
+        path: ./target/HanaAppContainer.war
+      
     - name: Create Release
       id: create_release
       uses: actions/create-release@master
