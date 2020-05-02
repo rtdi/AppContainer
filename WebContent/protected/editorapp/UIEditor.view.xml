@@ -21,7 +21,7 @@
 				<OverflowToolbar>
 					<Title text="Drag and Drop Controls below" />
 					<rtdi:ToolPaletteButton id="save" text="Save" icon="sap-icon://save" tooltip="Save" press=".saveAsXmlView" />
-					<Link text="Open File" target="_blank" id="openfile" />
+					<Link text="Test" target="_blank" id="openfile" />
 					<ToolbarSpacer />
 					<rtdi:ToolPaletteButton id="delete" text="Drop to delete" icon="sap-icon://delete" tooltip="Drop Elements to remove" />
 				</OverflowToolbar>

@@ -22,7 +22,7 @@ sap.ui.define(
 					itemIcon: { type: "string", defaultValue: "" },
 					itemText: { type: "string", defaultValue: "" },
 					itemAdditionalText: { type: "string", defaultValue: "" },
-					_modelColumns: { type: "Object", defaultValue: undefined }
+					modelColumns: { type: "Object", defaultValue: undefined }
 				},
 				events : {
 					showProperties : {}
@@ -80,6 +80,7 @@ sap.ui.define(
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
 				}, this);			
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			_updateItems : function() {
 				/*
@@ -195,7 +196,7 @@ sap.ui.define(
 										oColumns.push(item);
 									}
 								} );
-								that.setProperty("_modelColumns", oColumns, true);
+								that.setProperty("modelColumns", oColumns, true);
 								if (oColumns.length > 0) {
 									that.setItemText("{" + oColumns[0] + "}");
 								}

@@ -29,25 +29,25 @@ sap.ui.define(
 				},
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "String", defaultValue: "" },
-					oDataURL: { type: "String", defaultValue: "" },
-					showHeaderToolbar: {type: "Boolean", defaultValue: false},
-					showInfoToolbar: {type: "Boolean", defaultValue: false},
+					controlid: { type: "string", defaultValue: "" },
+					oDataURL: { type: "string", defaultValue: "" },
+					showHeaderToolbar: {type: "boolean", defaultValue: false},
+					showInfoToolbar: {type: "boolean", defaultValue: false},
 					
-					itemActiveIcon: {type: "String", defaultValue: ""},
-					itemAdaptTitleSize: {type: "Boolean", defaultValue: false},
-					itemDescription: {type: "String", defaultValue: ""},
+					itemActiveIcon: {type: "string", defaultValue: ""},
+					itemAdaptTitleSize: {type: "boolean", defaultValue: false},
+					itemDescription: {type: "string", defaultValue: ""},
 					itemHighlight: {type: "String", defaultValue: ""},
-					itemHighlightText: {type: "String", defaultValue: ""},
-					itemIcon: {type: "String", defaultValue: ""},
-					itemIconDensityAware: {type: "Boolean", defaultValue: false},
-					itemIconInset: {type: "Boolean", defaultValue: false},
-					itemInfo: {type: "String", defaultValue: ""},
-					itemInfoState: {type: "String", defaultValue: ""},
-					itemInfoStateInverted: {type: "Boolean", defaultValue: false},
-					itemType: {type: "String", defaultValue: ""},
-					itemUnread: {type: "Boolean", defaultValue: false},
-					itemWrapping: {type: "Boolean", defaultValue: false}
+					itemHighlightText: {type: "string", defaultValue: ""},
+					itemIcon: {type: "string", defaultValue: ""},
+					itemIconDensityAware: {type: "boolean", defaultValue: false},
+					itemIconInset: {type: "boolean", defaultValue: false},
+					itemInfo: {type: "string", defaultValue: ""},
+					itemInfoState: {type: "string", defaultValue: ""},
+					itemInfoStateInverted: {type: "boolean", defaultValue: false},
+					itemType: {type: "string", defaultValue: ""},
+					itemUnread: {type: "boolean", defaultValue: false},
+					itemWrapping: {type: "boolean", defaultValue: false}
 				},
 				events : {
 					showProperties : {}
@@ -116,6 +116,7 @@ sap.ui.define(
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
 				}, this);			
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			_updateAllItems : function(sSetterName, value) {
 				var aItems = this.getItems();

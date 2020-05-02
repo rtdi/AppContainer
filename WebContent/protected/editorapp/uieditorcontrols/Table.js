@@ -28,11 +28,11 @@ sap.ui.define(
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
 					controlid: { type: "string", defaultValue: "" },
-					oDataURL: { type: "String", defaultValue: "" },
-					oDataItemPath: { type: "String", defaultValue: "" },
-					showHeaderToolbar: {type: "Boolean", defaultValue: false},
-					showInfoToolbar: {type: "Boolean", defaultValue: false},
-					_modelColumns: { type: "Object", defaultValue: undefined }
+					oDataURL: { type: "string", defaultValue: "" },
+					oDataItemPath: { type: "string", defaultValue: "" },
+					showHeaderToolbar: {type: "boolean", defaultValue: false},
+					showInfoToolbar: {type: "boolean", defaultValue: false},
+					modelColumns: { type: "object", defaultValue: undefined }
 				},
 				events : {
 					showProperties : {}
@@ -91,14 +91,11 @@ sap.ui.define(
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
 				}, this);			
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			addNewColumn : function(iCount = 1) {
 				while (iCount > 0) {
 					var oColumnheader = new dText({text : "Column" } );
-					oColumnheader.attachEvent("showProperties", function(oEvent) {
-						var oView = sap.ui.getCore().byId("mainview");
-						oView.getController().showProperties(oEvent);
-					});
 					this.addColumn(new sap.m.Column({ header: [ oColumnheader ] }));
 					iCount--;
 				}
@@ -125,20 +122,12 @@ sap.ui.define(
 			},
 			_getTableCellControl : function(index) {
 				var oCellControl = new dHBox();
-				oCellControl.attachEvent("showProperties", function(oEvent) {
-					var oView = sap.ui.getCore().byId("mainview");
-					oView.getController().showProperties(oEvent);
-				});
 				var sMapping = "ColumnText";
-				var oModelColumns = this.getProperty("_modelColumns");
+				var oModelColumns = this.getProperty("modelColumns");
 				if (oModelColumns && index < oModelColumns.length) {
 					sMapping = "{" + oModelColumns[index] + "}";
 				}
 				var oText = new dText( {text: sMapping });
-				oText.attachEvent("showProperties", function(oEvent) {
-					var oView = sap.ui.getCore().byId("mainview");
-					oView.getController().showProperties(oEvent);
-				});
 				oCellControl.addItem(oText);
 				return oCellControl;
 			},
@@ -172,7 +161,7 @@ sap.ui.define(
 										oColumns.push(item);
 									}
 								} );
-								that.setProperty("_modelColumns", oColumns, true);
+								that.setProperty("modelColumns", oColumns, true);
 								that.setODataItemPath("/TABLE");
 								that._refreshTemplate();
 							} );
@@ -237,7 +226,7 @@ sap.ui.define(
 					if (this.getBinding("items")) {
 						oRow = this.getBindingInfo("items").template;
 						this.unbindAggregation("items");
-						oRow.insertCell( this._get_getTableCellControl(), index);
+						oRow.insertCell( this._getTableCellControl(), vIndex);
 						this.bindAggregation("items", this.getProperty("oDataItemPath"), oRow);
 					}
 				}
@@ -262,6 +251,9 @@ sap.ui.define(
 			},
 			getTemplate : function() {
 				return this.data("template");
+			},
+			indexOfTemplate : function(vContent) {
+				return this.indexOfItem(vContent);
 			},
 			rebindTemplate : function() {
 				if (this.getModel()) {

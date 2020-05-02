@@ -1,6 +1,7 @@
 package io.rtdi.hanaappserver.rest.odata.hanatable;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.olingo.commons.api.data.ContextURL;
 import org.apache.olingo.commons.api.data.Entity;
@@ -52,6 +57,10 @@ import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
 import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.apache.olingo.server.api.uri.queryoption.expression.Member;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+
 import io.rtdi.hanaappserver.rest.odata.ODataFilterExpressionVisitor;
 import io.rtdi.hanaappserver.rest.odata.ODataSQLProjectionBuilder;
 import io.rtdi.hanaappserver.rest.odata.ODataUtils;
@@ -63,6 +72,20 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 	private static long starttime = System.currentTimeMillis();
 	private static long lastprocessedtime = 0;
 	private Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	private static Cache<String, ResultCache> resultcache = Caffeine.newBuilder()
+		    .expireAfterWrite(5, TimeUnit.MINUTES)
+		    .maximumSize(1000)
+		    .removalListener((String key, ResultCache resultcache, RemovalCause cause) ->
+	        	{ 
+	        		try {
+	        			if (cause != RemovalCause.EXPLICIT) {
+	        				resultcache.stmt.close();
+	        			}
+					} catch (SQLException e) {
+					}
+	        	} )
+		    .build();
+
 
 	private OData odata;
 	private ServiceMetadata serviceMetadata;
@@ -89,6 +112,10 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 	@Override
 	public void readEntityCollection(ODataRequest request, ODataResponse response, UriInfo uriInfo,
 			ContentType responseFormat) throws ODataApplicationException, ODataLibraryException {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Map<String, String> columnnameindex = null;
+		String selectList = null;
 		try {
 			// 1st we have retrieve the requested EntitySet from the uriInfo object (representation of the parsed service URI)
 			List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
@@ -97,185 +124,233 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 			EdmEntityType edmEntityType = edmEntitySet.getEntityType();
 			
 			SelectOption selectOption = uriInfo.getSelectOption();
-			ODataSQLProjectionBuilder selectparser = new ODataSQLProjectionBuilder(edm);
-			String selectList = odata.createUriHelper().buildContextURLSelectList(edmEntityType, null, selectOption);
-			String sqlprojection = selectparser.buildSelectList(edmEntityType, null, selectOption);
-
-			StringBuffer sql = new StringBuffer();
-			sql.append("select ");
-			if (sqlprojection == null) {
-				sql.append('*');
-			} else {
-				sql.append(sqlprojection);
-			}
-			sql.append(" from \"")
-				.append(schemaname)
-				.append("\".\"")
-				.append(viewname)
-				.append("\" ");
-			
-			FilterOption filterOption = uriInfo.getFilterOption();
-			if(filterOption != null) {
-				Expression filter = filterOption.getExpression();
-				try {
-					ODataFilterExpressionVisitor expressionVisitor = new ODataFilterExpressionVisitor();
-					String visitorResult = filter.accept(expressionVisitor);
-					sql.append("where ")
-						.append(visitorResult)
-						.append(' ');
-				} catch (ExpressionVisitException e) {
-					throw new ODataApplicationException("Exception in filter evaluation",
-							HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ENGLISH);
+			EdmEntityType entitytype = edm.getEntityContainer().getEntitySet(ODataEdm.ENTITY_SET_NAME).getEntityType();
+			if (uriInfo.getSkipTokenOption() != null && uriInfo.getSkipTokenOption().getValue() != null) {
+				String skiptoken = uriInfo.getSkipTokenOption().getValue();
+				ResultCache r = resultcache.getIfPresent(skiptoken);
+				if (r == null) {
+					throw new ODataApplicationException("Cannot find the $skiptoken value in the cache, probably the followup query was more than 5 minutes after?", 404, null);
+				} else {
+					rs = r.rs;
+					stmt = r.stmt;
+					columnnameindex = r.columnnameindex;
+					selectList = r.selectList;
+					resultcache.invalidate(skiptoken);
 				}
-			}
-
-			OrderByOption orderByOption = uriInfo.getOrderByOption();
-			if (orderByOption != null) {
-				List<OrderByItem> orderItemList = orderByOption.getOrders();
-				if (orderItemList != null && orderItemList.size() > 0) {
-					sql.append("order by ");
-					boolean first = true;
-					for (OrderByItem item : orderItemList) {
-						if (first) {
-							first = false;
-						} else {
-							sql.append(", ");
-						}
-						Member expr = (Member) item.getExpression(); 
-						String columnname = expr.getResourcePath().getUriResourceParts().get(0).toString();
-						sql.append('"')
-							.append(columnname)
-							.append('"');
-						if (item.isDescending()) {
-							sql.append(" desc ");
+			} else {
+				ODataSQLProjectionBuilder selectparser = new ODataSQLProjectionBuilder(edm);
+				String sqlprojection = selectparser.buildSelectList(edmEntityType, null, selectOption);
+				selectList = odata.createUriHelper().buildContextURLSelectList(edmEntityType, null, selectOption);
+	
+				StringBuffer sql = new StringBuffer();
+				sql.append("select ");
+				if (sqlprojection == null) {
+					sql.append('*');
+				} else {
+					sql.append(sqlprojection);
+				}
+				sql.append(" from \"")
+					.append(schemaname)
+					.append("\".\"")
+					.append(viewname)
+					.append("\" ");
+				
+				FilterOption filterOption = uriInfo.getFilterOption();
+				if(filterOption != null) {
+					Expression filter = filterOption.getExpression();
+					try {
+						ODataFilterExpressionVisitor expressionVisitor = new ODataFilterExpressionVisitor();
+						String visitorResult = filter.accept(expressionVisitor);
+						sql.append("where ")
+							.append(visitorResult)
+							.append(' ');
+					} catch (ExpressionVisitException e) {
+						throw new ODataApplicationException("Exception in filter evaluation",
+								HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode(), Locale.ENGLISH);
+					}
+				}
+	
+				OrderByOption orderByOption = uriInfo.getOrderByOption();
+				if (orderByOption != null) {
+					List<OrderByItem> orderItemList = orderByOption.getOrders();
+					if (orderItemList != null && orderItemList.size() > 0) {
+						sql.append("order by ");
+						boolean first = true;
+						for (OrderByItem item : orderItemList) {
+							if (first) {
+								first = false;
+							} else {
+								sql.append(", ");
+							}
+							Member expr = (Member) item.getExpression(); 
+							String columnname = expr.getResourcePath().getUriResourceParts().get(0).toString();
+							sql.append('"')
+								.append(columnname)
+								.append('"');
+							if (item.isDescending()) {
+								sql.append(" desc ");
+							}
 						}
 					}
 				}
-			}
-			
-			TopOption topOption = uriInfo.getTopOption();
-			if (topOption != null) {
-			    int topNumber = topOption.getValue();
-			    if (topNumber <= 0) {
-			    	topNumber = 10000;
-			    }
-		    	sql.append("limit ")
+				
+				TopOption topOption = uriInfo.getTopOption();
+				if (topOption != null) {
+				    int topNumber = topOption.getValue();
+				    if (topNumber <= 0) {
+				    	topNumber = 5000;
+				    }
+			    	sql.append("limit ")
 		    		.append(topNumber)
 		    		.append(' ');
-			}
-
-			SkipOption skipOption = uriInfo.getSkipOption();
-			if (skipOption != null) {
-			    int skipNumber = skipOption.getValue();
-			    if (skipNumber > 0) {
-			    	sql.append("offset ")
-			    		.append(skipNumber)
-			    		.append(' ');
-			    }
-			}
+				}
 	
+				SkipOption skipOption = uriInfo.getSkipOption();
+				if (skipOption != null) {
+				    int skipNumber = skipOption.getValue();
+				    if (skipNumber > 0) {
+				    	sql.append("offset ")
+				    		.append(skipNumber)
+				    		.append(' ');
+				    }
+				}
+						
+				/*
+				 * The columnname does not need to match the propertyname, e.g. because the column name is "/BIC/COL1" and
+				 * that is not an allowed xml token name. Therefore the EDM does add a columnname annotation to every property.
+				 * In many cases they are identical but not always.
+				 */
+				columnnameindex = new HashMap<>();
+				for (String propertyname : entitytype.getPropertyNames()) {
+					EdmElement element = entitytype.getProperty(propertyname);
+					if (element != null && element instanceof EdmPropertyImpl) {
+						EdmPropertyImpl prop = (EdmPropertyImpl) element;
+						EdmAnnotation annotation = prop.getAnnotation(columnnameterm, null);
+						if (annotation != null) {
+							EdmConstantExpression columnname = annotation.getExpression().asConstant();
+							if (columnname != null && !columnname.getValueAsString().equals(propertyname)) {
+								/*
+								 * Only entries with differences are put into the map to speed up processing.
+								 * In best case, this is an empty map now.
+								 */
+								columnnameindex.put(columnname.getValueAsString(), propertyname);
+							}
+						}
+					}
+				}
+				stmt = conn.prepareStatement(sql.toString());
+				rs = stmt.executeQuery();
+			}
 			// 2nd: fetch the data from backend for this requested EntitySetName
 			// it has to be delivered as EntitySet object
 			EntityCollection entitycollection = new EntityCollection();
 			List<Entity> entitylist = entitycollection.getEntities();
-			EdmEntityType entitytype = edm.getEntityContainer().getEntitySet(ODataEdm.ENTITY_SET_NAME).getEntityType();
-			
-			/*
-			 * The columnname does not need to match the propertyname, e.g. because the column name is "/BIC/COL1" and
-			 * that is not an allowed xml token name. Therefore the EDM does add a columnname annotation to every property.
-			 * In many cases they are identical but not always.
-			 */
-			Map<String, String> columnnameindex = new HashMap<>();
-			for (String propertyname : entitytype.getPropertyNames()) {
-				EdmElement element = entitytype.getProperty(propertyname);
-				if (element != null && element instanceof EdmPropertyImpl) {
-					EdmPropertyImpl prop = (EdmPropertyImpl) element;
-					EdmAnnotation annotation = prop.getAnnotation(columnnameterm, null);
-					if (annotation != null) {
-						EdmConstantExpression columnname = annotation.getExpression().asConstant();
-						if (columnname != null && !columnname.getValueAsString().equals(propertyname)) {
-							/*
-							 * Only entries with differences are put into the map to speed up processing.
-							 * In best case, this is an empty map now.
-							 */
-							columnnameindex.put(columnname.getValueAsString(), propertyname);
+			int rowsremaining = 5000;
+			while (rowsremaining > 0 && rs.next()) {
+				Entity row = new Entity();
+				for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
+					String columnname = rs.getMetaData().getColumnName(i+1);
+					String propertyname = columnnameindex.get(columnname);
+					if (propertyname == null) {
+						/*
+						 * As said above, the map has entries for different names only. 
+						 */
+						propertyname = columnname;
+					}
+					EdmElement element = entitytype.getProperty(propertyname);
+					HanaDataType datatype = ODataUtils.getHanaDataType(element.getType());
+					Object value;
+					if (datatype != null) {
+						switch (datatype) {
+						case ALPHANUM:
+						case BINARY:
+						case BINTEXT:
+						case BLOB:
+						case CHAR:
+						case CLOB:
+						case NCHAR:
+						case NCLOB:
+						case NVARCHAR:
+						case SHORTTEXT:
+						case ST_GEOMETRY:
+						case ST_POINT:
+						case TEXT:
+						case VARBINARY:
+						case VARCHAR:
+						case BIGINT:
+						case DECIMAL:
+						case DOUBLE:
+						case INTEGER:
+						case REAL:
+						case SMALLDECIMAL:
+						case SMALLINT:
+						case TINYINT:
+						case BOOLEAN:
+						default:
+							value = rs.getObject(i+1);
+							row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+							break;
+						case DATE: // 2010-01-01
+							value = rs.getDate(i+1);
+							row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+							break;
+						case TIME: // 10:00:00
+							value = rs.getTime(i+1);
+							row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+							break;
+						case SECONDDATE: // 2009-12-31T23:00:00Z
+						case TIMESTAMP:
+							value = rs.getTimestamp(i+1, cal); // would love to get the Instant directly but the driver does not allow for that
+							row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+							break;
 						}
+						/* if (columnname.equalsIgnoreCase("id")) {
+							row.setId(ODataUtils.createId(edmEntitySet.getName(), value));
+						} */
+					} else {
+						throw new HanaSQLException("No data type found for oData element \"" + columnname + 
+								"\" with type \"" + element.getType().getName() + "\"", null);
 					}
 				}
+				rowsremaining--;
+				entitylist.add(row);
 			}
-			try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
-				try (ResultSet rs = stmt.executeQuery(); ) {
-					while (rs.next()) {
-						Entity row = new Entity();
-						for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
-							String columnname = rs.getMetaData().getColumnName(i+1);
-							String propertyname = columnnameindex.get(columnname);
-							if (propertyname == null) {
-								/*
-								 * As said above, the map has entries for different names only. 
-								 */
-								propertyname = columnname;
-							}
-							EdmElement element = entitytype.getProperty(propertyname);
-							HanaDataType datatype = ODataUtils.getHanaDataType(element.getType());
-							Object value;
-							if (datatype != null) {
-								switch (datatype) {
-								case ALPHANUM:
-								case BINARY:
-								case BINTEXT:
-								case BLOB:
-								case CHAR:
-								case CLOB:
-								case NCHAR:
-								case NCLOB:
-								case NVARCHAR:
-								case SHORTTEXT:
-								case ST_GEOMETRY:
-								case ST_POINT:
-								case TEXT:
-								case VARBINARY:
-								case VARCHAR:
-								case BIGINT:
-								case DECIMAL:
-								case DOUBLE:
-								case INTEGER:
-								case REAL:
-								case SMALLDECIMAL:
-								case SMALLINT:
-								case TINYINT:
-								case BOOLEAN:
-								default:
-									value = rs.getObject(i+1);
-									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
-									break;
-								case DATE: // 2010-01-01
-									value = rs.getDate(i+1);
-									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
-									break;
-								case TIME: // 10:00:00
-									value = rs.getTime(i+1);
-									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
-									break;
-								case SECONDDATE: // 2009-12-31T23:00:00Z
-								case TIMESTAMP:
-									value = rs.getTimestamp(i+1, cal); // would love to get the Instant directly but the driver does not allow for that
-									row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
-									break;
-								}
-								/* if (columnname.equalsIgnoreCase("id")) {
-									row.setId(ODataUtils.createId(edmEntitySet.getName(), value));
-								} */
-							} else {
-								throw new HanaSQLException("No data type found for oData element \"" + columnname + 
-										"\" with type \"" + element.getType().getName() + "\"", null);
-							}
-						}
-						entitylist.add(row);
+			
+			if (rowsremaining == 0 && !rs.isAfterLast()) {
+				/*
+				 * When not all data was fetched preserve the current state of the SQL in a cache.
+				 * In case the data is requested using the generated skip token, continue reading, else
+				 * the statement should be closed when the cache entry is emptied after 5 minute window of 
+				 * opportunity to continue reading.
+				 */
+				String skiptoken = String.valueOf(new Random().nextInt());
+				String originaluri = request.getRawRequestUri();
+				
+				/*
+				 * Take the original URI string and replace the old $skiptoken with the new one.
+				 */
+				Matcher matcher = Pattern.compile("\\$skiptoken=[+-]?\\d+").matcher(originaluri);
+				StringBuffer b = new StringBuffer();
+				URI nexturi;
+				if (matcher.find()) {
+					matcher.appendReplacement(b, "$skiptoken="+skiptoken);
+					matcher.appendTail(b);
+					nexturi = new URI(b.toString());
+				} else {
+					/*
+					 * When no $skiptoken was found, add a new one. Depending on if the current url has query parameters already or not
+					 * either an additional parameter is added with & or a first parameter with ?.
+					 */
+					if (originaluri.contains("?")) {
+						nexturi = new URI(originaluri + "&$skiptoken=" + skiptoken);
+					} else {
+						nexturi = new URI(originaluri + "?$skiptoken=" + skiptoken);
 					}
 				}
-			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql.toString(), "Execution of the query failed");
+				entitycollection.setNext(nexturi);
+				resultcache.put(skiptoken, new ResultCache(stmt, rs, columnnameindex, selectList));
+			} else {
+				stmt.close();
 			}
 			
 			CountOption countOption = uriInfo.getCountOption();
@@ -312,10 +387,19 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 			response.setHeader(HttpHeader.CONTENT_TYPE, responseFormat.toContentTypeString());
 			invocations++;
 			lastprocessedtime = System.currentTimeMillis();
+		} catch (SQLException e) {
+			throw new ODataApplicationException("SQL Error: " + e.getMessage(), 500, Locale.ENGLISH, e);
 		} catch (HanaSQLException e) {
 			throw new ODataApplicationException("SQL Error: " + e.getMessage(), 500, Locale.ENGLISH, e);
 		} catch (Exception e) {
 			throw new ODataApplicationException("Exception: " + e.getMessage(), 500, Locale.ENGLISH, e);
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e1) {
+				}
+			}
 		}
 	}
 	
@@ -331,4 +415,17 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
     	return lastprocessedtime;
     }
 
+    public static class ResultCache {
+		PreparedStatement stmt;
+    	ResultSet rs;
+    	Map<String, String> columnnameindex;
+    	String selectList;
+    	
+    	public ResultCache(PreparedStatement stmt, ResultSet rs, Map<String, String> columnnameindex, String selectList) {
+			this.stmt = stmt;
+			this.rs = rs;
+			this.columnnameindex = columnnameindex;
+			this.selectList = selectList;
+		}
+    }
 }

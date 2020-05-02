@@ -51,6 +51,7 @@ sap.ui.define(
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
 				}, this);			
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			getParentProperties : function() {
 				return sap.ui.layout.BlockLayoutCell.prototype.getMetadata.apply(this, arguments).getAllProperties();

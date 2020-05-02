@@ -54,13 +54,15 @@ sap.ui.define(
 
 				this.addStyleClass("uieditor");
 				this.addStyleClass("uieditorbox");
+				this.addStyleClass("uieditorhandle");
 				this.insertDragDropConfig(draginfo);
 				this.insertDragDropConfig(dropinfo);
 				this.attachBrowserEvent("dblclick", function(event) {
 				    event.stopPropagation();
 				    this.fireEvent("showProperties", undefined, true, false);
 				    return false;
-				}, this);			
+				}, this);
+				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
 			addContent : function(vContent) {
 				this.addItem(vContent);
