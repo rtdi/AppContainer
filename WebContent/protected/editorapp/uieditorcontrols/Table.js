@@ -30,6 +30,7 @@ sap.ui.define(
 					controlid: { type: "string", defaultValue: "" },
 					oDataURL: { type: "string", defaultValue: "" },
 					oDataItemPath: { type: "string", defaultValue: "" },
+					columnCount: { type: "int", defaultValue: 0 },
 					showHeaderToolbar: {type: "boolean", defaultValue: false},
 					showInfoToolbar: {type: "boolean", defaultValue: false},
 					modelColumns: { type: "object", defaultValue: undefined }
@@ -63,7 +64,6 @@ sap.ui.define(
 				this.insertDragDropConfig(draginfo2);
 				this.insertDragDropConfig(dropinfo1);
 				this.insertDragDropConfig(dropinfo2);
-				this.addNewColumn(5);
 				var oModel = new JSONModel();
 				oModel.setData({ "list": [
 					{ "propertyname": "controlid" },
@@ -71,6 +71,7 @@ sap.ui.define(
 					{ "propertyname": "footerText", "showmodelcolumns" : 2 },
 					{ "propertyname": "showHeaderToolbar" },
 					{ "propertyname": "showInfoToolbar" },
+					{ "propertyname": "columnCount" },
 					{ "propertyname": "oDataURL" },
 					{ "propertyname": "oDataItemPath" },
 					{ "propertyname": "alternateRowColors" },
@@ -93,32 +94,67 @@ sap.ui.define(
 				}, this);			
 				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
 			},
-			addNewColumn : function(iCount = 1) {
-				while (iCount > 0) {
-					var oColumnheader = new dText({text : "Column" } );
-					this.addColumn(new sap.m.Column({ header: [ oColumnheader ] }));
-					iCount--;
-				}
-				this._refreshTemplate();
-			},
 			_refreshTemplate : function() {
-				var oRow;
 				if (this.getModel()) {
-					if (this.getBinding("items")) {
-						oRow = this.data("template");
-					}
+					var oRow = this.data("template");
+					var isChanged = false;
 					if (!oRow) {
 						oRow = new sap.m.ColumnListItem();
 						this.data("template", oRow);
 						oRow.data("templateFor", this);
+						isChanged = true;
 					}
 					var aCells = oRow.getCells();
 					var columncount = this.getColumns().length;
 					for (var i = aCells.length; i < columncount; i++) {
 						oRow.addCell(this._getTableCellControl(i));
+						isChanged = true;
 					}
-					this.bindAggregation("items", this.getProperty("oDataItemPath"), oRow);
+					if (isChanged) {
+						this.bindAggregation("items", { path: this.getProperty("oDataItemPath"), template: oRow } );
+					}
 				}
+			},
+			setColumnCount : function(value) {
+				this.setProperty("columnCount", value);
+				var count = 0;
+				var isChanged = false;
+				if (this.getColumns()) {
+					count = this.getColumns().length;
+				}
+				while (count < value) {
+					var oColumnheader = new dText({text : "Column" + String(count+1) } );
+					this.addColumn(new sap.m.Column({ header: [ oColumnheader ] }));
+					count++;
+					isChanged = true;
+				}
+				while (count > value) {
+					var index = this.getColumns().length-1;
+					this.removeColumn(index);
+					var oRow = this.getTemplate();
+					if (oRow) {
+						oRow.removeCell(index);
+					}
+					count--;
+					isChanged = true;
+				}
+				if (isChanged) {
+					this.rebindTemplate();
+				}
+			},
+			bindAggregation : function(sName, oBindingInfo) {
+				sap.m.Table.prototype.bindAggregation.apply(this, arguments);
+				/*
+				 * Overwrite the columnCount with the columns of the aggregation
+				 */
+				this.setProperty("columnCount", oBindingInfo.template.getCells().length);
+				this.data("template", oBindingInfo.template);
+				oBindingInfo.template.data("templateFor", this);
+				var sPath = oBindingInfo.path;
+				if (sPath.charAt(0) === '{') {
+					sPath = sPath.substring(1, sPath.length-1);
+				}
+				this.setODataItemPath(sPath);
 			},
 			_getTableCellControl : function(index) {
 				var oCellControl = new dHBox();
@@ -146,7 +182,11 @@ sap.ui.define(
 						"groupId": "$direct",
 						"synchronizationMode": "None"
 				    });
+					if (!that.getODataItemPath()) {
+						that.setODataItemPath("/TABLE");
+					}
 					this.setModel(oModel);
+					this.rebindTemplate(); // TODO: Why is this neccessary??? Template is bound at that time and setModel fires an context event...
 					/*
 					 * Assuming the oData Service used in one from the HanaAppContainer, the 
 					 * modelColumns property should be updated to support the user picking the
@@ -162,8 +202,14 @@ sap.ui.define(
 									}
 								} );
 								that.setProperty("modelColumns", oColumns, true);
-								that.setODataItemPath("/TABLE");
-								that._refreshTemplate();
+								if (!that.getTemplate()) {
+									for (var i=0; i<Math.min(4, oColumns.length); i++) {
+										var oColumnheader = new dText({text : oColumns[i] } );
+										that.addColumn(new sap.m.Column({ header: [ oColumnheader ] }));
+									}
+									that.setProperty("columnCount", i);
+									that._refreshTemplate();
+								}
 							} );
 				} else if (this.getModel()) {
 					this.setModel(undefined);
@@ -171,6 +217,12 @@ sap.ui.define(
 			},
 			setODataItemPath : function(sPath) {
 				this.setProperty("oDataItemPath", sPath, false);
+				if (this.getModel()) {
+					vBindingInfo = this.getBinding("items");
+					if (vBindingInfo && vBindingInfo.sPath !== sPath) {
+						this.rebindTemplate();
+					}
+				}
 			},
 			setShowHeaderToolbar : function(vToolbar) {
 				this.setProperty("showHeaderToolbar", vToolbar, true);
@@ -206,30 +258,30 @@ sap.ui.define(
 			},
 			addContent : function(vContent) {
 				this.addColumn(new sap.m.Column({ header: vContent }));
-				this._refreshTemplate();
+				this.setProperty("columnCount", this.getColumns().length);
 			},
 			removeContent : function(vContent) {
 				var index = this.indexOfColumn(vContent);
 				this.removeColumn(vContent);
 				if (this.getModel()) {
 					if (this.getBinding("items")) {
-						oRow = this.getBindingInfo("items").template;
-						this.unbindAggregation("items");
+						oRow = this.getTemplate();
 						oRow.removeCell(index);
-						this.bindAggregation("items", this.getProperty("oDataItemPath"), oRow);
+						this.rebindTemplate();
 					}
 				}
+				this.setProperty("columnCount", this.getColumns().length);
 			},
 			insertContent : function(vContent, vIndex) {
 				this.insertColumn(new sap.m.Column({ header: vContent}), vIndex);
 				if (this.getModel()) {
-					if (this.getBinding("items")) {
-						oRow = this.getBindingInfo("items").template;
-						this.unbindAggregation("items");
+					oRow = this.getTemplate();
+					if (oRow) {
 						oRow.insertCell( this._getTableCellControl(), vIndex);
-						this.bindAggregation("items", this.getProperty("oDataItemPath"), oRow);
+						this.rebindTemplate();
 					}
 				}
+				this.setProperty("columnCount", this.getColumns().length);
 			},
 			indexOfContent : function(vContent) {
 				return this.indexOfColumn(vContent);
@@ -240,12 +292,10 @@ sap.ui.define(
 				var oRemovedCol = this.removeColumn(sourceindex);
 				this.insertColumn(oRemovedCol, targetindex);
 				if (this.getModel()) {
-					if (this.getBinding("items")) {
-						oRow = this.getBindingInfo("items").template;
-						this.unbindAggregation("items");
-						var oRemovedTemplate = oRow.removeCell(sourceindex);
+					oRow = this.getTemplate();
+					if (oRow) {
 						oRow.insertCell( oRemovedTemplate, targetindex);
-						this.bindAggregation("items", this.getProperty("oDataItemPath"), oRow);
+						this.rebindTemplate();
 					}
 				}
 			},
@@ -259,7 +309,7 @@ sap.ui.define(
 				if (this.getModel()) {
 					if (this.getBinding("items")) {
 						this.unbindAggregation("items");
-						this.bindAggregation("items", this.getProperty("oDataItemPath"), this.getTemplate());
+						this.bindAggregation("items", { path: this.getProperty("oDataItemPath"), template: this.getTemplate() } );
 					}
 				}
 			},

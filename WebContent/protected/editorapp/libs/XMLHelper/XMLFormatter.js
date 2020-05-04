@@ -74,7 +74,16 @@ sap.ui.define([
 		 */
 		var bindingposition = buffer.length;
 		buffer.push(">");
-		
+
+		/* 
+		 * For the oDataModel there is no place in the XML View yet, hence need to use the customData aggregation.
+		 */
+		if ("getODataURL" in oControl) {
+			buffer.push("\r\n" + indent("<" + ns + "customData>", level+1));
+			buffer.push("\r\n" + indent("<sap.ui.core:CustomData key=\"odataurl\" value=\"" + oControl.getODataURL() + "\" />", level+2));
+			buffer.push("\r\n" + indent("</" + ns + "customData>", level+1));
+		}
+
 		// Add some aggregations
 		Object.keys(vAggregations).forEach( function (sName) {
 			if (sName !== "customData" && sName !== "dragDropConfig") { // these two are used internally

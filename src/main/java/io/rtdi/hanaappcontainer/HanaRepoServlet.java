@@ -98,6 +98,10 @@ public class HanaRepoServlet extends HttpServlet {
 	        	writeUI5ComponentJS(response, contentpath);
 	        	return;
 	        }
+	        if (file.getName().endsWith(".controller.js")) {
+	        	writeUI5ControllerJS(response, contentpath);
+	        	return;
+	        }
 	        if (file.getName().equals("Component-preload.js")) {
 	        	writeEmpty(response, contentpath);
 	        	return;
@@ -185,6 +189,54 @@ public class HanaRepoServlet extends HttpServlet {
     }
 
     private static void writeEmpty(HttpServletResponse response, Path dir) throws IOException {
+        response.setHeader("Content-Type", "text/javascript");
+    }
+
+    private static void writeUI5ControllerJS(HttpServletResponse response, Path dir) throws IOException {
+		String resourceroot = "ui5.app";
+		String name = dir.getFileName().toString();
+		name = name.replace(".controller.js", "");
+
+    	ServletOutputStream out = response.getOutputStream();
+		out.println("sap.ui.define([\r\n" + 
+				"           	\"sap/ui/core/mvc/Controller\"\r\n" + 
+				"           ], function(Controller) {\r\n" + 
+				"           	\"use strict\";\r\n" + 
+				"           	return Controller.extend(\"" + resourceroot + "." + name + "\", {\r\n" + 
+				"           		onInit: function() {\r\n" + 
+				"           			var oView = sap.ui.getCore().byId(\"mainview\");\r\n" + 
+				"           			this.setModelRecursive(oView);\r\n" +
+				"           		},\r\n" + 
+				"           		setModelRecursive: function(oControl) {\r\n" + 
+				"           			if (oControl.data('odataurl')) {\r\n" +
+				"           				var oModel = new sap.ui.model.odata.v4.ODataModel({\r\n" + 
+				"		    					serviceUrl : oControl.data('odataurl'), \r\n" + 
+				"		    					\"autoExpandSelect\": true,\r\n" + 
+				"								\"operationMode\": \"Server\",\r\n" + 
+				"								\"groupId\": \"$direct\",\r\n" + 
+				"								\"synchronizationMode\": \"None\"\r\n" + 
+				"		    				});\r\n" + 
+				"							oControl.setModel(oModel);\r\n" +
+				"           			}\r\n" +
+				"           			if ('getContent' in oControl) {\r\n" +
+				"           				var aContent = oControl.getContent();\r\n" +
+				"           				if (aContent) {\r\n" +
+				"           					for (var i = 0; i<aContent.length; i++) {\r\n" +
+				"           						this.setModelRecursive(aContent[i]);\r\n" +
+				"           					}\r\n" +
+				"           				}\r\n" +
+				"           			}\r\n" +
+				"           			if ('getItems' in oControl) {\r\n" +
+				"           				var aContent = oControl.getItems();\r\n" +
+				"           				if (aContent) {\r\n" +
+				"           					for (var i = 0; i<aContent.length; i++) {\r\n" +
+				"           						this.setModelRecursive(aContent[i]);\r\n" +
+				"           					}\r\n" +
+				"           				}\r\n" +
+				"           			}\r\n" +
+				"           		}\r\n" + 
+				"           	});\r\n" + 
+				"           });");
         response.setHeader("Content-Type", "text/javascript");
     }
 

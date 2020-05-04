@@ -135,13 +135,24 @@ sap.ui.define([
 					var vType = oAllSettings[sAttributeName].type;
 					oSettings[sAttributeName] = this._convertScalarDatatype(vType, attribute.value);
 				}
-				oSettings["showProperties"] = showProperties;
+				if ("showProperties" in oAllSettings) {
+					oSettings["showProperties"] = showProperties;
+				}
 				var nodes = node.childNodes;
+				var sTemplateAggregation;
 				for (var i = 0; i < nodes.length; i++) {
 					var node = nodes[i];
 					if (node instanceof Element) {
 						var aggregationname = node.localName;
-						if (oAllSettings[aggregationname]) {
+						if (aggregationname === "customData") {
+							oSettings["oDataURL"] = this._findODataURLAttributeValue(node.childNodes);
+						} else if (aggregationname in oSettings) {
+							/*
+							 * In case "items" was set already in the attributes above, this is a template and items needs to be set again with the full binding info
+							 */
+							var sPath = oSettings[aggregationname];
+							oSettings[aggregationname] = { path: sPath, template: this._buildContentTreeAggregation(node.childNodes, showProperties)[0]};
+						} else if (oAllSettings[aggregationname]) {
 							oSettings[aggregationname] = this._buildContentTreeAggregation(node.childNodes, showProperties);
 						} else {
 							// default aggregation
@@ -154,6 +165,19 @@ sap.ui.define([
 				}
 				return new oClass( oSettings );
 			}
+		},
+		_findODataURLAttributeValue : function(nodes) {
+			for (var i = 0; i < nodes.length; i++) {
+				if (nodes[i].attributes) {
+					var oAttribute = nodes[i].attributes["key"];
+					if (oAttribute && oAttribute.nodeValue === "odataurl") {
+						if (nodes[i].attributes["value"]) {
+							return nodes[i].attributes["value"].nodeValue;
+						}
+					}
+				}
+			}
+			return null;
 		},
 		_buildContentTreeAggregation : function(nodes, showProperties) {
 			var aItems = [];
@@ -433,11 +457,16 @@ sap.ui.define([
 		    const sFilename = urlParams.get('filename');
 		    if (!!sFilename) {
 				var buffer = [];
+				var sViewName = sFilename.substring(sFilename.lastIndexOf('/'));
+				if (sViewName.endsWith(".view.xml")) {
+					sViewName = sViewName.substring(0, sViewName.length-9);
+				}
 				var oEditor = sap.ui.getCore().byId("mainview--editor");
 				oEditor.getContent().forEach(function(oItem, index) {
 					XMLFormatter.generateXML(oItem, buffer, 1);
 				});
 				var viewcontent = '<mvc:View height="100%" class="sapUiSizeCompact"\r\n' +
+						'    controllerName="ui5.app.' + sViewName + '"\r\n' + 
 						'    xmlns:mvc="sap.ui.core.mvc"\r\n' + 
 						'    xmlns:sap.m="sap.m"\r\n' + 
 						'    xmlns:sap.ui.layout="sap.ui.layout"\r\n' + 
@@ -590,6 +619,12 @@ sap.ui.define([
 				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TimePickerSliders;
 			case "sap.m.StepInput":
 				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.StepInput;
+			case "sap.ui.core.ListItem":
+				return sap.ui.core.ListItem;
+			case "sap.m.ColumnListItem":
+				return sap.m.ColumnListItem;
+			case "sap.m.Column":
+				return sap.m.Column;
 			default:
 				return undefined;
 			}
