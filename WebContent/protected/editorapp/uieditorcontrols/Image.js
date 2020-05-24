@@ -2,74 +2,29 @@ sap.ui.define(
   [
 	  'sap/m/Image',
 	  'sap/ui/model/json/JSONModel',
-	  'sap/m/ImageMode'],
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Image, JSONModel) {
-  return sap.m.Image.extend(
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Image", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					src : {type : "sap.ui.core.URI", group : "Data", defaultValue : null},
+					width : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : null},
+					height : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : null},
+					decorative : {type : "boolean", group : "Accessibility", defaultValue : true},
+					alt : {type : "string", group : "Accessibility", defaultValue : null},
+					useMap : {type : "string", group : "Misc", defaultValue : null},
+					densityAware : {type : "boolean", group : "Misc", defaultValue : false},
+					activeSrc : {type : "sap.ui.core.URI", group : "Data", defaultValue : ""},
+					mode : {type : "sap.m.ImageMode", group : "Misc", defaultValue : "Image"},
+					backgroundSize : {type : "string", group : "Appearance", defaultValue : "cover"},
+					backgroundPosition : {type : "string", group : "Appearance", defaultValue : "initial"},
+					backgroundRepeat : {type : "string", group : "Appearance", defaultValue : "no-repeat"}
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.Image.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "src", "showmodelcolumns" : 2 },
-					{ "propertyname": "activeSrc", "showmodelcolumns" : 2 },
-					{ "propertyname": "alt", "showmodelcolumns" : 2 },
-					{ "propertyname": "backgroundPosition" },
-					{ "propertyname": "backgroundRepeat" },
-					{ "propertyname": "backgroundSize" },
-					{ "propertyname": "decorative" },
-					{ "propertyname": "densityAware" },
-					{ "propertyname": "height" },
-					{ "propertyname": "width" },
-					{ "propertyname": "useMap" },
-					{ "propertyname": "mode" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.Image.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.Image.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.Image.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.Image.prototype.getMetadata.apply(this, arguments).getName();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Image(), false);
 			}
 
 		});

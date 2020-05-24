@@ -17,8 +17,13 @@ sap.ui.define(
 			},
 			setObjectValue : function(fValue) {
 				this.setProperty("objectValue", fValue, true);
-				var sDatatype = this.getDatatype();
-				sap.m.ComboBox.prototype.setValue.call(this, String(fValue));
+				var sValue;
+				if (!!!fValue) {
+					sValue = "";
+				} else {
+					sValue = String(fValue);
+				}
+				sap.m.ComboBox.prototype.setValue.call(this, sValue);
 			},
 			setValue : function(fValue) {
 				sap.m.ComboBox.prototype.setValue.apply(this, arguments);

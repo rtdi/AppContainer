@@ -1,74 +1,47 @@
 sap.ui.define(
   [
 	  'sap/m/TimePicker', 
-	  'sap/ui/model/json/JSONModel'],
+	  'sap/ui/model/json/JSONModel',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(TimePicker, JSONModel) {
-  return sap.m.TimePicker.extend(
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TimePicker", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					localeId: {type : "string", group: "Data"},
+					title: {type: "string", group: "Misc", defaultValue: null},
+					minutesStep: {type: "int", group: "Misc", defaultValue: 1},
+					secondsStep: {type: "int", group: "Misc", defaultValue: 1},
+					placeholderSymbol: {type: "string", group: "Misc", defaultValue: "_"},
+					mask: {type: "string", group: "Misc", defaultValue: null},
+					maskMode: {type: "sap.m.TimePickerMaskMode", group: "Misc", defaultValue: sap.m.TimePickerMaskMode.On},
+					support2400: {type: "boolean", group: "Misc", defaultValue: false},
+					
+					// DateTimeField
+					displayFormat: {type: "string", group: "Appearance", defaultValue: null},
+					valueFormat: {type: "string", group: "Data", defaultValue: null},
+					dateValue: {type: "object", group: "Data", defaultValue: null},
+					initialFocusedDateValue: {type: "object", group: "Data", defaultValue: null},
+					
+					// InputBase
+					value: { type: "string", group: "Data", defaultValue: null, bindable: "bindable" },
+					width: { type: "sap.ui.core.CSSSize", group: "Dimension", defaultValue: null },
+					enabled: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueState: { type: "sap.ui.core.ValueState", group: "Appearance", defaultValue: sap.ui.core.ValueState.None },
+					name: { type: "string", group: "Misc", defaultValue: null },
+					placeholder: { type: "string", group: "Misc", defaultValue: null },
+					editable: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueStateText: { type: "string", group: "Misc", defaultValue: null },
+					showValueStateMessage: { type: "boolean", group: "Misc", defaultValue: true },
+					textAlign: { type: "sap.ui.core.TextAlign", group: "Appearance", defaultValue: sap.ui.core.TextAlign.Initial },
+					textDirection: { type: "sap.ui.core.TextDirection", group: "Appearance", defaultValue: sap.ui.core.TextDirection.Inherit },
+					required : {type : "boolean", group : "Misc", defaultValue : false}
+
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.TimePicker.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "minDate" },
-					{ "propertyname": "maxDate" },
-					{ "propertyname": "secondaryCalendarType" },
-					{ "propertyname": "minutesStep" },
-					{ "propertyname": "secondsStep" },
-					{ "propertyname": "placeholder" },
-					{ "propertyname": "name" },
-					{ "propertyname": "width" },
-					{ "propertyname": "textAlign" },
-					{ "propertyname": "valueState" },
-					{ "propertyname": "valueStateText" },
-					{ "propertyname": "showValueStateMessage" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.TimePicker.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.TimePicker.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.TimePicker.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.TimePicker.prototype.getMetadata.apply(this, arguments).getName();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.TimePicker(), false);
 			}
 		});
 });

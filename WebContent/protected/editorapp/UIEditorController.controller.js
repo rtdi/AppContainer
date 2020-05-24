@@ -132,8 +132,13 @@ sap.ui.define([
 					if (sAttributeName === "id") {
 						sAttributeName = "controlid";
 					}
-					var vType = oAllSettings[sAttributeName].type;
-					oSettings[sAttributeName] = this._convertScalarDatatype(vType, attribute.value);
+					if (oAllSettings[sAttributeName]) {
+						/*
+						 * Ignore properties that are hidden in the control like selectedkey in sap.m.Select
+						 */
+						var vType = oAllSettings[sAttributeName].type;
+						oSettings[sAttributeName] = this._convertScalarDatatype(vType, attribute.value);
+					}
 				}
 				if ("showProperties" in oAllSettings) {
 					oSettings["showProperties"] = showProperties;
@@ -417,6 +422,14 @@ sap.ui.define([
 				}
 			// }
 		},
+		_getBaseDataTypeName : function(oDatatype) {
+			var oBaseType = oDatatype.getBaseType();
+			if (oBaseType) {
+				return oBaseType.getName();
+			} else {
+				return oDatatype.getName();
+			}					
+		},
 		updateProperties : function(oEvent) {
 			var oView = sap.ui.getCore().byId("mainview");
 			var oPropertiesTable = oView.byId("properties");
@@ -432,6 +445,10 @@ sap.ui.define([
 						var currentvalue = oSourceControl[sGetter].call(oSourceControl);
 						var newvalue = oItem.propertyvalue;
 						if (currentvalue != newvalue) {
+							var sDataTypeName = this._getBaseDataTypeName(oAllProperties[oItem.propertyname].getType());
+							if (newvalue === "" && sDataTypeName !== "string") {
+								newvalue = undefined;
+							}
 							/*
 							 * Update the value and the binding. Setting a 
 							 * value of "{name}" is not sufficient to trigger a binding creation.
@@ -447,7 +464,7 @@ sap.ui.define([
 					} else {
 						  alert('Code Error: The control has no property named "' + row.propertyname + '"');
 					}
-				});
+				}, this);
 				oView.getController()._triggerRebind(oSourceControl);
 			}
 		},
@@ -457,7 +474,7 @@ sap.ui.define([
 		    const sFilename = urlParams.get('filename');
 		    if (!!sFilename) {
 				var buffer = [];
-				var sViewName = sFilename.substring(sFilename.lastIndexOf('/'));
+				var sViewName = sFilename.substring(sFilename.lastIndexOf('/')+1);
 				if (sViewName.endsWith(".view.xml")) {
 					sViewName = sViewName.substring(0, sViewName.length-9);
 				}
@@ -625,6 +642,8 @@ sap.ui.define([
 				return sap.m.ColumnListItem;
 			case "sap.m.Column":
 				return sap.m.Column;
+			case "sap.m.SegmentedButtonItem":
+				return sap.m.SegmentedButtonItem;
 			default:
 				return undefined;
 			}

@@ -1,74 +1,44 @@
 sap.ui.define(
   [
 	  'sap/m/DateTimePicker', 
-	  'sap/ui/model/json/JSONModel'],
-  function(DateTimePicker, JSONModel) {
-  return sap.m.DateTimePicker.extend(
+	  'sap/ui/model/json/JSONModel',
+	  'sap/ui/core/TextAlign',
+	  'sap/ui/core/TextDirection',
+	  'sap/ui/core/ValueState',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+  function(DateTimePicker, JSONModel, TextAlign, TextDirection, ValueState) {
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DateTimePicker", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					minutesStep: {type: "int", group: "Misc", defaultValue: 1 },
+					secondsStep: {type: "int", group: "Misc", defaultValue: 1 },
+					
+					// DateTimeField
+					displayFormat: {type: "string", group: "Appearance", defaultValue: null},
+					valueFormat: {type: "string", group: "Data", defaultValue: null},
+					dateValue: {type: "object", group: "Data", defaultValue: null},
+					initialFocusedDateValue: {type: "object", group: "Data", defaultValue: null},
+					
+					// InputBase
+					value: { type: "string", group: "Data", defaultValue: null, bindable: "bindable" },
+					width: { type: "sap.ui.core.CSSSize", group: "Dimension", defaultValue: null },
+					enabled: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueState: { type: "sap.ui.core.ValueState", group: "Appearance", defaultValue: sap.ui.core.ValueState.None },
+					name: { type: "string", group: "Misc", defaultValue: null },
+					placeholder: { type: "string", group: "Misc", defaultValue: null },
+					editable: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueStateText: { type: "string", group: "Misc", defaultValue: null },
+					showValueStateMessage: { type: "boolean", group: "Misc", defaultValue: true },
+					textAlign: { type: "sap.ui.core.TextAlign", group: "Appearance", defaultValue: sap.ui.core.TextAlign.Initial },
+					textDirection: { type: "sap.ui.core.TextDirection", group: "Appearance", defaultValue: sap.ui.core.TextDirection.Inherit },
+					required : {type : "boolean", group : "Misc", defaultValue : false}
+
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.DateTimePicker.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "minDate" },
-					{ "propertyname": "maxDate" },
-					{ "propertyname": "secondaryCalendarType" },
-					{ "propertyname": "minutesStep" },
-					{ "propertyname": "secondsStep" },
-					{ "propertyname": "placeholder" },
-					{ "propertyname": "name" },
-					{ "propertyname": "width" },
-					{ "propertyname": "textAlign" },
-					{ "propertyname": "valueState" },
-					{ "propertyname": "valueStateText" },
-					{ "propertyname": "showValueStateMessage" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.DateTimePicker.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.DateTimePicker.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.DateTimePicker.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.DateTimePicker.prototype.getMetadata.apply(this, arguments).getName();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.DateTimePicker(), false);
 			}
 		});
 });

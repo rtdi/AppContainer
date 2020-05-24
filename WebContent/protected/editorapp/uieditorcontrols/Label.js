@@ -4,70 +4,30 @@ sap.ui.define(
 	  'sap/ui/model/json/JSONModel',
 	  'sap/m/LabelDesign', 
 	  'sap/ui/core/TextAlign',
-	  'sap/ui/core/VerticalAlign'],
-  function(Label, JSONModel) {
-  return sap.m.Label.extend(
+	  'sap/ui/core/TextDirection',
+	  'sap/ui/core/VerticalAlign',
+	  'sap/m/WrappingType',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+  function(Label, JSONModel, LabelDesign, TextAlign, TextDirection, VerticalAlign, WrappingType) {
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Label", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					design : {type : "sap.m.LabelDesign", group : "Appearance", defaultValue : LabelDesign.Standard},
+					text : {type : "string", group : "Misc", defaultValue : null},
+					textAlign : {type : "sap.ui.core.TextAlign", group : "Appearance", defaultValue : TextAlign.Begin},
+					textDirection : {type : "sap.ui.core.TextDirection", group : "Appearance", defaultValue : TextDirection.Inherit},
+					width : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : ''},
+					required : {type : "boolean", group : "Misc", defaultValue : false},
+					displayOnly : {type : "boolean", group : "Appearance", defaultValue : false},
+					wrapping: {type : "boolean", group : "Appearance", defaultValue : false},
+					wrappingType : {type: "sap.m.WrappingType", group : "Appearance", defaultValue : WrappingType.Normal},
+					vAlign : {type : "sap.ui.core.VerticalAlign", group : "Appearance", defaultValue : VerticalAlign.Inherit}
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.Label.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "text", "showmodelcolumns" : 2 },
-					{ "propertyname": "design" },
-					{ "propertyname": "required" },
-					{ "propertyname": "width" },
-					{ "propertyname": "textAlign" },
-					{ "propertyname": "vAlign" },
-					{ "propertyname": "wrapping" },
-					{ "propertyname": "wrappingType" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.Label.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.Label.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.Label.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.Label.prototype.getMetadata.apply(this, arguments).getName();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Label(), true);
 			}
 		});
 });

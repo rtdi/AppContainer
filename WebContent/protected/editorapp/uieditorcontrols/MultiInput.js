@@ -7,101 +7,69 @@ sap.ui.define(
 	  'sap/m/InputType', 
 	  'sap/ui/core/ValueState',
 	  'sap/ui/core/Item',
-	  'sap/m/Token'],
+	  'sap/m/Token',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(MultiInput, JSONModel) {
-  return sap.m.MultiInput.extend(
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.MultiInput", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" },
-					oDataURL: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					enableMultiLineMode: {type: "boolean", group: "Behavior", defaultValue: false},
+					maxTokens: {type: "int", group: "Behavior"},
+					
+					// Input
+					type : {type : "sap.m.InputType", group : "Data", defaultValue : sap.m.InputType.Text},
+					maxLength : {type : "int", group : "Behavior", defaultValue : 0},
+					showValueHelp : {type : "boolean", group : "Behavior", defaultValue : false},
+					showSuggestion : {type : "boolean", group : "Behavior", defaultValue : false},
+					valueHelpOnly : {type : "boolean", group : "Behavior", defaultValue : false},
+					filterSuggests : {type : "boolean", group : "Behavior", defaultValue : true},
+
+					maxSuggestionWidth : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : null},
+					startSuggestion : {type : "int", group : "Behavior", defaultValue : 1},
+					showTableSuggestionValueHelp : {type : "boolean", group : "Behavior", defaultValue : true},
+					description: { type: "string", group: "Misc", defaultValue: null },
+					fieldWidth: { type: "sap.ui.core.CSSSize", group: "Appearance", defaultValue: '50%' },
+					valueLiveUpdate : {type : "boolean", group : "Behavior", defaultValue : false},
+					// selectedKey: {type: "string", group: "Data", defaultValue: ""},
+					textFormatMode: {type: "sap.m.InputTextFormatMode", group: "Misc", defaultValue: sap.m.InputTextFormatMode.Value},
+					textFormatter: {type: "any", group: "Misc", defaultValue: ""},
+					// suggestionRowValidator: {type: "any", group: "Misc", defaultValue: ""},
+					enableSuggestionsHighlighting: {type: "boolean", group: "Behavior", defaultValue: true},
+					autocomplete: {type: "boolean", group: "Behavior", defaultValue: true},
+
+					// InputBase
+					value: { type: "string", group: "Data", defaultValue: null, bindable: "bindable" },
+					width: { type: "sap.ui.core.CSSSize", group: "Dimension", defaultValue: null },
+					enabled: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueState: { type: "sap.ui.core.ValueState", group: "Appearance", defaultValue: sap.ui.core.ValueState.None },
+					name: { type: "string", group: "Misc", defaultValue: null },
+					placeholder: { type: "string", group: "Misc", defaultValue: null },
+					editable: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueStateText: { type: "string", group: "Misc", defaultValue: null },
+					showValueStateMessage: { type: "boolean", group: "Misc", defaultValue: true },
+					textAlign: { type: "sap.ui.core.TextAlign", group: "Appearance", defaultValue: sap.ui.core.TextAlign.Initial },
+					textDirection: { type: "sap.ui.core.TextDirection", group: "Appearance", defaultValue: sap.ui.core.TextDirection.Inherit },
+					required : {type : "boolean", group : "Misc", defaultValue : false}
+
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.MultiInput.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				
-				this.setTokens([
+				var oChild = new sap.m.MultiInput();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, true);
+				oChild.setTokens([
 					new sap.m.Token({text: "Token 1", key: "0001"}),
 					new sap.m.Token({text: "Token 2", key: "0002"})
 				]);
-				this.addValidator(function(args){
+				oChild.addValidator(function(args){
 					var text = args.text;
 					return new sap.m.Token({key: text, text: text});
 				});
 				
 				for (var i=1; i<5; i++) {
-					this.addSuggestionItem(new sap.ui.core.Item( { text: "Token " + i, key: "000" + i } ));
+					oChild.addSuggestionItem(new sap.ui.core.Item( { text: "Token " + i, key: "000" + i } ));
 				}
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "description", "showmodelcolumns" : 2 },
-					{ "propertyname": "enableSuggestionsHighlighting" },
-					{ "propertyname": "oDataURL" },
-					{ "propertyname": "autocomplete" },
-					{ "propertyname": "name" },
-					{ "propertyname": "fieldWidth" },
-					{ "propertyname": "width" },
-					{ "propertyname": "filterSuggests" },
-					{ "propertyname": "maxLength" },
-					{ "propertyname": "maxSuggestionWidth" },
-					{ "propertyname": "maxTokens" },
-					{ "propertyname": "placeholder" },
-					{ "propertyname": "showSuggestion" },
-					{ "propertyname": "showTableSuggestionValueHelp" },
-					{ "propertyname": "showValueHelp" },
-					{ "propertyname": "showValueStateMessage" },
-					{ "propertyname": "startSuggestion" },
-					{ "propertyname": "textAlign" },
-					{ "propertyname": "textFormatMode" },
-					{ "propertyname": "type" },
-					{ "propertyname": "value", "showmodelcolumns" : 2 },
-					{ "propertyname": "valueHelpOnly" },
-					{ "propertyname": "valueLiveUpdate" },
-					{ "propertyname": "valueState" },
-					{ "propertyname": "valueStateText" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-				
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.MultiInput.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.MultiInput.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.MultiInput.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.MultiInput.prototype.getMetadata.apply(this, arguments).getName();
 			}
 		});
 });

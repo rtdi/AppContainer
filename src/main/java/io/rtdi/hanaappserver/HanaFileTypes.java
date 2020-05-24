@@ -4,5 +4,6 @@ public enum HanaFileTypes {
 	HDBTABLE,
 	HDBPROCEDURE,
 	HDBVIEW,
-	HDBCDS;
+	HDBCDS,
+	CSV;
 }

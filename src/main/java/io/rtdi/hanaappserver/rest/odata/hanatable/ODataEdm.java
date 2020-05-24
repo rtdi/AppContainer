@@ -1,9 +1,6 @@
 package io.rtdi.hanaappserver.rest.odata.hanatable;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +22,8 @@ import org.apache.olingo.commons.api.edm.provider.annotation.CsdlConstantExpress
 import org.apache.olingo.commons.api.ex.ODataException;
 
 import io.rtdi.hanaappserver.rest.odata.ODataUtils;
+import io.rtdi.hanaappserver.utils.Describe;
+import io.rtdi.hanaappserver.utils.Describe.ColumnDefinition;
 import io.rtdi.hanaappserver.utils.HanaDataType;
 import io.rtdi.hanaappserver.utils.HanaSQLException;
 
@@ -42,58 +41,40 @@ public class ODataEdm extends CsdlAbstractEdmProvider {
 	private CsdlEntityContainerInfo containerinfo;
 
 	public ODataEdm(Connection conn, String schemaname, String objectname) throws HanaSQLException {
-		String sql = "select column_name, data_type_name, length, scale, comments, is_primary_key from (" +
-				"select column_name, data_type_name, length, scale, comments, position, null as is_primary_key from view_columns \r\n" + 
-				"where schema_name = ? and view_name = ? \r\n" + 
-				"union all \r\n" +
-				"select t.column_name, t.data_type_name, t.length, t.scale, t.comments, t.position, p.is_primary_key " +
-				"from table_columns t\r\n" + 
-				"left join constraints p on " +
-				"  (p.schema_name = t.schema_name and p.table_name = t.table_name and p.column_name = t.column_name and p.is_primary_key = 'TRUE')" +
-				"where t.schema_name = ? and t.table_name = ? \r\n" + 
-				") order by position";
-		try (PreparedStatement stmt = conn.prepareStatement(sql);) {
-			stmt.setString(1, schemaname);
-			stmt.setString(2, objectname);
-			stmt.setString(3, schemaname);
-			stmt.setString(4, objectname);
-			try (ResultSet rs = stmt.executeQuery(); ) {
-				List<CsdlProperty> columns = new ArrayList<CsdlProperty>();
-				List<CsdlPropertyRef> keys = new ArrayList<CsdlPropertyRef>();
-				while (rs.next()) {
-					String columnname = rs.getString(1);
-					/*
-					 * Some column names cannot be expressed as xml tag names, hence need to be encoded.
-					 * To find the way back, from column name to property name, these properties are annotated
-					 * with the original column name.
-					 */
-					String propertyname = ODataUtils.escapeXmlTag(columnname);
-					CsdlProperty c = new CsdlProperty()
-							.setName(propertyname);
-					if (!propertyname.equals(columnname)) {
-						CsdlAnnotation annotationcolname = new CsdlAnnotation()
-					            .setTerm(HANA_COLUMNNAME_ANNOTATION)
-					            .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String, columnname));
-						c.setAnnotations(Collections.singletonList(annotationcolname));
-					}
-					setODataType(c, rs.getString(2), rs.getInt(3), rs.getInt(4));
-					columns.add(c);
-					if (rs.getString(6) != null) {
-						CsdlPropertyRef key = new CsdlPropertyRef();
-						key.setName(rs.getString(1));
-						keys.add(key);
-					}
-				}
-				entitytype = new CsdlEntityType();
-				entitytype.setName(objectfqn.getName());
-				entitytype.setProperties(columns);
-				if (keys.size() != 0) {
-					entitytype.setKey(keys);
-				}
+		List<ColumnDefinition> columnlist = Describe.getObjectColumns(conn, schemaname, objectname);
+		List<CsdlProperty> columns = new ArrayList<CsdlProperty>();
+		List<CsdlPropertyRef> keys = new ArrayList<CsdlPropertyRef>();
+		for (ColumnDefinition def : columnlist) {
+			String columnname = def.getColumnname();
+			/*
+			 * Some column names cannot be expressed as xml tag names, hence need to be encoded.
+			 * To find the way back, from column name to property name, these properties are annotated
+			 * with the original column name.
+			 */
+			String propertyname = ODataUtils.escapeXmlTag(columnname);
+			CsdlProperty c = new CsdlProperty()
+					.setName(propertyname);
+			if (!propertyname.equals(columnname)) {
+				CsdlAnnotation annotationcolname = new CsdlAnnotation()
+			            .setTerm(HANA_COLUMNNAME_ANNOTATION)
+			            .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String, columnname));
+				c.setAnnotations(Collections.singletonList(annotationcolname));
 			}
-		} catch (SQLException e) {
-			throw new HanaSQLException(e, sql, "Tried to read the view definition");
+			setODataType(c, def.getDatatypename(), def.getLength(), def.getScale());
+			columns.add(c);
+			if (def.isKey()) {
+				CsdlPropertyRef key = new CsdlPropertyRef();
+				key.setName(columnname);
+				keys.add(key);
+			}			
 		}
+		entitytype = new CsdlEntityType();
+		entitytype.setName(objectfqn.getName());
+		entitytype.setProperties(columns);
+		if (keys.size() != 0) {
+			entitytype.setKey(keys);
+		}
+
 		entityset = new CsdlEntitySet();
 		entityset.setName(ENTITY_SET_NAME);
 		entityset.setType(objectfqn);

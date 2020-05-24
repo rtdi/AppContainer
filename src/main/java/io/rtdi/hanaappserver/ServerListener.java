@@ -37,7 +37,6 @@ public class ServerListener implements ServletContextListener {
     	if (pools != null) {
     		for (DataSource p : pools.values()) {
     			p.close(true);
-    			// p.purge();
     			p.getPool().terminatePoolCleaner();
     	    	log.debug("Closing session connection pool {}", p.getName());
     		}

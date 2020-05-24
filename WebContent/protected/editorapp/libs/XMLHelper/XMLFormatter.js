@@ -42,7 +42,11 @@ sap.ui.define([
 		}
 		// Add all properties to the XML node
 		Object.keys(vProperties).forEach( function (sName) {
-			if (sName !== "propertiesModel") {
+			/*
+			 * Write properties only if the exist in the actual control and the wrapper control.
+			 * This should avoid writing temporary properties like selectedid of the sap.m.select control.
+			 */
+			if (sName !== "propertiesModel" && sName in oControl.getMetadata().getAllProperties()) {
 				var sMethodname = vProperties[sName]._sGetter;
 				if (!vProperties[sName].deprecated) {
 					var defaultvalue = vProperties[sName].defaultValue;
@@ -56,8 +60,10 @@ sap.ui.define([
 					var sValue;
 					if (sBindingPath) {
 						sValue = "{" + sBindingPath + "}";
-					} else {
+					} else if (oControl[sMethodname]) {
 						sValue = oControl[sMethodname].apply(oControl);
+					} else {
+						sValue = defaultvalue;
 					}
 					if (sValue === "" || (Array.isArray(sValue) && sValue.length == 0)) {
 						sValue = null;
@@ -69,13 +75,11 @@ sap.ui.define([
 				}
 			}
 		});
-		/*
-		 * Finally add the aggregation binding info
-		 */
 		var bindingposition = buffer.length;
 		buffer.push(">");
 
-		/* 
+		/*
+		 * Finally add the aggregation binding info.
 		 * For the oDataModel there is no place in the XML View yet, hence need to use the customData aggregation.
 		 */
 		if ("getODataURL" in oControl) {
@@ -88,7 +92,7 @@ sap.ui.define([
 		Object.keys(vAggregations).forEach( function (sName) {
 			if (sName !== "customData" && sName !== "dragDropConfig") { // these two are used internally
 				var sMethodname = vAggregations[sName]._sGetter;
-				if (!vAggregations[sName].deprecated) {
+				if (!vAggregations[sName].deprecated && oControl[sMethodname]) {
 					var aElements = oControl[sMethodname].apply(oControl);
 					var oBindingInfo = oControl.getBindingInfo(sName);
 					if (oBindingInfo) {
@@ -146,7 +150,8 @@ sap.ui.define([
 				}
 			}
 		});
-		if (hasdata) {
+		if (hasdata || oControl instanceof sap.ui.core.Control ) {
+			// A control with all default should be added to the view of course
 			buffer.push("\r\n" + indent("</" + ns + xmlname + ">\r\n", level));
 		} else {
 			buffer.pop(); // <tagname...

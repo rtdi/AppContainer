@@ -4,79 +4,43 @@ sap.ui.define(
 	  'sap/ui/model/json/JSONModel',
 	  'sap/ui/core/TextAlign',
 	  'sap/ui/core/Wrapping',
-	  'sap/ui/core/ValueState'
+	  'sap/ui/core/ValueState',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'
   ],
   function(TextArea, JSONModel) {
-  return sap.m.TextArea.extend(
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TextArea", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					rows : {type : "int", group : "Appearance", defaultValue : 2},
+					cols : {type : "int", group : "Appearance", defaultValue : 20},
+					height : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : null},
+					maxLength : {type : "int", group : "Behavior", defaultValue : 0},
+					showExceededText: {type: "boolean", group: "Behavior", defaultValue: false},
+					wrapping : {type : "sap.ui.core.Wrapping", group : "Behavior", defaultValue : sap.ui.core.Wrapping.None},
+					valueLiveUpdate : {type : "boolean", group : "Behavior", defaultValue : false},
+					growing : {type : "boolean", group : "Behavior", defaultValue : false},
+					growingMaxLines : {type : "int", group : "Behavior", defaultValue : 0},
+					
+					// InputBase
+					value: { type: "string", group: "Data", defaultValue: null, bindable: "bindable" },
+					width: { type: "sap.ui.core.CSSSize", group: "Dimension", defaultValue: null },
+					enabled: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueState: { type: "sap.ui.core.ValueState", group: "Appearance", defaultValue: sap.ui.core.ValueState.None },
+					name: { type: "string", group: "Misc", defaultValue: null },
+					placeholder: { type: "string", group: "Misc", defaultValue: null },
+					editable: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueStateText: { type: "string", group: "Misc", defaultValue: null },
+					showValueStateMessage: { type: "boolean", group: "Misc", defaultValue: true },
+					textAlign: { type: "sap.ui.core.TextAlign", group: "Appearance", defaultValue: sap.ui.core.TextAlign.Initial },
+					textDirection: { type: "sap.ui.core.TextDirection", group: "Appearance", defaultValue: sap.ui.core.TextDirection.Inherit },
+					required : {type : "boolean", group : "Misc", defaultValue : false}
+
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.TextArea.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "value", "showmodelcolumns" : 2 },
-					{ "propertyname": "name" },
-					{ "propertyname": "cols" },
-					{ "propertyname": "rows" },
-					{ "propertyname": "height" },
-					{ "propertyname": "width" },
-					{ "propertyname": "wrapping" },
-					{ "propertyname": "textAlign" },
-					{ "propertyname": "growing" },
-					{ "propertyname": "growingMaxLines" },
-					{ "propertyname": "maxLength" },
-					{ "propertyname": "placeholder" },
-					{ "propertyname": "showExceededText" },
-					{ "propertyname": "showValueStateMessage" },
-					{ "propertyname": "valueLiveUpdate" },
-					{ "propertyname": "valueState" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.TextArea.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.TextArea.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.TextArea.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.TextArea.prototype.getMetadata.apply(this, arguments).getName();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.TextArea(), false);
 			}
 		});
 });

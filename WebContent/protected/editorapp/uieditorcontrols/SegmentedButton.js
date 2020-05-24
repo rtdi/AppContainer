@@ -3,119 +3,116 @@ sap.ui.define(
 	  'sap/m/SegmentedButton',
 	  'sap/ui/model/json/JSONModel',
 	  'sap/ui/core/Element',
-	  'sap/m/SegmentedButtonItem'],
+	  'sap/m/SegmentedButtonItem',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(SegmentedButton, JSONModel, Element) {
-  return sap.m.SegmentedButton.extend(
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.SegmentedButton", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" },
 					buttonCount: { type: "int", defaultValue: "3" },
 					buttonIcon: { type: "string", defaultValue: "" },
 					buttonKey: { type: "string", defaultValue: "" },
-					buttonText: { type: "string", defaultValue: "" }
+					buttonText: { type: "string", defaultValue: "" },
+					
+					width : {type : "sap.ui.core.CSSSize", group : "Misc", defaultValue : "auto"},
+					enabled : {type : "boolean", group : "Behavior", defaultValue : true},
+					selectedKey: { type: "string", group: "Data", defaultValue: "", bindable: "bindable" }
+
 				},
-				events : {
-					showProperties : {}
+				aggregations : {
+					items : { type : "sap.m.SegmentedButtonItem", multiple : true, singularName : "item", bindable : "bindable" },
 				}
+
 			},
 			renderer : {},
 			init : function() {
-				sap.m.SegmentedButton.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "selectedKey" },
-					{ "propertyname": "width" },
-					{ "propertyname": "buttonCount" },
-					{ "propertyname": "buttonIcon" },
-					{ "propertyname": "buttonKey" },
-					{ "propertyname": "buttonText" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    var sItem = this.getSelectedItem();
-				    if (sItem) {
-				    	var oItem = Element.registry.get(sItem);
-				    	this.setButtonIcon(oItem.getIcon());
-				    	this.setButtonKey(oItem.getKey());
-				    	this.setButtonText(oItem.getText());
-				    }
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
+				var oChild = new sap.m.SegmentedButton();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, false);
+				this.setWidth("auto"); // Required workaround, else the style is width=100%
 			},
 			setButtonCount : function(value) {
 				if (value > 1) {
+					var oChild = this.getAggregation("_control");
 					this.setProperty("buttonCount", value, true);
 					var count = 0;
-					if (!!this.getItems()) {
-						count = this.getItems().length;
+					if (!!oChild.getItems()) {
+						count = oChild.getItems().length;
 					}
 					while (count < value) {
 						var oButton = new sap.m.SegmentedButtonItem( {text: "Button" + String(count+1)} );
-						this.addItem(oButton);
+						oChild.addItem(oButton);
 						count++;
 					}
-					var aItems = this.getItems();
+					var aItems = oChild.getItems();
 					while (count > value) {
-						this.removeItem(aItems[count-1]);
+						oChild.removeItem(aItems[count-1]);
 						count--;
 					}
 				}
 			},
+			getButtonIcon : function() {
+				var oItem = Element.registry.get(this.getAggregation("_control").getSelectedItem());
+				if (!!oItem) {
+					return oItem.getIcon();
+				}
+			},
+			getButtonKey : function() {
+				var oItem = Element.registry.get(this.getAggregation("_control").getSelectedItem());
+				if (!!oItem) {
+					return oItem.getKey();
+				}
+			},
+			getButtonText : function() {
+				var oItem = Element.registry.get(this.getAggregation("_control").getSelectedItem());
+				if (!!oItem) {
+					return oItem.getText();
+				}
+			},
 			setButtonIcon : function(value) {
 				this.setProperty("buttonIcon", value, true);
-				var oItem = Element.registry.get(this.getSelectedItem());
+				var oItem = Element.registry.get(this.getAggregation("_control").getSelectedItem());
 				if (!!oItem) {
 					oItem.setIcon(value);
 				}
 			},
 			setButtonKey : function(value) {
 				this.setProperty("buttonKey", value, true);
-				var oItem = Element.registry.get(this.getSelectedItem());
+				var oItem = Element.registry.get(this.getAggregation("_control").getSelectedItem());
 				if (!!oItem) {
 					oItem.setKey(value);
 				}
 			},
 			setButtonText : function(value) {
 				this.setProperty("buttonText", value, true);
-				var oItem = Element.registry.get(this.getSelectedItem());
+				var oItem = Element.registry.get(this.getAggregation("_control").getSelectedItem());
 				if (!!oItem) {
 					oItem.setText(value);
 				}
 			},
-			getParentProperties : function() {
-				return sap.m.SegmentedButton.prototype.getMetadata.apply(this, arguments).getAllProperties();
+			/*
+			 * Redirect all item-calls to the child control
+			 */
+			getItems : function() {
+				return this.getAggregation("_control").getItems();
 			},
-			getParentAggregations : function() {
-				return sap.m.SegmentedButton.prototype.getMetadata.apply(this, arguments).getAllAggregations();
+			addItem : function(oItem) {
+				return this.getAggregation("_control").addItem(oItem);
 			},
-			getParentAssociations : function() {
-				return sap.m.SegmentedButton.prototype.getMetadata.apply(this, arguments).getAllAssociations();
+			destroyItems : function() {
+				return this.getAggregation("_control").destroyItems();
 			},
-			getParentClassName : function() {
-				return sap.m.SegmentedButton.prototype.getMetadata.apply(this, arguments).getName();
+			indexOfItem : function(oItem) {
+				return this.getAggregation("_control").indexOfItem(oItem);
+			},
+			insertItem : function(oItem, iIndex) {
+				return this.getAggregation("_control").insertItem(oItem, iIndex);
+			},
+			removeAllItems : function() {
+				return this.getAggregation("_control").removeAllItems();
+			},
+			removeItem : function(oItem) {
+				return this.getAggregation("_control").removeItem(oItem);
 			}
 
 		});

@@ -139,7 +139,7 @@ public class Util {
 	
 	public static String fileToSchemaname(File file, File rootdir) {
 		String schemaname = null;
-		while (file != null && !file.equals(rootdir)) {
+		while (file != null && file.getParentFile() != null && !file.getParentFile().equals(rootdir)) {
 			file = file.getParentFile();
 			schemaname = file.getName();
 		}

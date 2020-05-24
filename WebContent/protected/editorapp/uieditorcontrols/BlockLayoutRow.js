@@ -66,8 +66,12 @@ sap.ui.define(
 			},
 			reorderContent : function(oSourceControl, oTargetControl) {
 				this.removeContent(oSourceControl);
-				var targetindex = this.indexOfContent(oTargetControl);
-				this.insertContent(oSourceControl, targetindex);
+				if (oTargetControl) {
+					var targetindex = this.indexOfContent(oTargetControl);
+					this.insertContent(oSourceControl, targetindex);
+				} else {
+					this.addContent(oSourceControl);
+				}
 			},
 			getParentProperties : function() {
 				return sap.ui.layout.BlockLayoutRow.prototype.getMetadata.apply(this, arguments).getAllProperties();

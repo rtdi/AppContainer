@@ -74,9 +74,13 @@ sap.ui.define(
 				this.removeItem(vContent);
 			},
 			reorderContent : function(oSourceControl, oTargetControl) {
-				this.removeItem(oSourceControl);
-				var targetindex = this.indexOfContent(oTargetControl);
-				this.insertContent(oSourceControl, targetindex);
+				this.removeContent(oSourceControl);
+				if (oTargetControl) {
+					var targetindex = this.indexOfContent(oTargetControl);
+					this.insertContent(oSourceControl, targetindex);
+				} else {
+					this.addContent(oSourceControl);
+				}
 			},
 			insertContent : function(vContent, vIndex) {
 				this.insertItem(vContent, vIndex);

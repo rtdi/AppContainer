@@ -5,83 +5,52 @@ sap.ui.define(
 	  'sap/ui/core/TextAlign',
 	  'sap/m/InputTextFormatMode',
 	  'sap/m/InputType',
-	  'sap/ui/core/ValueState'],
-  function(Input, JSONModel) {
-  return sap.m.Input.extend(
+	  'sap/ui/core/TextDirection',
+	  'sap/ui/core/ValueState',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+  function(Input, JSONModel, TextAlign, InputTextFormatMode, InputType, TextDirection, ValueState) {
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Input", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					type : {type : "sap.m.InputType", group : "Data", defaultValue : InputType.Text},
+					maxLength : {type : "int", group : "Behavior", defaultValue : 0},
+					dateFormat : {type : "string", group : "Misc", defaultValue : 'YYYY-MM-dd', deprecated: true},
+					showValueHelp : {type : "boolean", group : "Behavior", defaultValue : false},
+					showSuggestion : {type : "boolean", group : "Behavior", defaultValue : false},
+					valueHelpOnly : {type : "boolean", group : "Behavior", defaultValue : false},
+					filterSuggests : {type : "boolean", group : "Behavior", defaultValue : true},
+					maxSuggestionWidth : {type : "sap.ui.core.CSSSize", group : "Appearance", defaultValue : null},
+					startSuggestion : {type : "int", group : "Behavior", defaultValue : 1},
+					showTableSuggestionValueHelp : {type : "boolean", group : "Behavior", defaultValue : true},
+					description: { type: "string", group: "Misc", defaultValue: null },
+					fieldWidth: { type: "sap.ui.core.CSSSize", group: "Appearance", defaultValue: '50%' },
+					valueLiveUpdate : {type : "boolean", group : "Behavior", defaultValue : false},
+					selectedKey: {type: "string", group: "Data", defaultValue: ""},
+					textFormatMode: {type: "sap.m.InputTextFormatMode", group: "Misc", defaultValue: InputTextFormatMode.Value},
+					textFormatter: {type: "any", group: "Misc", defaultValue: ""},
+					suggestionRowValidator: {type: "any", group: "Misc", defaultValue: ""},
+					enableSuggestionsHighlighting: {type: "boolean", group: "Behavior", defaultValue: true},
+					autocomplete: {type: "boolean", group: "Behavior", defaultValue: true},
+					
+					// InputBase
+					value: { type: "string", group: "Data", defaultValue: null, bindable: "bindable" },
+					width: { type: "sap.ui.core.CSSSize", group: "Dimension", defaultValue: null },
+					enabled: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueState: { type: "sap.ui.core.ValueState", group: "Appearance", defaultValue: ValueState.None },
+					name: { type: "string", group: "Misc", defaultValue: null },
+					placeholder: { type: "string", group: "Misc", defaultValue: null },
+					editable: { type: "boolean", group: "Behavior", defaultValue: true },
+					valueStateText: { type: "string", group: "Misc", defaultValue: null },
+					showValueStateMessage: { type: "boolean", group: "Misc", defaultValue: true },
+					textAlign: { type: "sap.ui.core.TextAlign", group: "Appearance", defaultValue: TextAlign.Initial },
+					textDirection: { type: "sap.ui.core.TextDirection", group: "Appearance", defaultValue: TextDirection.Inherit },
+					required : {type : "boolean", group : "Misc", defaultValue : false}
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.Input.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "description", "showmodelcolumns" : 2 },
-					{ "propertyname": "name" },
-					{ "propertyname": "value", "showmodelcolumns" : 2 },
-					{ "propertyname": "type" },
-					{ "propertyname": "autocomplete" },
-					{ "propertyname": "width" },
-					{ "propertyname": "fieldWidth" },
-					{ "propertyname": "textAlign" },
-					{ "propertyname": "textFormatMode" },
-					{ "propertyname": "maxLength" },
-					{ "propertyname": "filterSuggests" },
-					{ "propertyname": "enableSuggestionsHighlighting" },
-					{ "propertyname": "showSuggestion" },
-					{ "propertyname": "showTableSuggestionValueHelp" },
-					{ "propertyname": "showValueHelp" },
-					{ "propertyname": "showValueStateMessage" },
-					{ "propertyname": "startSuggestion" },
-					{ "propertyname": "maxSuggestionWidth" },
-					{ "propertyname": "valueLiveUpdate" },
-					{ "propertyname": "valueState" },
-					{ "propertyname": "valueStateText" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.Input.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.Input.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.Input.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.Input.prototype.getMetadata.apply(this, arguments).getName();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Input(), true);
 			}
 
 		});

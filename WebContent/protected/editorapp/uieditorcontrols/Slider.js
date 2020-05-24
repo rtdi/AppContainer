@@ -1,69 +1,29 @@
 sap.ui.define(
-  ['sap/m/Slider', 'sap/ui/model/json/JSONModel'],
+  ['sap/m/Slider',
+	  'sap/ui/model/json/JSONModel',
+	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Slider, JSONModel) {
-  return sap.m.Slider.extend(
+  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
 		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Slider", {
 			metadata : {
-				dnd : {
-					draggable : true,
-					droppable : true
-				},
 				properties: {
-					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
-					controlid: { type: "string", defaultValue: "" }
-				},
-				events : {
-					showProperties : {}
+					width: { type: "sap.ui.core.CSSSize", group: "Appearance", defaultValue: "100%" },
+					enabled: { type: "boolean", group: "Behavior", defaultValue: true },
+					name: { type: "string", group: "Misc", defaultValue: "" },
+					min: { type: "float", group: "Data", defaultValue: 0 },
+					max: { type: "float", group: "Data", defaultValue: 100 },
+					step: { type: "float", group: "Data", defaultValue: 1 },
+					progress: { type: "boolean", group: "Misc", defaultValue: true },
+					value: { type: "float", group: "Data", defaultValue: 0 },
+					showHandleTooltip: { type: "boolean", group: "Appearance", defaultValue: true},
+					showAdvancedTooltip: { type: "boolean", group: "Appearance", defaultValue: false},
+					inputsAsTooltips: {type: "boolean", group: "Appearance", defaultValue: false},
+					enableTickmarks: {type: "boolean", group: "Appearance", defaultValue: false}
 				}
 			},
 			renderer : {},
 			init : function() {
-				sap.m.Slider.prototype.init.apply(this, arguments);
-				var oView = sap.ui.getCore().byId("mainview");
-				var draginfo = new sap.ui.core.dnd.DragInfo({ "groupName": "controls" });
-				var dropinfo = new sap.ui.core.dnd.DropInfo(
-						{ 
-							"groupName": "controls", 
-							"dropPosition": sap.ui.core.dnd.DropPosition.OnOrBetween,
-							"drop": oView.getController().onDropControl 
-						}
-				);
-				var oModel = new JSONModel();
-				oModel.setData({ "list": [
-					{ "propertyname": "controlid" },
-					{ "propertyname": "enableTickmarks" },
-					{ "propertyname": "width" },
-					{ "propertyname": "min" },
-					{ "propertyname": "max" },
-					{ "propertyname": "showHandleTooltip" },
-					{ "propertyname": "step" },
-					{ "propertyname": "value" }
-				] });
-				this.setProperty("propertiesModel", oModel, true);
-
-				this.addStyleClass("uieditor");
-				this.addStyleClass("uieditorhandle");
-				this.insertDragDropConfig(draginfo);
-				this.insertDragDropConfig(dropinfo);
-				this.attachBrowserEvent("dblclick", function(event) {
-				    event.stopPropagation();
-				    this.fireEvent("showProperties", undefined, true, false);
-				    return false;
-				}, this);			
-				this.attachEvent("showProperties", sap.ui.getCore().byId("mainview").getController().showProperties);
-			},
-			getParentProperties : function() {
-				return sap.m.Slider.prototype.getMetadata.apply(this, arguments).getAllProperties();
-			},
-			getParentAggregations : function() {
-				return sap.m.Slider.prototype.getMetadata.apply(this, arguments).getAllAggregations();
-			},
-			getParentAssociations : function() {
-				return sap.m.Slider.prototype.getMetadata.apply(this, arguments).getAllAssociations();
-			},
-			getParentClassName : function() {
-				return sap.m.Slider.prototype.getMetadata.apply(this, arguments).getName();
+				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Slider());
 			}
-
 		});
 });

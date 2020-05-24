@@ -8,16 +8,8 @@
 	xmlns:core="sap.ui.core">
 	<l:DynamicSideContent
 		id="DynamicSideContent">
-		<Panel height="100%" id="editor">
-			<dragDropConfig>
-				<dnd:DragInfo
-					groupName="controls"/>
-				<dnd:DropInfo
-					groupName="controls"
-					dropPosition="On"
-					drop="onDropControl" />
-			</dragDropConfig>
-			<headerToolbar>
+		<rtdi:Panel height="100%" id="editor">
+			<rtdi:headerToolbar>
 				<OverflowToolbar>
 					<Title text="Drag and Drop Controls below" />
 					<rtdi:ToolPaletteButton id="save" text="Save" icon="sap-icon://save" tooltip="Save" press=".saveAsXmlView" />
@@ -25,10 +17,10 @@
 					<ToolbarSpacer />
 					<rtdi:ToolPaletteButton id="delete" text="Drop to delete" icon="sap-icon://delete" tooltip="Drop Elements to remove" />
 				</OverflowToolbar>
-			</headerToolbar>
-			<content>
-			</content>
-		</Panel>
+			</rtdi:headerToolbar>
+			<rtdi:content>
+			</rtdi:content>
+		</rtdi:Panel>
 		<l:sideContent>
 			<Title text="Tool Palette" />
 			<Panel expandable="true" headerText="Simple Controls" expanded="true" class="sapUiResponsiveMargin" id="toolbarSimpleControls" >

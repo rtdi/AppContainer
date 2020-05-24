@@ -15,8 +15,8 @@ sap.ui.define(
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
 					controlid: { type: "string", defaultValue: "" },
-					showHeaderToolbar: {type: "Boolean", defaultValue: false},
-					showInfoToolbar: {type: "Boolean", defaultValue: false}
+					showHeaderToolbar: {type: "boolean", defaultValue: false},
+					showInfoToolbar: {type: "boolean", defaultValue: false}
 				},
 				events : {
 					showProperties : {}
@@ -61,8 +61,12 @@ sap.ui.define(
 			},
 			reorderContent : function(oSourceControl, oTargetControl) {
 				this.removeContent(oSourceControl);
-				var targetindex = this.indexOfContent(oTargetControl);
-				this.insertContent(oSourceControl, targetindex);
+				if (oTargetControl) {
+					var targetindex = this.indexOfContent(oTargetControl);
+					this.insertContent(oSourceControl, targetindex);
+				} else {
+					this.addContent(oSourceControl);
+				}
 			},
 			setShowHeaderToolbar : function(vToolbar) {
 				this.setProperty("showHeaderToolbar", vToolbar, true);

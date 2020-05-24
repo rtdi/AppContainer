@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.rtdi.hanaappcontainer.WebAppConstants;
+import io.rtdi.hanaappcontainer.designtimeobjects.csv.CSVImport;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbcds.HDBCDS;
 import io.rtdi.hanaappcontainer.designtimeobjects.hdbtable.HDBTable;
 import io.rtdi.hanaappcontainer.objects.table.HanaTable;
@@ -213,14 +214,20 @@ public class ActivationService {
 				break;
 			case HDBPROCEDURE:
 				break;
-			case HDBTABLE:
+			case HDBTABLE: {
 				String tablename = Util.fileToTablename(file, rootdir);
 				HanaTable table = HDBTable.parseHDBTableText(text, schemaname, tablename);
 				table.valid(result);
 				table.activate(result, conn, ActivationStyle.RECONCILE);
 				break;
+			}
 			case HDBVIEW:
 				break;
+			case CSV: {
+				String tablename = file.getName().substring(0, file.getName().length()-4);
+				CSVImport imp = new CSVImport(result, conn, ActivationStyle.RECONCILE);
+				imp.csvImport(file, schemaname, tablename);
+			}
 			default:
 				break;
 			}

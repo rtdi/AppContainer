@@ -1,0 +1,9 @@
+_CHANGE_TYPE,APPLICATIONID,AREA,LOCALE,ID,TEXT
+T,Editor,,all
+I,Editor,UI,all,import,true
+D,Editor,UI,en_US,importtext,"Allow import"
+I,Editor,UI,en_US,importtext,"Allow import"
+A,Editor,UI,de_DE,importtext,"Erlaube Import"
+I,Editor,UI,all,export,true
+A,Editor,UI,en_US,exporttext,"Allow export"
+A,Editor,UI,de_DE,exporttext,"Erlaube Export"

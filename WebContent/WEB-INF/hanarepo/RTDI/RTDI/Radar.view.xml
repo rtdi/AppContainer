@@ -1,0 +1,13 @@
+<mvc:View height="100%" class="sapUiSizeCompact"
+	controllerName="io.rtdi.app.RadarController"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:amcharts="io.rtdi.amchartsui5controls"
+	xmlns:rtdi="io.rtdi.hanaappcontainer.editorapp.uieditorcontrols" 
+	xmlns:core="sap.ui.core">
+	<Panel height="100%" id="editor">
+		<content>
+			<amcharts:RadarChart id="radarchart" />
+		</content>
+	</Panel>
+</mvc:View>
