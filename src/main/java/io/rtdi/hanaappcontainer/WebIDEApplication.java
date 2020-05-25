@@ -1,6 +1,6 @@
 package io.rtdi.hanaappcontainer;
 
-import jakarta.ws.rs.ApplicationPath;
+import javax.ws.rs.ApplicationPath;
 
 import io.rtdi.hanaappserver.servlets.JerseyApplication;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
