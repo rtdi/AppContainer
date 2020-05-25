@@ -1,4 +1,4 @@
-FROM tomcat:9-jdk13-openjdk-oracle
+FROM tomcat:10-jdk14-openjdk-oracle
 
 LABEL maintainer="info@rtdi.io"
 
