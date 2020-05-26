@@ -28,7 +28,7 @@ sap.ui.define([
 			return new io.rtdi.amchartsui5controls.AxisRendererCircular();
 		},		
 		_getYAxisRenderer : function() {
-			return new io.rtdi.amchartsui5controls.AxisRendererCircular();
+			return new io.rtdi.amchartsui5controls.AxisRendererRadial();
 		},		
 		createRadarSeries : function() {
 			var series = new io.rtdi.amchartsui5controls.RadarSeries();

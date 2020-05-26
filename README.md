@@ -2,6 +2,8 @@
 
 _Developing SAP Hana Applications quickly_
 
+Source code available here: [github](https://github.com/rtdi/HanaAppContainer)
+
 ## Design Thinking goal
 * As a developer I would like to build UI5 applications as quickly as possible. Everything the backend can do automatically, it should.
 * Cloud, onPrem are just different deployment options.
@@ -27,7 +29,12 @@ Then start the image via docker run. Only one parameter needs to be set, the env
 
     docker run -d -p 80:8080 -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/hanaappcontainer
 
-From then on the application can be opened with at the URL http://<dockerhostname>/HanaAppContainer/ with a list of applications
+From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/HanaAppContainer/ with a list of applications
+
+## Help!
+
+The source code of this project is available at [github](https://github.com/rtdi/HanaAppContainer).
+As an OpenSource project it grows with the interactions. Hence I invite all to file [issues](https://github.com/rtdi/HanaAppContainer/issues) in github, no matter if it is a request for help or product suggestions and to spread the word. The more people are using it, the faster progress will be made to your benefit.
 
 
 ## Capabilities
@@ -40,31 +47,57 @@ The complete solution consists of the following modules:
 * Graphical UI Editor for XMLViews
 * Backend services to read data via oData or Restful calls
 * Backend services to invoke stored procedures, which usually trigger business logic, e.g. create a booking
-* Lots of extension points at all levels to use for custom projects 
+* Lots of extension points at all levels to use for custom projects
+
+<img src="docs/media/Screenshot 01 - Home page.png" width="50%">
+
+
 
 ### Repository
 
 A file system based repository where new development artifacts can be managed and edited. The goal is to support all file types, e.g. hdbtable files to create tables from scratch, html files,... It is file system based to allow easy integration with git source code control. 
 
+<img src="docs/media/Screenshot 02 - Designtime Browser.png" width="50%">
+
+
+
 ### Activation
 
 Just like Hana XS Classic and Hana XS Advanced or the Cloud Application Programming Model artifacts of SAP, the same objects can be activated to create Hana objects easily.
+
+<img src="docs/media/Screenshot 03 - hdbtable.png" width="50%">
+
+
 
 ### Webserver
 
 All files within the repository can be opened via the web browser, if permissions allow that.
 
+<img src="docs/media/SampleUI.png" width="50%">
+
+
+
 ### Graphical UI Editor
 
 Allows to edit normal XMLView files by drag and drop of control and changing their properties via a double click.
+
+<img src="docs/media/XMLViewEditor.gif">
+
+
 
 ### oData/Restful service endpoint
 
 Every single table or view is exposed as oData endpoint and as Restful service. See the swagger definitions.
 
+<img src="docs/media/Screenshot 16 - odata.png" width="50%">
+
+
 ### Procedures as Restful endpoints
 
 Every stored procedure the user has permissions on can be invoked via a Restful service.
+
+<img src="docs/media/procedure-invocation.png" width="50%">
+
 
 ### Extension points
 

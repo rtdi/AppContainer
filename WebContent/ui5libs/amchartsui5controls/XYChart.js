@@ -6,10 +6,6 @@ sap.ui.define([
 	return io.rtdi.amchartsui5controls.SerialChart.extend("io.rtdi.amchartsui5controls.XYChart", {
 		metadata: {
             properties: {
-            	arrangeTooltips: { type: "boolean" },
-            	horizontalMouseWheelBehavior: { type: "string" },
-            	maskBullets: { type: "boolean" },
-            	mouseWheelBehavior: { type: "string" },
             }, 
             aggregations: {
                 xAxis : {type : "io.rtdi.amchartsui5controls.Axis", multiple : true},
@@ -21,9 +17,11 @@ sap.ui.define([
 		},
 		addXAxis : function(axis) {
 			this.addAggregation("xAxis", axis, true);
+			return axis;
 		},
 		addYAxis : function(axis) {
 			this.addAggregation("yAxis", axis, true);
+			return axis;
 		},
 		chartRendering : function(chart) {
 			if (this.getAggregation("xAxis")) {
@@ -42,25 +40,17 @@ sap.ui.define([
 			}
 			io.rtdi.amchartsui5controls.SerialChart.prototype.chartRendering.apply(this, arguments);
 		},
-		_getXAxisRenderer : function() {
-			return undefined;
-		},		
-		_getYAxisRenderer : function() {
-			return undefined;
-		},		
 		createCategoryAxis : function() {
-			var axis = new io.rtdi.amchartsui5controls.CategoryAxis();
-			this.addXAxis(axis);
-			axis.setRenderer(this._getXAxisRenderer());
-
-			return axis;
+			return new am4charts.CategoryAxis();
+		},
+		createDateAxis : function() {
+			return new am4charts.DateAxis();
 		},
 		createValueAxis : function() {
-			var axis = new io.rtdi.amchartsui5controls.ValueAxis();
-			this.addYAxis(axis);
-			axis.setRenderer(this._getYAxisRenderer());
-			return axis;
+			return new am4charts.ValueAxis();
 		},
-
+		createCircleBullet : function() {
+			return new am4charts.CircleBullet();
+		},
 	});
 });
