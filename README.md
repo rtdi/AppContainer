@@ -49,7 +49,7 @@ The complete solution consists of the following modules:
 * Backend services to invoke stored procedures, which usually trigger business logic, e.g. create a booking
 * Lots of extension points at all levels to use for custom projects
 
-<img src="docs/media/Screenshot 01 - Home page.png" width="50%">
+<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 01 - Home page.png" width="50%">
 
 
 
@@ -57,7 +57,7 @@ The complete solution consists of the following modules:
 
 A file system based repository where new development artifacts can be managed and edited. The goal is to support all file types, e.g. hdbtable files to create tables from scratch, html files,... It is file system based to allow easy integration with git source code control. 
 
-<img src="docs/media/Screenshot 02 - Designtime Browser.png" width="50%">
+<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 02 - Designtime Browser.png" width="50%">
 
 
 
@@ -65,7 +65,7 @@ A file system based repository where new development artifacts can be managed an
 
 Just like Hana XS Classic and Hana XS Advanced or the Cloud Application Programming Model artifacts of SAP, the same objects can be activated to create Hana objects easily.
 
-<img src="docs/media/Screenshot 03 - hdbtable.png" width="50%">
+<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 03 - hdbtable.png" width="50%">
 
 
 
@@ -73,7 +73,7 @@ Just like Hana XS Classic and Hana XS Advanced or the Cloud Application Programm
 
 All files within the repository can be opened via the web browser, if permissions allow that.
 
-<img src="docs/media/SampleUI.png" width="50%">
+<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/SampleUI.png" width="50%">
 
 
 
@@ -81,7 +81,7 @@ All files within the repository can be opened via the web browser, if permission
 
 Allows to edit normal XMLView files by drag and drop of control and changing their properties via a double click.
 
-<img src="docs/media/XMLViewEditor.gif">
+<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/XMLViewEditor.gif">
 
 
 
@@ -89,14 +89,14 @@ Allows to edit normal XMLView files by drag and drop of control and changing the
 
 Every single table or view is exposed as oData endpoint and as Restful service. See the swagger definitions.
 
-<img src="docs/media/Screenshot 16 - odata.png" width="50%">
+<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 16 - odata.png" width="50%">
 
 
 ### Procedures as Restful endpoints
 
 Every stored procedure the user has permissions on can be invoked via a Restful service.
 
-<img src="docs/media/procedure-invocation.png" width="50%">
+<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/procedure-invocation.png" width="50%">
 
 
 ### Extension points
