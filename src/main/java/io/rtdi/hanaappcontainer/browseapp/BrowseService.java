@@ -246,7 +246,9 @@ public class BrowseService {
 			username = Util.validateFilename(username);
 			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
 			File rootdir = filedir.getParentFile();
-			if (!rootdir.isDirectory()) {
+			if (!rootdir.exists()) {
+				rootdir.mkdirs(); // The user logged in the first time
+			} else if (!rootdir.isDirectory()) {
 				throw new IOException("The directory is not accessible on the server \"" 
 						+ rootdir.getAbsolutePath() + "\", cannot create a directory under it");
 			}
