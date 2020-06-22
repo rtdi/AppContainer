@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    name: Upload Release Asset
+    name: Build and release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -27,12 +27,12 @@ jobs:
         echo "::set-env name=MVN_PROJECT_VERSION::$MVN_PROJECT_VERSION"
         mvn -DskipTests=true --no-transfer-progress clean package
         
-    - name: Build the Docker image
-      run: docker build . --file docker/Dockerfile --tag rtdi/hanaappcontainer:latest
-    - name: Login to DockerHub Registry
-      run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-    - name: Push the latest Docker image
-      run: docker push rtdi/hanaappcontainer:latest
+#    - name: Build the Docker image
+#      run: docker build . --file docker/Dockerfile --tag rtdi/hanaappcontainer:latest
+#    - name: Login to DockerHub Registry
+#      run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+#    - name: Push the latest Docker image
+#      run: docker push rtdi/hanaappcontainer:latest
       
     - name: Create Release
       id: create_release
