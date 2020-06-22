@@ -8,49 +8,61 @@ sap.ui.define([
             properties: {
             }, 
             aggregations: {
-                xAxis : {type : "io.rtdi.amchartsui5controls.Axis", multiple : true},
-                yAxis : {type : "io.rtdi.amchartsui5controls.Axis", multiple : true},
+                xAxes: {type : "io.rtdi.amchartsui5controls.Axis", multiple : true},
+                yAxes: {type : "io.rtdi.amchartsui5controls.Axis", multiple : true},
             }
 		},
 		renderer : {},
 		init : function() {
 		},
 		addXAxis : function(axis) {
-			this.addAggregation("xAxis", axis, true);
+			this.addAggregation("xAxes", axis);
+			this.getChart().xAxes.push(axis.getAm4ChartObject());
+			axis.initAxis();
 			return axis;
 		},
 		addYAxis : function(axis) {
-			this.addAggregation("yAxis", axis, true);
+			this.addAggregation("yAxes", axis);
+			this.getChart().yAxes.push(axis.getAm4ChartObject());
+			axis.initAxis();
 			return axis;
 		},
-		chartRendering : function(chart) {
-			if (this.getAggregation("xAxis")) {
-				this.getAggregation("xAxis").forEach(function(axis) {
-					var a = axis._getAm4ChartObject();
-					chart.xAxes.push(a);
-					axis._link();
-				}, this);
-			}
-			if (this.getAggregation("yAxis")) {
-				this.getAggregation("yAxis").forEach(function(axis) {
-					var a = axis._getAm4ChartObject();
-					chart.yAxes.push(a);
-					axis._link();
-				}, this);
-			}
-			io.rtdi.amchartsui5controls.SerialChart.prototype.chartRendering.apply(this, arguments);
+		addNewCategoryXAxis : function() {
+			return this.addXAxis(new io.rtdi.amchartsui5controls.AxisCategory());
 		},
-		createCategoryAxis : function() {
-			return new am4charts.CategoryAxis();
+		addNewCategoryYAxis : function() {
+			return this.addYAxis(new io.rtdi.amchartsui5controls.AxisCategory());
 		},
-		createDateAxis : function() {
-			return new am4charts.DateAxis();
+		addNewDateXAxis : function() {
+			return this.addXAxis(new io.rtdi.amchartsui5controls.AxisDate());
 		},
-		createValueAxis : function() {
-			return new am4charts.ValueAxis();
+		addNewDateYAxis : function() {
+			return this.addYAxis(new io.rtdi.amchartsui5controls.AxisDate());
+		},
+		addNewValueXAxis : function() {
+			return this.addXAxis(new io.rtdi.amchartsui5controls.AxisValue());
+		},
+		addNewValueYAxis : function() {
+			return this.addYAxis(new io.rtdi.amchartsui5controls.AxisValue());
 		},
 		createCircleBullet : function() {
 			return new am4charts.CircleBullet();
 		},
+		executeQuery : function() {
+			io.rtdi.amchartsui5controls.SerialChart.prototype.executeQuery.apply(this, arguments);
+			var aXAxes = this.getAggregation("xAxes");
+			if (aXAxes) {
+				aXAxes.forEach(function(axis) {
+					axis.executeQuery();
+				}, this);
+			};
+			var aYAxes = this.getAggregation("yAxes");
+			if (aYAxes) {
+				aYAxes.forEach(function(axis) {
+					axis.executeQuery();
+				}, this);
+			};
+		}
+
 	});
 });

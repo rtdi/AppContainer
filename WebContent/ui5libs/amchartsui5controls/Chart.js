@@ -9,13 +9,15 @@ sap.ui.define([
             properties: {
                 width: { type: "sap.ui.core.CSSSize", defaultValue: "100%" },
                 height: { type: "sap.ui.core.CSSSize", defaultValue: "100%" },
-                _chart: {type : "any", visibility: "hidden"},
-                _chartInitCallback: {type : "any", visibility: "hidden"}
+                _chart: {type : "any"},
             }, 
             aggregations: {
             },
 		},
-		init : function() {
+		constructor : function() {
+			Control.prototype.constructor.apply(this, arguments);
+			var chart = am4core.create(undefined, this._createNewChart());
+			this.setProperty("_chart", chart, true);
 		},
 		renderer : function(oRm, oControl) {
 			oRm.write("<div");
@@ -48,29 +50,18 @@ sap.ui.define([
 			return am4core.color(value);
 		},
 		onAfterRendering : function() {
-			sap.ui.core.Control.prototype.onAfterRendering.apply(this, arguments); // run the super class's method first
+			sap.ui.core.Control.prototype.onAfterRendering.apply(this, arguments);
+			this.executeQuery();
 			if (this.getProperty("_chart")) {
-				/*
-				 * Safety net
-				 */
-				this.getProperty("_chart").dispose();
+				this.getProperty("_chart").moveHtmlContainer(this.getDomRef());
 			}
-			var chart = am4core.create(this.getDomRef(), this._createNewChart());
-			chart.dataSource.events.on("parseended", function(ev) {
-				  // parsed data is assigned to data source's `data` property
-				  var data = ev.target.data;
-				  ev.target.data = data.value;
-				});
-			this.setProperty("_chart", chart, true);
-			this.getProperty("_chartInitCallback").call(this, this, chart);
 		},
 		dispose : function() {
 			if (this.getProperty("_chart")) {
 				this.getProperty("_chart").dispose();
 			}
 		},
-		setChartInitCallback : function(f) {
-			this.setProperty("_chartInitCallback", f, true);
+		executeQuery : function() {
 		}
 	});
 });

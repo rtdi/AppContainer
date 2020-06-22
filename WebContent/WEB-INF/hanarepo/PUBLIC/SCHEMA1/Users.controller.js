@@ -10,6 +10,8 @@ sap.ui.define([
 		    var oModel = new sap.ui.model.odata.v4.ODataModel( {
 		    	"groupId": "$direct",
 		    	synchronizationMode : "None",
+		    	"autoExpandSelect": true,
+		    	"operationMode": "Server",
 			    serviceUrl : "/HanaAppContainer/protected/odata/SYS/USERS/"
 		    } );
 		    oTable.setModel(oModel);

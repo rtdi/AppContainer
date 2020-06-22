@@ -18,12 +18,12 @@ public interface HDBCDSParserListener extends ParseTreeListener {
 	 */
 	void exitRoot(HDBCDSParser.RootContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HDBCDSParser#NAMESPACE}.
+	 * Enter a parse tree produced by {@link HDBCDSParser#NAMESPACE_SYMBOL}.
 	 * @param ctx the parse tree
 	 */
 	void enterNamespace(HDBCDSParser.NamespaceContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link HDBCDSParser#NAMESPACE}.
+	 * Exit a parse tree produced by {@link HDBCDSParser#NAMESPACE_SYMBOL}.
 	 * @param ctx the parse tree
 	 */
 	void exitNamespace(HDBCDSParser.NamespaceContext ctx);

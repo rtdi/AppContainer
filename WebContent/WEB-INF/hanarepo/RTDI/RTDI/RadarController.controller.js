@@ -8,37 +8,69 @@ sap.ui.define([
    	return Controller.extend("ui5.app.RadarController", {
    		onInit : function() {
 			var oView = sap.ui.getCore().byId("mainview");
-   			var chart = oView.byId("radarchart");
+   			var oControl = oView.byId("radarchart");
+   			var oFilterModel = new sap.ui.model.json.JSONModel( { year: 2003} );
+   			oControl.setModel(oFilterModel);
+   			var chart = oControl.getChart();
    			
-		    var oModel = new sap.ui.model.odata.v4.ODataModel({
-	    		serviceUrl : "/HanaAppContainer/protected/odata/SYS/M_CS_TABLES/", 
+		    /* var oModel = new sap.ui.model.odata.v4.ODataModel({
+	    		serviceUrl : "/HanaAppContainer/protected/odata/RTDI/SALES_DATA_WEEKLY/", 
 	    		"autoExpandSelect": true,
 				"operationMode": "Server",
 				"groupId": "$direct",
 				"synchronizationMode": "None"
 		    });
-
-		    var oList = oModel.bindList("/TABLE", undefined, undefined, undefined, {
+		    
+		    var oBindingContext = oModel.bindContext("/TABLE", undefined, {
 		          $$ownRequest: true,
-		          $filter : "SCHEMA_NAME eq 'SAPHANADB'",
-		          $select: ["TABLE_NAME", "MEMORY_SIZE_IN_TOTAL", "RECORD_COUNT"]
+		          $filter : "YEAR_ID eq 2003",
+		          // $select: ["TABLE_NAME", "MEMORY_SIZE_IN_TOTAL", "RECORD_COUNT"]
 		        });
 		    
-		    chart.setChartInitCallback(this.initChart);
+		    var oContext = oBindingContext.getBoundContext();
+		    var oProperty = oModel.bindProperty("WEEK_START_DATE", oContext);
+		    var oProperty = oModel.bindProperty("YEAR_ID", oContext);
+		    var oProperty = oModel.bindProperty("WEEK_ID", oContext);
+		    var oProperty = oModel.bindProperty("REVENUE", oContext);
+		    
+		    
+		    oBindingContext.initialize();
+		    
+		    oBindingContext.requestObject().then(function (o) {
+	            var data = o; 
+		    });
+		    
+		    
+		    var oList = oModel.bindList("/TABLE", undefined, undefined, undefined, {
+		          $$ownRequest: true,
+		          $filter : "YEAR_ID eq 2003",
+		          // $select: ["TABLE_NAME", "MEMORY_SIZE_IN_TOTAL", "RECORD_COUNT"]
+		        });
+		    var oListContext = oList.getContext();
+		    var oProperty = oModel.bindProperty("WEEK_START_DATE", oListContext);
+		    var oProperty = oModel.bindProperty("YEAR_ID", oListContext);
+		    var oProperty = oModel.bindProperty("WEEK_ID", oListContext);
+		    var oProperty = oModel.bindProperty("REVENUE", oListContext);
+		    
+		    oList.initialize();
+		    
+		    var sUrl = oList.requestDownloadUrl().then(function (o) {
+		    	var x = o;
+		    });
+		    
+		    oList.requestContexts().then(function (aContexts) {
+		        aContexts.forEach(function (oContext) {
+		            var data = oContext.getObject(); 
+		        });
+		    }); */
+
+		    
+/*		    chart.setChartInitCallback(this.initChart);
+		    
 		    
    		},
-   		initChart : function(oControl, chart) {
-   			var firstDay = new Date(2003, 1, 1);
-   			firstDay = am4core.time.round(firstDay, "year", 1);
-
-   			var dailyData = [];
-			for (var i = 0; i < 7; i++) {
-			    // dailyData.push({ day: chart.dateFormatter.language.translate(chart.dateFormatter.weekdaysShort[i]) });
-			    dailyData.push({ "DAY_IN_WEEK": i });
-			}
-
-
-   			chart.dataSource.url = "/HanaAppContainer/protected/odata/RTDI/SALES_DATA_DAILY/TABLE?$filter=YEAR_ID%20eq%202003&$skip=0&$top=100";
+   		initChart : function(oControl, chart) { */
+   			
    			chart.innerRadius = am4core.percent(15);
    			chart.radius = am4core.percent(90);
    			chart.fontSize = "11px";
@@ -46,20 +78,14 @@ sap.ui.define([
    			chart.endAngle = chart.startAngle + 350;
    			chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
 
-   			// Create axes
-   			var dateAxis = chart.xAxes.push(oControl.createDateAxis());
-   			dateAxis.baseInterval = { timeUnit: "week", count: 1 };
+   			var da = oControl.addNewYearXAxis();
+   			var dateAxis = da.getAm4ChartObject();
+   			da.setYearPath("/year");
    			dateAxis.renderer.innerRadius = oControl.createCSSPercentNumber(40);
-   			dateAxis.renderer.minGridDistance = 5;
-   			dateAxis.renderer.labels.template.relativeRotation = 0;
-   			dateAxis.renderer.labels.template.location = 0.5;
    			dateAxis.renderer.labels.template.radius = oControl.createCSSPercentNumber(-57);
-   			dateAxis.renderer.labels.template.fontSize = "8px";
-   			dateAxis.dateFormats.setKey("week", "w");
-   			dateAxis.periodChangeDateFormats.setKey("week", "w");
-   			dateAxis.cursorTooltipEnabled = false;
 
-   			var valueAxis = chart.yAxes.push(oControl.createValueAxis());
+   			var va = oControl.addNewValueYAxis();
+   			var valueAxis = va.getAm4ChartObject();
    			valueAxis.renderer.inversed = true;
    			valueAxis.renderer.radius = oControl.createCSSPercentNumber(40);
    			valueAxis.renderer.minGridDistance = 15;
@@ -68,15 +94,14 @@ sap.ui.define([
    			valueAxis.cursorTooltipEnabled = false;
    			valueAxis.renderer.labels.template.fill = oControl.createCSSColor("#000000");
 
-   			/*
-   			 *  create view sales_data_daily as select orderdate, year_id, week(orderdate) as week_id,
-			 *	weekday(orderdate) as day_in_week, sum(msrp) as revenue from sales_data
-			 *	group by orderdate, year_id, week(orderdate), weekday(orderdate);
-   			 */
    			// Create series
-   			var columnSeries = chart.series.push(oControl.createRadarColumnSeries());
-   			columnSeries.dataFields.dateX = "ORDERDATE";
+   			var cs = oControl.addNewRadarColumnSeries();
+   			var columnSeries = cs.getAm4ChartObject();
+   			columnSeries.dataFields.dateX = "WEEK_START_DATE";
    			columnSeries.dataFields.valueY = "REVENUE";
+   			cs.setODataUrl("/HanaAppContainer/protected/odata/RTDI/SALES_DATA_WEEKLY/", "TABLE");
+   			cs.addFilter(new io.rtdi.amchartsui5controls.DataProviderFilterEqual("YEAR_ID", "/year"));
+
    			columnSeries.columns.template.strokeOpacity = 0;
    			columnSeries.columns.template.width = oControl.createCSSPercentNumber(95);
    			columnSeries.fill = oControl.createCSSColor("#00ffff");
@@ -87,23 +112,19 @@ sap.ui.define([
    			columnSeries.columns.template.tooltipText = "[bold]week {DAY_IN_WEEK}\n[font-size:13px]Total {valueY}";
    			columnSeries.cursorTooltipEnabled = false;
 
-   			// weekday axis
-   			var weekDayAxis = chart.yAxes.push(oControl.createCategoryAxis());
-   			weekDayAxis.dataFields.category = "DAY_IN_WEEK";
-   			weekDayAxis.data = dailyData;
-   			weekDayAxis.renderer.innerRadius = oControl.createCSSPercentNumber(50);
-   			weekDayAxis.renderer.minGridDistance = 10;
-   			weekDayAxis.renderer.grid.template.location = 0;
-   			weekDayAxis.renderer.line.disabled = true;
-   			weekDayAxis.renderer.axisAngle = 90;
-   			weekDayAxis.cursorTooltipEnabled = false;
-   			weekDayAxis.renderer.labels.template.fill = oControl.createCSSColor("#0f0f00");
+   			var wa = oControl.addNewWeekdayYAxis();
+   			var weekDayAxis = wa.getAm4ChartObject();
+   			
 
    			// bubble series
-   			var bubbleSeries = chart.series.push(oControl.createRadarSeries());
+   			var bs = oControl.addNewRadarSeries();
+   			var bubbleSeries = bs.getAm4ChartObject();
    			bubbleSeries.dataFields.dateX = "ORDERDATE";
    			bubbleSeries.dataFields.categoryY = "DAY_IN_WEEK";
    			bubbleSeries.dataFields.value = "REVENUE";
+   			bs.setODataUrl("/HanaAppContainer/protected/odata/RTDI/SALES_DATA_DAILY/", "TABLE");
+   			bs.addFilter(new io.rtdi.amchartsui5controls.DataProviderFilterEqual("YEAR_ID", "/year"));
+   			
    			bubbleSeries.yAxis = weekDayAxis;
    			bubbleSeries.strokeOpacity = 0;
    			bubbleSeries.maskBullets = false;
@@ -124,45 +145,12 @@ sap.ui.define([
    			bubbleSeries.heatRules.push({ target: bubbleBullet.circle, min: 2, max: 12, dataField: "value", property: "radius" });
    			bubbleSeries.dataItems.template.locations.categoryY = 0.5;
 
-   			// add month ranges
-   			for (var i = 0; i < 13; i++) {
-   			  var range = dateAxis.axisRanges.create();
-   			  range.date = new Date(firstDay.getFullYear(), i, 0, 0, 0, 0);
-   			  range.endDate = new Date(firstDay.getFullYear(), i + 1, 0, 0, 0, 0);
-   			  if (i % 2) {
-   			    range.axisFill.fillOpacity = 0.4;
-   			  }
-   			  else {
-   			    range.axisFill.fillOpacity = 0.8;
-   			  }
-   			  range.axisFill.radius = -28;
-   			  range.axisFill.adapter.add("innerRadius", function(innerRadius, target) {
-   			    return dateAxis.renderer.pixelRadius + 7;
-   			  })
-   			  range.axisFill.fill = oControl.createCSSColor("#b9ce37");
-   			  range.axisFill.stroke = oControl.createCSSColor("#5f6062");
-   			  range.grid.disabled = true;
-   			  range.label.text = chart.dateFormatter.language.translate(chart.dateFormatter.months[i])
-   			  range.label.bent = true;
-   			  range.label.radius = 10;
-   			  range.label.fontSize = 10;
-   			  range.label.paddingBottom = 5;
-   			  range.label.interactionsEnabled = false;
-   			  range.axisFill.interactionsEnabled = true;
-   			  range.axisFill.cursorOverStyle = am4core.MouseCursorStyle.pointer;
-   			  range.axisFill.events.on("hit", function(event) {
-   			    if (dateAxis.start == 0 && dateAxis.end == 1) {
-   			      dateAxis.zoomToDates(event.target.dataItem.date, event.target.dataItem.endDate);
-   			    }
-   			    else {
-   			      dateAxis.zoom({ start: 0, end: 1 });
-   			    }
-   			  })
-   			}
 
    			chart.cursor = new am4charts.RadarCursor();
    			chart.cursor.innerRadius = am4core.percent(40);
    			chart.cursor.lineY.disabled = true;
+   			
+   			// oDataProvider.updateData();
 
 
    			/* var label = chart.radarContainer.createChild(am4core.Label);

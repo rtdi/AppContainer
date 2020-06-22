@@ -8,23 +8,24 @@ sap.ui.define([
             properties: {
             }, 
             aggregations: {
-                series : {type : "io.rtdi.amchartsui5controls.Series", multiple : true},
+                series: {type : "io.rtdi.amchartsui5controls.Series", multiple : true},
             }
 		},
 		renderer : {},
-		init : function() {
+		addSeries : function(s) {
+			var series = new io.rtdi.amchartsui5controls.Series();
+			series._setAm4ChartObject(s);
+			this.addAggregation("series", series);
+			this.getChart().series.push(s);
+			return series;
 		},
-		addSeries : function(series) {
-			this.addAggregation("series", series, true);
-		},
-		chartRendering : function(chart) {
-			if (this.getAggregation("series")) {
-				this.getAggregation("series").forEach(function(series) {
-					chart.series.push(series._getAm4ChartObject());
-					series._link();
+		executeQuery : function() {
+			var aSeries = this.getAggregation("series");
+			if (aSeries) {
+				aSeries.forEach(function(series) {
+					series.executeQuery();
 				}, this);
 			}
-			io.rtdi.amchartsui5controls.Chart.prototype.chartRendering.apply(this, arguments);
-		},
+		}
 	});
 });
