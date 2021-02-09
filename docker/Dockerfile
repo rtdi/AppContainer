@@ -1,4 +1,4 @@
-FROM rtdi/connectorrootapp
+FROM rtdi/connectorrootapp:tomcat9
 
 LABEL maintainer="info@rtdi.io"
 
