@@ -104,8 +104,8 @@
                maxThreads="150" SSLEnabled="true" >
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
         <SSLHostConfig>
-            <Certificate certificateKeyFile="security/ssl/localhost-rsa-key.pem"
-                         certificateFile="security/ssl/localhost-rsa-cert.pem"
+            <Certificate certificateKeyFile="conf/security/ssl/localhost-rsa-key.pem"
+                         certificateFile="conf/security/ssl/localhost-rsa-cert.pem"
 						 certificateKeyPassword="changeit"
                          type="RSA" />
         </SSLHostConfig>

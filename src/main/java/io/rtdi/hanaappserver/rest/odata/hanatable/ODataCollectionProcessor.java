@@ -1,6 +1,7 @@
 package io.rtdi.hanaappserver.rest.odata.hanatable;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -60,6 +61,7 @@ import org.apache.olingo.server.api.uri.queryoption.expression.Member;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.sap.db.jdbc.HanaClob;
 
 import io.rtdi.hanaappserver.rest.odata.ODataFilterExpressionVisitor;
 import io.rtdi.hanaappserver.rest.odata.ODataSQLProjectionBuilder;
@@ -265,7 +267,6 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 						case ALPHANUM:
 						case BINARY:
 						case BINTEXT:
-						case BLOB:
 						case CHAR:
 						case CLOB:
 						case NCHAR:
@@ -288,7 +289,22 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 						case BOOLEAN:
 						default:
 							value = rs.getObject(i+1);
+							if (value instanceof HanaClob) {
+								HanaClob clob = (HanaClob) value;
+								Reader r = clob.getCharacterStream();
+								char[] arr = new char[8 * 1024];
+							    StringBuilder buffer = new StringBuilder();
+							    int len;
+							    while ((len = r.read(arr, 0, arr.length)) != -1) {
+							        buffer.append(arr, 0, len);
+							    }
+							    r.close();
+							    value = buffer.toString();
+							}
 							row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+							break;
+						case BLOB:
+							// TODO: BLOB not implemented yet
 							break;
 						case DATE: // 2010-01-01
 							value = rs.getDate(i+1);
