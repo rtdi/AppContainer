@@ -84,9 +84,9 @@ public class EditorService {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {
 			String username = user.getHanaUser();
-			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 			username = Util.validateFilename(username);
-			File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			File file = upath.resolve(path).toFile();
 			if (!file.isFile()) {
 				throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
 			}
@@ -139,13 +139,13 @@ public class EditorService {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {
 			String username = user.getHanaUser();
-			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 			username = Util.validateFilename(username);
-			File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
-			if (!file.isFile()) {
-				throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path ppath = upath.resolve(path);
+			if (!ppath.toFile().isFile()) {
+				throw new IOException("Cannot find file \"" + ppath.toAbsolutePath().toString() + "\" on the server");
 			}
-			Files.writeString(file.toPath(), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			Files.writeString(ppath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();

@@ -97,9 +97,8 @@ public class PermissionService {
     	    		)
     		String schema) {
 		try {
-			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
-			String schemapath = user + File.separatorChar + schema;
-			File file = new File(rootpath, schemapath);
+			java.nio.file.Path spath = WebAppConstants.getHanaRepoSchemaDir(request.getServletContext(), user, schema);
+			File file = spath.toFile();
 			if (!file.isDirectory()) {
 				throw new IOException("Cannot find directory \"" + file.getAbsolutePath() + "\" on the server");
 			}
@@ -125,10 +124,10 @@ public class PermissionService {
     		    .build();
     		session.setAttribute(FILEPERMISSIONCACHE, permissioncache);
     	}
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
+    	java.nio.file.Path rootpath = WebAppConstants.getHanaRepo(request.getServletContext());
 		Permissions permissions = permissioncache.getIfPresent(schemapath);
 		if (permissions == null) {
-			permissions = new Permissions(hanauser, user, schema, rootpath);
+			permissions = new Permissions(hanauser, user, schema, rootpath.toString());
 			permissioncache.put(schemapath, permissions);
 		}
 		return permissions;

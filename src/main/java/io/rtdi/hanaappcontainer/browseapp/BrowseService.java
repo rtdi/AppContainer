@@ -81,10 +81,10 @@ public class BrowseService {
     public Response browse() {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
-			File rootdir = new File(rootpath + File.separatorChar + username);
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			File rootdir = upath.toFile();
 			if (!rootdir.isDirectory()) {
 				log.debug("Root directory is not accessible on the server \"{}\"", rootdir.getAbsolutePath());
 				return Response.ok(new Directory()).build();
@@ -132,18 +132,17 @@ public class BrowseService {
     		 String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
-			File rootdir = new File(rootpath + File.separatorChar + username);
-			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			File filedir = upath.resolve(path).toFile();
 			if (!filedir.isDirectory()) {
 				throw new IOException("The directory is not accessible on the server \"" + filedir.getAbsolutePath() + "\"");
 			}
 			File[] files = filedir.listFiles(plainfilefilter);
-			DirectoryContent directorylist = new DirectoryContent(getPath(filedir, rootdir));
+			DirectoryContent directorylist = new DirectoryContent(getPath(filedir, upath.toFile()));
 			for(File f : files) {
-				directorylist.add(new FileData(f, rootdir));
+				directorylist.add(new FileData(f, upath.toFile()));
 			}
 			Collections.sort(directorylist.getFiles());
 			return Response.ok(directorylist).build();
@@ -188,17 +187,16 @@ public class BrowseService {
     		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
-			File rootdir = new File(rootpath + File.separatorChar + username);
-			File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
-			if (file.exists()) {
-				throw new IOException("The file exists on the server already \"" + file.getAbsolutePath() + "\"");
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path fpath = upath.resolve(path);
+			if (fpath.toFile().exists()) {
+				throw new IOException("The file exists on the server already \"" + fpath.toAbsolutePath().toString() + "\"");
 			}
 			
-			java.nio.file.Path newfile = Files.createFile(file.toPath());
-			FileData data = new FileData(newfile.toFile(), rootdir);
+			java.nio.file.Path newfile = Files.createFile(fpath);
+			FileData data = new FileData(newfile.toFile(), upath.toFile());
 			return Response.ok(data).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
@@ -241,11 +239,11 @@ public class BrowseService {
     		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
-			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
-			File rootdir = filedir.getParentFile();
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			File filedir = upath.resolve(path).toFile();
+			File rootdir = upath.toFile();
 			if (!rootdir.exists()) {
 				rootdir.mkdirs(); // The user logged in the first time
 			} else if (!rootdir.isDirectory()) {
@@ -299,14 +297,14 @@ public class BrowseService {
     		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
-			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
-			if (!filedir.isDirectory()) {
-				throw new IOException("The directory is not accessible on the server \"" + filedir.getAbsolutePath() + "\"");
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path filedir = upath.resolve(path);
+			if (!filedir.toFile().isDirectory()) {
+				throw new IOException("The directory is not accessible on the server \"" + filedir.toAbsolutePath().toString() + "\"");
 			}
-			Files.delete(filedir.toPath());
+			Files.delete(filedir);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
@@ -349,14 +347,14 @@ public class BrowseService {
     		String path) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
-			File filedir = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
-			if (!filedir.isFile()) {
-				throw new IOException("The file does not exist or is a directory \"" + filedir.getAbsolutePath() + "\"");
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path filedir = upath.resolve(path);
+			if (!filedir.toFile().isFile()) {
+				throw new IOException("The file does not exist or is a directory \"" + filedir.toAbsolutePath().toString() + "\"");
 			}
-			Files.delete(filedir.toPath());
+			Files.delete(filedir);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
@@ -405,20 +403,19 @@ public class BrowseService {
     		FileData target) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		try {
 			username = Util.validateFilename(username);
-			File rootdir = new File(rootpath + File.separatorChar + username);
-			File sourcefile = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
-			File targetfile = new File(rootpath + File.separatorChar + username + File.separatorChar + target.path);
-			Util.validatePathWithin(targetfile, rootdir);
-			if (!sourcefile.exists()) {
-				throw new IOException("The file does not exist \"" + sourcefile.getAbsolutePath() + "\"");
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path sourcefile = upath.resolve(path);
+			java.nio.file.Path targetfile = upath.resolve(target.path);
+			Util.validatePathWithin(targetfile.toFile(), upath.toFile());
+			if (!sourcefile.toFile().exists()) {
+				throw new IOException("The file does not exist \"" + sourcefile.toAbsolutePath().toString() + "\"");
 			}
-			if (targetfile.exists()) {
-				throw new IOException("The target file exist already \"" + targetfile.getAbsolutePath() + "\"");
+			if (targetfile.toFile().exists()) {
+				throw new IOException("The target file exist already \"" + targetfile.toAbsolutePath().toString() + "\"");
 			}
-			Files.move(sourcefile.toPath(), targetfile.toPath());
+			Files.move(sourcefile, targetfile);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();

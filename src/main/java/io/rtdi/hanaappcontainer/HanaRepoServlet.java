@@ -57,7 +57,7 @@ public class HanaRepoServlet extends HttpServlet {
 	        String userdir = relativepath.getName(0).toString();
 	        String schemadir = relativepath.getName(1).toString();
 	
-			Path rootpath = Paths.get(request.getServletContext().getRealPath(WebAppConstants.HANAREPO));
+	        Path rootpath = WebAppConstants.getHanaRepo(request.getServletContext());
 			Path requestedpath = rootpath.resolve(relativepath);
 	        File file = requestedpath.toFile();
 			Path contentpath;
@@ -66,7 +66,7 @@ public class HanaRepoServlet extends HttpServlet {
 	        } else {
 	        	contentpath = requestedpath;
 	        }
-			Path schemapath = rootpath.resolve(userdir).resolve(schemadir);
+			Path schemapath = WebAppConstants.getHanaRepoSchemaDir(request.getServletContext(), userdir, schemadir);
 			// The user is allowed if the requested path is within its own home directory
 	        if (!userdir.equals(hanauser.getHanaUser())) {
 	    		Permissions permissions = PermissionService.getPermissions(request, userdir, schemadir);

@@ -84,13 +84,13 @@ public class ImportService {
     public Response runImport(@PathParam("schema") String schemaraw, @QueryParam("type") ImportType importtype) {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		String username = user.getHanaUser();
-		String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 		ArrayList<String> importresult = new ArrayList<>();
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
 			username = Util.validateFilename(username);
 			String schemaname = Util.decodeURIfull(schemaraw);
 			schemaname = Util.validateFilename(schemaname);
-			File rootdir = new File(rootpath + File.separatorChar + username  + File.separatorChar + schemaname);
+			java.nio.file.Path spath = WebAppConstants.getHanaRepoSchemaDir(request.getServletContext(), username, schemaname);
+			File rootdir = spath.toFile();
 			if (!rootdir.isDirectory()) {
 				if (!rootdir.mkdirs()) {
 					throw new IOException("Cannot create the director \"" + rootdir.getAbsolutePath() + "\" on the server");
@@ -107,13 +107,15 @@ public class ImportService {
 						String path = Util.packageToPath(tablename);
 						String filename = Util.packageToFilename(tablename);
 						filename = filename + ".hdbtable";
-						File d = new File(rootdir.getAbsolutePath() + File.separatorChar + path);
+						java.nio.file.Path ppath = spath.resolve(path);
+						File d = ppath.toFile();
 						if (!d.exists()) {
 							if (!d.mkdirs()) {
 								throw new HanaSQLException("Failed to create the directory", d.getAbsolutePath());
 							}
 						}
-						Files.writeString(new File(d.getAbsolutePath() + File.separatorChar + filename).toPath(), hdbtablecontent, StandardOpenOption.CREATE);
+						
+						Files.writeString(ppath.resolve(filename), hdbtablecontent, StandardOpenOption.CREATE);
 					}
 				}
 			} catch (SQLException e) {

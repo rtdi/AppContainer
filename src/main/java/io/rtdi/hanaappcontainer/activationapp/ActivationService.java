@@ -93,14 +93,15 @@ public class ActivationService {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {
 			String username = user.getHanaUser();
-			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 			try (Connection conn = SessionHandler.handleSession(request, log);) {
 				username = Util.validateFilename(username);
-				File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+				java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+				java.nio.file.Path ppath = upath.resolve(path);
+				File file = ppath.toFile();
 				if (!file.isFile()) {
 					throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
 				}
-				File rootdir = new File(rootpath + File.separatorChar + username);
+				File rootdir = upath.toFile();
 				String schemaname = Util.fileToSchemaname(file, rootdir);
 				ActivationResult cdsactivationresult = new ActivationResult("Activating the file", null, ActivationSuccess.SUCCESS, null);
 				activateFile(file, schemaname, conn, cdsactivationresult, rootdir);
@@ -144,14 +145,15 @@ public class ActivationService {
 		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
 		try {
 			String username = user.getHanaUser();
-			String rootpath = request.getServletContext().getRealPath(WebAppConstants.HANAREPO);
 			try (Connection conn = SessionHandler.handleSession(request, log);) {
 				username = Util.validateFilename(username);
-				File file = new File(rootpath + File.separatorChar + username + File.separatorChar + path);
+				java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+				java.nio.file.Path ppath = upath.resolve(path);
+				File file = ppath.toFile();
 				if (!file.exists()) {
 					throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
 				}
-				File rootdir = new File(rootpath + File.separatorChar + username);
+				File rootdir = upath.toFile();
 				String schemaname = Util.fileToSchemaname(file, rootdir);
 				if (schemaname != null) {
 					ActivationResult result = new ActivationResult("Activating the CDS file", null, ActivationSuccess.SUCCESS, null);

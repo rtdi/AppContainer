@@ -107,13 +107,18 @@ public class ODataSQLProjectionBuilder {
 			final Set<List<String>> selectedPaths = ExpandSelectHelper.getSelectedPathsWithTypeCasts(selectItems,
 					propertyName);
 			if (selectedPaths == null) {
-				String sqlexpression = "\"" + propertyName + "\"";
+				String sqlexpression;
+				if (edmProperty.getType().getName().equals("Geometry")) {
+					sqlexpression = "\"" + propertyName + "\".ST_AsGeoJSON()";
+				} else {
+					sqlexpression = "\"" + propertyName + "\"";
+				}
 				EdmAnnotation annotation = edmProperty.getAnnotation(sqlmappingterm, null);
 				if (annotation != null) {
 					EdmExpression expr = annotation.getExpression();
-					sqlexpression = expr.asConstant().getValueAsString() + " as \"" + propertyName + "\"" ; 
+					sqlexpression = expr.asConstant().getValueAsString(); 
 				}
-				result.append(sqlexpression);
+				result.append(sqlexpression + " as \"" + propertyName + "\"");
 			} else {
 				List<List<String>> complexSelectedPaths = edmProperty != null
 						&& edmProperty.getType() instanceof EdmComplexType

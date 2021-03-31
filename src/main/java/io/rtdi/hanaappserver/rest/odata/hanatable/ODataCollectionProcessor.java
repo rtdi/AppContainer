@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,10 @@ import org.apache.olingo.commons.api.edm.EdmEntitySet;
 import org.apache.olingo.commons.api.edm.EdmEntityType;
 import org.apache.olingo.commons.api.edm.EdmTerm;
 import org.apache.olingo.commons.api.edm.annotation.EdmConstantExpression;
+import org.apache.olingo.commons.api.edm.geo.Geospatial.Dimension;
+import org.apache.olingo.commons.api.edm.geo.LineString;
+import org.apache.olingo.commons.api.edm.geo.MultiLineString;
+import org.apache.olingo.commons.api.edm.geo.Point;
 import org.apache.olingo.commons.api.format.ContentType;
 import org.apache.olingo.commons.api.http.HttpHeader;
 import org.apache.olingo.commons.api.http.HttpStatusCode;
@@ -57,7 +62,12 @@ import org.apache.olingo.server.api.uri.queryoption.TopOption;
 import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
 import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.apache.olingo.server.api.uri.queryoption.expression.Member;
+import org.geojson.FeatureCollection;
+import org.geojson.GeoJsonObject;
+import org.geojson.LngLatAlt;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
@@ -301,7 +311,32 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 							    r.close();
 							    value = buffer.toString();
 							}
-							row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+							if (datatype == HanaDataType.ST_GEOMETRY || datatype == HanaDataType.ST_POINT) {
+								ObjectMapper mapper = new ObjectMapper();
+								GeoJsonObject geo = mapper.readValue(value.toString(), GeoJsonObject.class);
+								MultiLineString m;
+								if (geo instanceof org.geojson.MultiLineString) {
+									org.geojson.MultiLineString geom = (org.geojson.MultiLineString) geo;
+									List<LineString> olines = new ArrayList<>();
+									List<List<LngLatAlt>> coords = geom.getCoordinates();
+									for (List<LngLatAlt> geoline : coords) {
+										List<Point> opoints = new ArrayList<>();
+										for (LngLatAlt point : geoline) {
+											Point op = new Point(Dimension.GEOGRAPHY, null);
+											op.setX(point.getLongitude());
+											op.setY(point.getLatitude());
+											op.setZ(point.getAltitude());
+											opoints.add(op);
+										}
+										LineString olinestring = new LineString(Dimension.GEOGRAPHY, null, opoints);
+										olines.add(olinestring);
+									}
+									m = new MultiLineString(Dimension.GEOGRAPHY, null, olines);
+									row.addProperty(new Property(null, propertyname, ValueType.GEOSPATIAL, m));
+								}
+							} else {
+								row.addProperty(new Property(null, propertyname, ValueType.PRIMITIVE, value));
+							}
 							break;
 						case BLOB:
 							// TODO: BLOB not implemented yet
