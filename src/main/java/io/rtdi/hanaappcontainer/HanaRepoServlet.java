@@ -19,6 +19,7 @@ import org.apache.catalina.connector.Response;
 
 import io.rtdi.hanaappcontainer.PermissionService.Permissions;
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
+import io.rtdi.hanaappserver.utils.Util;
 
 
 @WebServlet("/protected/hanarepo/*")
@@ -46,64 +47,77 @@ public class HanaRepoServlet extends HttpServlet {
     	try {
 			HanaPrincipal hanauser = (HanaPrincipal) request.getUserPrincipal();
 	        String filename = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
-	        if (filename.startsWith("[currentuser]/")) {
-	        	filename = filename.replace("[currentuser]", hanauser.getHanaUser());
+	        if (filename.startsWith("currentuser/")) {
+	        	filename = hanauser.getHanaUser() + filename.substring(11);
 	        }
 	    	Path relativepath = Paths.get(filename);
-	    	if (relativepath.getNameCount() < 2) {
-				response.sendError(Response.SC_NOT_FOUND, "requested file has to follow the pattern /protected/hanarepo/{hanauser}/{hanaschema}/*");
+	    	if (relativepath.getNameCount() < 1) {
+				response.sendError(Response.SC_NOT_FOUND, "requested file has to follow the pattern /protected/hanarepo/{hanauser}/*");
 				return;
 	    	}
 	        String userdir = relativepath.getName(0).toString();
-	        String schemadir = relativepath.getName(1).toString();
+			Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), userdir);
 	
 	        Path rootpath = WebAppConstants.getHanaRepo(request.getServletContext());
-			Path requestedpath = rootpath.resolve(relativepath);
+			Path requestedpath = rootpath.resolve(Util.makeRelativePath(relativepath.toString()));
 	        File file = requestedpath.toFile();
-			Path contentpath;
 			if (file.isDirectory()) {
-	        	contentpath = requestedpath.resolve("index.html");
-	        } else {
-	        	contentpath = requestedpath;
+				// send redirect
+				String redirectto;
+				if (filename.endsWith("/")) {
+					redirectto = "index.html";
+				} else {
+					redirectto = relativepath.getFileName().toString() + "/index.html";
+				}
+	        	ServletOutputStream out = response.getOutputStream();
+	    		out.println("<!DOCTYPE html>");
+	    		out.println("<html>");
+	    		out.println("  <head>");
+	    		out.println("    <meta http-equiv=\"refresh\" content=\"0; url=" + redirectto + "\" />");
+	    		out.println("  </head>");
+	    		out.println("  <body>");
+	    		out.println("    <p><a href=\"" + redirectto + "\">redirect to index.html</a></p>");
+	    		out.println("  </body>");
+	    		out.println("</html>");
+	    		return;
 	        }
-			Path schemapath = WebAppConstants.getHanaRepoSchemaDir(request.getServletContext(), userdir, schemadir);
 			// The user is allowed if the requested path is within its own home directory
 	        if (!userdir.equals(hanauser.getHanaUser())) {
-	    		Permissions permissions = PermissionService.getPermissions(request, userdir, schemadir);
+	    		Permissions permissions = PermissionService.getPermissions(request, userdir);
 	    		Set<String> dirs = permissions.getDirectories();
-	    		Path r = schemapath.relativize(contentpath.getParent()); // find the directory of the requested file
+	    		Path r = upath.relativize(requestedpath.getParent()); // find the directory of the requested file
 	    		if (!dirs.contains(PermissionService.getRestUri(r))) {
-	    			response.sendError(Response.SC_FORBIDDEN, "User has no permissions to read the data in location \"" + contentpath.getParent().toString() + "\"");
+	    			response.sendError(Response.SC_FORBIDDEN, "User has no permissions to read the data in location \"" + requestedpath.getParent().toString() + "\"");
 	    			return;
 	    		}
 	        }
 	        invocations++;
 	        lastprocessedtime = System.currentTimeMillis();
-	        file = contentpath.toFile();
+	        file = requestedpath.toFile();
 	        if (file.isFile()) { // if the file exist, then output it
 		        response.setHeader("Content-Type", getServletContext().getMimeType(file.getAbsolutePath()));
 		        response.setHeader("Content-Length", String.valueOf(file.length()));
 		        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
-		        Files.copy(contentpath, response.getOutputStream());
+		        Files.copy(requestedpath, response.getOutputStream());
 		        return;
 	        }
 	        /*
 	         * When the file does not exist, then create some default ones automatically for UI5 applications
 	         */
 	        if (file.getName().endsWith(".html")) {
-	        	writeUI5HTML(response, contentpath);
+	        	writeUI5HTML(response, requestedpath);
 	        	return;
 	        }
 	        if (file.getName().equals("Component.js")) {
-	        	writeUI5ComponentJS(response, contentpath);
+	        	writeUI5ComponentJS(response, requestedpath);
 	        	return;
 	        }
 	        if (file.getName().endsWith(".controller.js")) {
-	        	writeUI5ControllerJS(response, contentpath);
+	        	writeUI5ControllerJS(response, requestedpath);
 	        	return;
 	        }
 	        if (file.getName().equals("Component-preload.js")) {
-	        	writeEmpty(response, contentpath);
+	        	writeEmpty(response, requestedpath);
 	        	return;
 	        }
 			response.sendError(Response.SC_NOT_FOUND, "File at location \"" + file.getAbsolutePath() + "\" does not exist");
@@ -141,21 +155,28 @@ public class HanaRepoServlet extends HttpServlet {
 		out.println("    <script");
 		out.println("       id=\"sap-ui-bootstrap\"");
 		out.println("       src=\"/openui5/resources/sap-ui-core.js\"");
+		out.println("       data-sap-ui-libs=\"sap.m\"");
 		out.println("       data-sap-ui-theme=\"sap_fiori_3\"");
 		out.println("       data-sap-ui-async=\"true\"");
 		out.println("       data-sap-ui-xx-bindingSyntax=\"complex\"");
 		out.println("       data-sap-ui-xx-supportedLanguages=\"en\"");
 		out.println("       data-sap-ui-frameOptions=\"trusted\"");
 		out.println("       data-sap-ui-resourceroots='{");
+		out.println("          \"ui5libs\": \"/HanaAppContainer/ui5libs\",");
+		out.println("          \"ui5externallibs\": \"/ui5externallibs\",");
 		out.println("          \"" + resourceroot + "\": \"./\"");
 		out.println("       }' >");
 		out.println("    </script>");
 		out.println("    <script>");
-		out.println("        sap.ui.getCore().attachInit(function () {");
+		out.println("        sap.ui.getCore().attachInit(function() {");
 		out.println("            document.body.innerHTML=''");
-		out.println("            new sap.ui.xmlview({");
-		out.println("                viewName: \"" + resourceroot + "." + name + "\", id: \"mainview\"");
-		out.println("            }).placeAt(\"content\");");
+		out.println("        	 new sap.m.Shell({");
+		out.println("        	     app: new sap.ui.core.ComponentContainer({");
+		out.println("        		     height : \"100%\",");
+		out.println("        			 name : \"" + resourceroot + "\"");
+		out.println("        		 }),");
+		out.println("                appWidthLimited : false");	
+		out.println("        	}).placeAt(\"content\");");
 		out.println("        });");
 		out.println("    </script>");
 		out.println("  </head>");

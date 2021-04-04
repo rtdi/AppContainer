@@ -89,11 +89,11 @@ public class ImportService {
 			username = Util.validateFilename(username);
 			String schemaname = Util.decodeURIfull(schemaraw);
 			schemaname = Util.validateFilename(schemaname);
-			java.nio.file.Path spath = WebAppConstants.getHanaRepoSchemaDir(request.getServletContext(), username, schemaname);
+			java.nio.file.Path spath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
 			File rootdir = spath.toFile();
 			if (!rootdir.isDirectory()) {
 				if (!rootdir.mkdirs()) {
-					throw new IOException("Cannot create the director \"" + rootdir.getAbsolutePath() + "\" on the server");
+					throw new IOException("Cannot create the directory \"" + rootdir.getAbsolutePath() + "\" on the server");
 				}
 			}
 			String sql = "select table_name from tables where schema_name = ? and is_user_defined_type = 'FALSE'";

@@ -31,6 +31,20 @@ Then start the image via docker run. Only one parameter needs to be set, the env
 
 From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/HanaAppContainer/ with a list of applications
 
+An even better docker run command is to add a few server directories, here all in the hosts /dockermountpoints directory, and point them into various predefined points.
+
+    docker run -d --name appcontainer  -p 80:8080 -p 443:8443 \
+       -v /dockermountpoints/rtdiconfig:/usr/local/tomcat/conf/rtdiconfig \
+       -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
+       -v /dockermountpoints/hanarepo:/usr/local/tomcat/hanarepo \
+       -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
+       -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/hanaappcontainer
+
+- /usr/local/tomcat/conf/rtdiconfig: The directory where tomcat related settings can go. Usually not needed.
+- /usr/local/tomcat/conf/security: The directory with ssl settings. The tomcat-users.xml user database is not used.
+- /usr/local/tomcat/hanarepo: This is where all developed files are located, one directory per user and a global PUBLIC directory.
+- /usr/local/tomcat/webapps/ui5externallibs: A place to put all additional ui5 libraries and files not part of the deployed web application.
+
 ## Help!
 
 The source code of this project is available at [github](https://github.com/rtdi/HanaAppContainer).

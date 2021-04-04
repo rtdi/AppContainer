@@ -89,32 +89,25 @@ public class PermissionService {
     	    		description = "Hana repository owner",
     	    		example = "<currently logged in user to see his own files>"
     	    		)
-    		String user, 
-    		@PathParam("schema") 
-    	    @Parameter(
-    	    		description = "Hana repository schema",
-    	    		example = "SCHEMAXYZ"
-    	    		)
-    		String schema) {
+    		String user) {
 		try {
-			java.nio.file.Path spath = WebAppConstants.getHanaRepoSchemaDir(request.getServletContext(), user, schema);
+			java.nio.file.Path spath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), user);
 			File file = spath.toFile();
 			if (!file.isDirectory()) {
 				throw new IOException("Cannot find directory \"" + file.getAbsolutePath() + "\" on the server");
 			}
-			return Response.ok(getPermissions(request, user, schema)).build();
+			return Response.ok(getPermissions(request, user)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
 		}
 	}
 	
-	public static Permissions getPermissions(HttpServletRequest request, String user, String schema) throws ServletException, IOException {
+	public static Permissions getPermissions(HttpServletRequest request, String user) throws ServletException, IOException {
 		HanaPrincipal hanauser = (HanaPrincipal) request.getUserPrincipal();
 		if (hanauser == null) {
 			throw new ServletException("No login information found?");
 		}
     	HttpSession session = request.getSession(true);
-		String schemapath = user + File.separatorChar + schema;
     	@SuppressWarnings("unchecked")
 		Cache<String, Permissions> permissioncache = (Cache<String, Permissions>) session.getAttribute(FILEPERMISSIONCACHE);
     	if (permissioncache == null) {
@@ -125,10 +118,10 @@ public class PermissionService {
     		session.setAttribute(FILEPERMISSIONCACHE, permissioncache);
     	}
     	java.nio.file.Path rootpath = WebAppConstants.getHanaRepo(request.getServletContext());
-		Permissions permissions = permissioncache.getIfPresent(schemapath);
+		Permissions permissions = permissioncache.getIfPresent(user);
 		if (permissions == null) {
-			permissions = new Permissions(hanauser, user, schema, rootpath.toString());
-			permissioncache.put(schemapath, permissions);
+			permissions = new Permissions(hanauser, user, rootpath.toString());
+			permissioncache.put(user, permissions);
 		}
 		return permissions;
 	}
@@ -138,20 +131,21 @@ public class PermissionService {
 		private String[] roles;
 		private Set<String> directories = new HashSet<>();
 		
-		public Permissions(HanaPrincipal hanauser, String user, String schema, String rootpath) throws IOException {
+		public Permissions(HanaPrincipal hanauser, String user, String rootpath) throws IOException {
 			super();
 			roles = hanauser.getRoles();
 
     		HashSet<String> assignedroles = new HashSet<>();
     		assignedroles.addAll(Arrays.asList(hanauser.getRoles()));
     		assignedroles.add("PUBLIC");
-			java.nio.file.Path requestedpath = Paths.get(rootpath, user, schema);
+			java.nio.file.Path requestedpath = Paths.get(rootpath, user);
 			if (!requestedpath.toFile().exists()) {
 				throw new IOException("The path \"" + requestedpath.toString() + "\" does not exist");
 			} else if (!requestedpath.toFile().isDirectory()) {
 				throw new IOException("The path \"" + requestedpath.toString() + "\" is not a directory");
 			} else {
-				addDirectories(requestedpath, directories, assignedroles, requestedpath, user.equals(hanauser.getHanaUser()), false);
+				addDirectories(requestedpath, directories, assignedroles, requestedpath,
+						user.equals(hanauser.getHanaUser()) || user.equals("PUBLIC"), false);
 			}
 		}
 
@@ -184,11 +178,13 @@ public class PermissionService {
 			}
 			if (allow) {
 				directories.add(getRestUri(requestedpath.relativize(dirpath)));				
-			}
-			File[] subdirs = dir.listFiles(new DirectoryFilter());
-			if (subdirs != null) {
-				for (File subdir : subdirs) {
-					addDirectories(subdir.toPath(), directories, assignedroles, requestedpath, own, allow);
+				File[] subdirs = dir.listFiles(new DirectoryFilter());
+				if (subdirs != null) {
+					for (File subdir : subdirs) {
+						if (!subdir.getName().equals(".git")) {
+							addDirectories(subdir.toPath(), directories, assignedroles, requestedpath, own, allow);
+						}
+					}
 				}
 			}
 		}

@@ -1,5 +1,8 @@
-sap.ui.define([ "sap/ui/core/mvc/Controller",
-		"sap/ui/model/odata/v4/ODataModel"], function(Controller, ODataModel) {
+sap.ui.define([
+	"sap/ui/core/mvc/Controller",
+	"sap/ui/model/odata/v4/ODataModel",
+	"ui5libs/ui5ajax"],
+function(Controller, ODataModel, ui5ajax) {
 	"use strict";
 
 	return Controller.extend("io.rtdi.hanaappcontainer.browseapp.Controller", {
@@ -31,10 +34,24 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 				return "../editorapp/index.html?filename=" + encodeURI(spath);
 			}
 		},
+		formatterEnableRun: function(spath) {
+			if (spath && (spath.endsWith(".html") || spath.endsWith(".view.xml"))) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+		formatterLinkRun: function(spath) {
+			if (spath && (spath.endsWith(".html") || spath.endsWith(".view.xml"))) {
+				return "../hanarepo/currentuser/" + spath.substring(0, spath.length - 9) + ".html";
+			} else {
+				return undefined;
+			}
+		},
 		onAddDirectory : function() {
 			var that = this;
 			var oModel = this.getView().getModel();
-			var oCurrentSubDirs = oModel.getProperty("/folders");
+			var oCurrentSubDirs = oModel.getProperty("/folders/0/folders");
 			var sNewDir = "newschema";
 			if (oCurrentSubDirs != null) {
 				// find the subdirectory called "newfolder" with the highest number suffix
@@ -74,7 +91,7 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 		},
 		onSelectDir : function(oEvent) {
 			var oContext = oEvent.getParameters().rowBindingContext;
-			if (oContext.getObject() !== undefined) {
+			if (typeof oContext !== 'undefined' && typeof oContext.getObject() !== 'undefined') {
 				var oModel = new sap.ui.model.json.JSONModel();
 				oModel.loadData("../rest/browseapp/files/" + oContext.getObject().path);
 				this.getView().byId("idFiles").setModel(oModel);
@@ -404,6 +421,121 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 			});
 
 			oDialog.open();
+		},
+		onGitRemote: function() {
+			if (!this.oGitSettingDialog) {
+				var that = this; 
+				this.oGitSettingDialog = new sap.m.Dialog({
+					title: "Remote git settings",
+					contentWidth: "550px",
+					contentHeight: "300px",
+					customHeader: [ new sap.m.Toolbar(
+						{content: [ 
+							new sap.m.Image({src: "../../public/media/git-logo-64-64.png"}),
+							new sap.m.Text({ text: 'Git configuration'})
+						]})
+					],
+					content: [
+						new sap.m.Label({text: "Remote git url"}),
+						new sap.m.Input({id: "dialogurl", value: "{/remoteurl}"}),
+						new sap.m.Label({text: "Username/AccessKey"}),
+						new sap.m.Input({id: "dialogusername", value: "{/username}"}),
+						new sap.m.Label({text: "Password/AccessSecret"}),
+						new sap.m.Input({id: "dialogpassword", value: "{/password}"})
+					],
+					beginButton: new sap.m.Button({
+						type: sap.m.ButtonType.Emphasized,
+						text: "OK",
+						press: function () {
+							var oModel = that.oGitSettingDialog.getModel();
+							ui5ajax.postModel("../rest/browseapp/gitconfig", oModel)
+								.then(
+									data => {
+										that.oGitSettingDialog.close();
+									},
+									error => {
+										sap.m.MessageToast.show('Call failed with message "' + error + '"');
+									}
+								);
+						}.bind(this)
+					}),
+					endButton: new sap.m.Button({
+						text: "Close",
+						press: function () {
+							this.oGitSettingDialog.close();
+						}.bind(this)
+					})
+				});
+				var oDialogModel = new sap.ui.model.json.JSONModel();
+				this.oGitSettingDialog.setModel(oDialogModel);
+
+				//to get access to the controller's model
+				this.getView().addDependent(this.oGitSettingDialog);
+			}
+
+			this.oGitSettingDialog.open();
+		},
+		onGitPush: function() {
+			if (!this.oCommitDialog) {
+				var that = this; 
+				this.oCommitDialog = new sap.m.Dialog({
+					title: "Commit message",
+					contentWidth: "550px",
+					contentHeight: "300px",
+					customHeader: [ new sap.m.Toolbar(
+						{content: [ 
+							new sap.m.Image({src: "../../public/media/git-logo-64-64.png"}),
+							new sap.m.Text({ text: 'Commit message'})
+						]})
+					],
+					content: [
+						new sap.m.TextArea({id: "dialogmessage", value: "{/message}", width: "100%", height: "200px" }),
+					],
+					beginButton: new sap.m.Button({
+						type: sap.m.ButtonType.Emphasized,
+						text: "Commit",
+						press: function () {
+							var oModel = that.oCommitDialog.getModel();
+							ui5ajax.postModel("../rest/browseapp/gitpush", oModel)
+								.then(
+									data => {
+										that.oCommitDialog.close();
+										sap.m.MessageToast.show(data);
+										that.onDirectoryRefresh();
+										oModel.setJSON({ message: '' });
+									},
+									error => {
+										sap.m.MessageToast.show('Call failed with message "' + error + '"');
+									}
+								);
+						}.bind(this)
+					}),
+					endButton: new sap.m.Button({
+						text: "Cancel",
+						press: function () {
+							this.oCommitDialog.close();
+						}.bind(this)
+					})
+				});
+				var oDialogModel = new sap.ui.model.json.JSONModel();
+				this.oCommitDialog.setModel(oDialogModel);
+				
+				//to get access to the controller's model
+				this.getView().addDependent(this.oCommitDialog);
+			}
+
+			this.oCommitDialog.open();
+		},
+		onGitPull: function() {
+			ui5ajax.ajaxGet("../rest/browseapp/gitpull")
+				.then(
+					data => {
+						sap.m.MessageToast.show('Pull succeeded');
+					}, 
+					error => {
+						sap.m.MessageToast.show('Call failed with message "' + error + '"');
+					}
+				);
 		}
 	});
 

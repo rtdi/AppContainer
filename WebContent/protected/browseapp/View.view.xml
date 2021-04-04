@@ -20,8 +20,11 @@
 							visibleRowCountMode="Auto">
 			                <t:extension>
 			                    <OverflowToolbar>
-			                        <Title id="title" text="Directory for user {/username}"/>
+			                        <Title id="title" text="Directory for user"/>
 			                        <ToolbarSpacer/>
+									<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush" />
+									<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull" />
+									<Button icon="sap-icon://activate" tooltip="Configure git remote" press="onGitRemote" />
 									<Button icon="sap-icon://add" tooltip="Add new root directory" press="onAddDirectory" />
 			                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
 			                    </OverflowToolbar>
@@ -73,7 +76,7 @@
 					visibleRowCountMode="Auto">
 	                <t:extension>
 	                    <OverflowToolbar>
-							<Title text="Files in folder {/path}" level="H2" />
+							<Title text="Files in folder: {/path}/" level="H2" />
 							<ToolbarSpacer />
 							<Button icon="sap-icon://add" tooltip="Add new file" press="onAddFile" />
 	                        <Button icon="sap-icon://refresh" tooltip="Refresh file list" press="onFilesRefresh"/>
@@ -95,6 +98,11 @@
 										target="_blank" 
 										visible="{ path: 'path', formatter: '.formatterEnableEditor' }" 
 										href="{ path: 'path', formatter: '.formatterEditorLink' }" />
+									<Link 
+										text="(run)" 
+										target="_blank" 
+										visible="{ path: 'path', formatter: '.formatterEnableRun' }" 
+										href="{ path: 'path', formatter: '.formatterLinkRun' }" />
 								</HBox>
 							</t:template>
 						</t:Column>

@@ -20,9 +20,4 @@ public class WebAppConstants {
 		return rootdir.resolve(username);
 	}
 
-	public static Path getHanaRepoSchemaDir(ServletContext ctx, String username, String schemaname) {
-		Path rootdir = getHanaRepoUserDir(ctx, username);
-		return rootdir.resolve(schemaname);
-	}
-
 }

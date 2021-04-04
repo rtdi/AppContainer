@@ -5,7 +5,7 @@ sap.ui.define([
 	"use strict";
 	return Controller.extend("ui.app.Users", {
 		onInit : function () {
-			var oView = sap.ui.getCore().byId("mainview");
+			var oView = this.getView();
 			var oTable = oView.byId("usertable");
 		    var oModel = new sap.ui.model.odata.v4.ODataModel( {
 		    	"groupId": "$direct",

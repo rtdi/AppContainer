@@ -3,10 +3,17 @@ package io.rtdi.hanaappcontainer.browseapp;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +31,28 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jgit.api.CreateBranchCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.dircache.DirCache;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import io.rtdi.hanaappcontainer.WebAppConstants;
 import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
@@ -41,6 +70,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class BrowseService {
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
 	private static final PlainFilesFilter plainfilefilter = new PlainFilesFilter();
+	private static Cache<String, CredentialsProvider> gitcredentialstore = Caffeine.newBuilder()
+		    .maximumSize(100)
+		    .expireAfterAccess(60, TimeUnit.MINUTES)
+		    .build();
 
 	@Context
     private Configuration configuration;
@@ -50,7 +83,352 @@ public class BrowseService {
 	
 	@Context 
 	private HttpServletRequest request;
+	
+	private FileRepositoryBuilder getRepoBuilder(java.nio.file.Path upath) {
+		File gitdir = new File(upath.toFile(), Constants.DOT_GIT);
+		FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
+		repositoryBuilder
+	        .readEnvironment() // scan environment GIT_* variables
+	        .addCeilingDirectory(gitdir)
+	        .findGitDir(gitdir);
+		return repositoryBuilder;
+	}
 
+	private Git getGit(java.nio.file.Path upath, boolean forcecreate) throws IOException, IllegalStateException, GitAPIException {
+		FileRepositoryBuilder repositoryBuilder = getRepoBuilder(upath);
+		if( repositoryBuilder.getGitDir() == null ) {
+			if (forcecreate) {
+				File gitdir = new File(upath.toFile(), Constants.DOT_GIT);
+				return Git.init().setDirectory(gitdir.getParentFile()).call();
+			} else {
+				return null;
+			}
+		} else {
+			return new Git(repositoryBuilder.build());
+		}
+	}
+	
+	private CredentialsProvider getGitCredentials(Git git, String username) throws JsonParseException, JsonMappingException, IOException {
+		CredentialsProvider credentials = gitcredentialstore.getIfPresent(username);
+		if (credentials == null) {
+			GitConfig gitconfig = GitConfig.createFromFile(git, username);
+			credentials = new UsernamePasswordCredentialsProvider(gitconfig.getUsername(), gitconfig.getPassword());
+			gitcredentialstore.put(username, credentials);
+		}
+		return credentials;
+	}
+	
+	@POST
+	@Path("gitpush")
+    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Push contents to git repository",
+			description = "Does a git add, commit and push",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response gitPush(
+   		 	@Parameter(
+   	 	    		description = "Commit message",
+   	 	    		example = "Initial commit"
+   	 	    		)
+    		GitCommit gitcommit) {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		String message = gitcommit.getMessage();
+		try {
+			username = Util.validateFilename(username);
+			if (message == null || message.length() == 0) {
+				message = username + " at " + DateFormat.getInstance().format(new Date()); 
+			}
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			try (Git git = getGit(upath, true);) {
+				String result;
+				org.eclipse.jgit.api.Status modified = git.status().call();
+				Set<String> filesmodified = modified.getModified();
+				if (filesmodified == null || filesmodified.size() == 0) {
+					return Response.ok(new SuccessMessage("Local directory is up to date")).build();
+				} else {			
+					DirCache files = git.add().addFilepattern(".").call();
+					RevCommit commit = git.commit().setMessage(message).call();
+					String url = git.getRepository().getConfig().getString("remote", "origin", "url");
+					if (url == null) {
+						throw new IOException("No git remote url specified yet");
+					} else {
+						Iterable<PushResult> iter = git.push()
+							.setRemote(url)
+							.setCredentialsProvider(getGitCredentials(git, username))
+							.call();
+						PushResult pushResult = iter.iterator().next();
+						org.eclipse.jgit.transport.RemoteRefUpdate.Status status = pushResult.getRemoteUpdate( "refs/heads/master" ).getStatus();
+						result = status.name();
+					}
+					return Response.ok(new SuccessMessage("Changes pushed")).build();
+				}
+			}
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+	
+	public static class GitCommit {
+		private String message;
+
+		public String getMessage() {
+			return message;
+		}
+
+		public void setMessage(String message) {
+			this.message = message;
+		}
+	}
+	
+	@GET
+	@Path("gitpull")
+    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Pull git repository",
+			description = "Does a git pull",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response gitPull() {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		try {
+			username = Util.validateFilename(username);
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			try (Git git = getGit(upath, false);) {
+				String url = git.getRepository().getConfig().getString("remote", "origin", "url");
+				if (url == null) {
+					throw new IOException("No git remote url specified yet");
+				} else {
+					git.pull()
+						.setRemote("origin")
+						.setCredentialsProvider(getGitCredentials(git, username))
+						.call();
+				}
+				return Response.ok(new SuccessMessage("pulled")).build();
+			}
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+
+
+	@POST
+	@Path("gitconfig")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Configure remote git",
+			description = "Provide URL and tokens for the remote git repo",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Returns the simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown, e.g. file at path does not exist",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Filesystem")
+    public Response gitconfig(
+   		 	@Parameter(
+   	 	    		description = "Config data",
+   	 	    		example = "{ url: 'https://github.com/my/repo', username: 'hello', passwd: 'world' }"
+   	 	    		)
+    		GitConfig gitconfig) {
+		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		String username = user.getHanaUser();
+		try {
+			username = Util.validateFilename(username);
+			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			CredentialsProvider credentials = new UsernamePasswordCredentialsProvider(gitconfig.getUsername(), gitconfig.getPassword());
+			Collection<Ref> remoterepos = new LsRemoteCommand(null)
+					.setRemote(gitconfig.getRemoteurl())
+					.setCredentialsProvider(credentials).call();
+			// remote repo exists and can be connected
+			gitconfig.save(upath, username);
+			gitcredentialstore.put(username, credentials);
+			// check if a git init or git clone is appropriate
+			FileRepositoryBuilder builder = getRepoBuilder(upath);
+			String[] localfiles = upath.toFile().list();
+			if (builder.getGitDir() != null || remoterepos == null || remoterepos.size() == 0) {
+				// Case #1: A local git exists already -> open git
+				// Case #2: A local git does not exist and the remote is empty -> git init
+				try (Git git = getGit(upath, true);) {
+					setGitRemote(git, gitconfig);
+					return Response.ok(new SuccessMessage("remote set")).build();
+				}
+			} else if (localfiles == null || localfiles.length == 0) {
+				// Case #3: The local repo does not exist and the local folder is empty and the remote has data
+				try (Git git = Git.cloneRepository()
+						  .setURI(gitconfig.getRemoteurl())
+						  .setDirectory(upath.toFile())
+						  .setCredentialsProvider(credentials)
+						  .call();) {
+					return Response.ok(new SuccessMessage("Cloned remote repo")).build();
+				}
+			} else {
+				// Case #4: The local filesystem has data and the remote has data
+				try (Git git = getGit(upath, true);) {
+					String branchName = "master";
+					setGitRemote(git, gitconfig);
+					git.fetch().call();
+					git.branchCreate().setName(branchName).setStartPoint("origin/" + branchName)
+					    .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
+					git.checkout().setName(branchName).call();
+					git.fetch().call();
+					git.reset().setRef("origin/" + branchName).call();
+					return Response.ok(new SuccessMessage("Created local repo and fetched remote")).build();
+				}
+
+				/*var git = Git.Init().SetDirectory(Location).Call();
+				Repository = git.GetRepository();
+				 
+				// Original code in question works, is shorter,
+				// but this is most likely the "proper" way to do it.
+				var config = Repository.GetConfig();
+				RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
+				remoteConfig.AddURI(new URIish(cloneUrl));
+				// May use * instead of branch name to fetch all branches.
+				// Same as config.SetString("remote", "origin", "fetch", ...);
+				remoteConfig.AddFetchRefSpec(new RefSpec(
+				    "+refs/heads/" + Settings.Branch +
+				    ":refs/remotes/origin/" + Settings.Branch));
+				remoteConfig.Update(config);
+				config.Save();
+				 
+				git.Fetch().Call();
+				git.BranchCreate().SetName(branchName).SetStartPoint("origin/" + branchName)
+				    .SetUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).Call();
+				git.Checkout().SetName(branchName).Call();
+				 
+				// To update the branch:
+				 
+				git.Fetch().Call();
+				git.Reset().SetRef("origin/" + branchName).Call(); */
+			}
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		}
+	}
+
+	private void setGitRemote(Git git, GitConfig gitconfig) throws GitAPIException, URISyntaxException {
+		boolean remoteoriginexists = false;
+		List<RemoteConfig> remotes = git.remoteList().call();
+		if (remotes != null) {
+			for( RemoteConfig r : remotes) {
+				if (r.getName().equals("origin")) {
+					remoteoriginexists = true;
+					break;
+				}
+			}
+		}
+		if (remoteoriginexists) {
+			/* StoredConfig config = git.getRepository().getConfig();
+			config.setString("remote", "origin", "url", gitconfig.getRemoteurl());
+			config.save(); */
+			git.remoteSetUrl().setRemoteName("origin").setRemoteUri(new URIish(gitconfig.getRemoteurl())).call();
+		} else {
+			git.remoteAdd().setName("origin").setUri(new URIish(gitconfig.getRemoteurl())).call();
+		}
+	}
+	
+	public static class GitConfig {
+		private String remoteurl;
+		private String username;
+		private String password;
+		
+		public GitConfig() {
+		}
+		
+		public static GitConfig createFromFile(Git git, String username) throws JsonParseException, JsonMappingException, IOException {
+			File d = git.getRepository().getWorkTree().getParentFile();
+			ObjectMapper mapper = new ObjectMapper();
+			return mapper.readValue(new File(d, username + ".remotesettings"), GitConfig.class);
+		}		
+		
+		public String getRemoteurl() {
+			return remoteurl;
+		}
+		
+		public void save(java.nio.file.Path upath, String username) throws JsonGenerationException, JsonMappingException, IOException {
+			File d = upath.getParent().toFile();
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.writeValue(new File(d, username + ".remotesettings"), this);
+		}
+
+		public void setRemoteurl(String remoteurl) {
+			this.remoteurl = remoteurl;
+		}
+		
+		public String getUsername() {
+			return username;
+		}
+		
+		public void setUsername(String username) {
+			this.username = username;
+		}
+		
+		public String getPassword() {
+			return password;
+		}
+		
+		public void setPassword(String password) {
+			this.password = password;
+		}
+		
+	}
+	
 	@GET
 	@Path("browse")
     @Produces(MediaType.APPLICATION_JSON)
@@ -135,7 +513,7 @@ public class BrowseService {
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-			File filedir = upath.resolve(path).toFile();
+			File filedir = upath.resolve(Util.makeRelativePath(path)).toFile();
 			if (!filedir.isDirectory()) {
 				throw new IOException("The directory is not accessible on the server \"" + filedir.getAbsolutePath() + "\"");
 			}
@@ -190,7 +568,7 @@ public class BrowseService {
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-			java.nio.file.Path fpath = upath.resolve(path);
+			java.nio.file.Path fpath = upath.resolve(Util.makeRelativePath(path));
 			if (fpath.toFile().exists()) {
 				throw new IOException("The file exists on the server already \"" + fpath.toAbsolutePath().toString() + "\"");
 			}
@@ -242,7 +620,7 @@ public class BrowseService {
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-			File filedir = upath.resolve(path).toFile();
+			File filedir = upath.resolve(Util.makeRelativePath(path)).toFile();
 			File rootdir = upath.toFile();
 			if (!rootdir.exists()) {
 				rootdir.mkdirs(); // The user logged in the first time
@@ -300,7 +678,7 @@ public class BrowseService {
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-			java.nio.file.Path filedir = upath.resolve(path);
+			java.nio.file.Path filedir = upath.resolve(Util.makeRelativePath(path));
 			if (!filedir.toFile().isDirectory()) {
 				throw new IOException("The directory is not accessible on the server \"" + filedir.toAbsolutePath().toString() + "\"");
 			}
@@ -350,7 +728,7 @@ public class BrowseService {
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-			java.nio.file.Path filedir = upath.resolve(path);
+			java.nio.file.Path filedir = upath.resolve(Util.makeRelativePath(path));
 			if (!filedir.toFile().isFile()) {
 				throw new IOException("The file does not exist or is a directory \"" + filedir.toAbsolutePath().toString() + "\"");
 			}
@@ -406,8 +784,8 @@ public class BrowseService {
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-			java.nio.file.Path sourcefile = upath.resolve(path);
-			java.nio.file.Path targetfile = upath.resolve(target.path);
+			java.nio.file.Path sourcefile = upath.resolve(Util.makeRelativePath(path));
+			java.nio.file.Path targetfile = upath.resolve(Util.makeRelativePath(target.path));
 			Util.validatePathWithin(targetfile.toFile(), upath.toFile());
 			if (!sourcefile.toFile().exists()) {
 				throw new IOException("The file does not exist \"" + sourcefile.toAbsolutePath().toString() + "\"");
@@ -421,7 +799,7 @@ public class BrowseService {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
 		}
 	}
-
+	
 	@Schema(description="All files within a given directory")
 	public static class DirectoryContent {
 		List<FileData> directorylist = new ArrayList<>();
@@ -489,23 +867,29 @@ public class BrowseService {
 			name = rootdir.getName();
 			if (parent == null) {
 				path = "";
-			} else if (parent.path == "") {
-				path = name;
-			} else {
-				path = parent.path + "/" + name;
-			}
-			File[] plainfiles = rootdir.listFiles(plainfilefilter);
-			if (plainfiles!= null) {
-				filecount = plainfiles.length;
-			} else {
-				filecount = 0;
-			}
-			
-			File[] files = rootdir.listFiles(filter);
-			if (files != null && files.length > 0) {
 				folders = new ArrayList<>();
-				for (File f : files) {
-					folders.add(new Folder(f, this));
+				folders.add(new Folder(rootdir, this));
+			} else {
+				if (parent.path == "") {
+					path = ".";
+				} else {
+					path = parent.path + "/" + name;
+				}
+				File[] plainfiles = rootdir.listFiles(plainfilefilter);
+				if (plainfiles!= null) {
+					filecount = plainfiles.length;
+				} else {
+					filecount = 0;
+				}
+				
+				File[] files = rootdir.listFiles(filter);
+				if (files != null && files.length > 0) {
+					folders = new ArrayList<>();
+					for (File f : files) {
+						if (! f.getName().equals(".git")) {
+							folders.add(new Folder(f, this));
+						}
+					}
 				}
 			}
 		}

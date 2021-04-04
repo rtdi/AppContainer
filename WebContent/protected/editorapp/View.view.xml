@@ -1,0 +1,22 @@
+<mvc:View height="100%" class="sapUiSizeCompact" 
+	id="mainview"
+	controllerName="io.rtdi.hanaappcontainer.editorapp.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:codeeditor="sap.ui.codeeditor"
+    >
+	<Page>
+		<customHeader>
+			<Toolbar>
+				<Text id="headertext" />
+				<ToolbarSpacer />
+				<Button icon="sap-icon://save" tooltip="Save" press=".onSave"/>
+				<Button icon="sap-icon://activate" tooltip="Activate" press=".onActivate" />
+			</Toolbar>
+		</customHeader>
+		<content>
+			<codeeditor:CodeEditor id="codeeditor" width="100%">
+			</codeeditor:CodeEditor>
+		</content>
+	</Page>
+</mvc:View>
