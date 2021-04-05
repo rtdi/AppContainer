@@ -87,7 +87,9 @@ function(Controller, ODataModel, ui5ajax) {
 			var oModel = new sap.ui.model.json.JSONModel();
 			oModel.loadData("../rest/browseapp/browse");
 			this.getView().setModel(oModel);
-			this.getView().byId("idFiles").setModel(new sap.ui.model.json.JSONModel()); // empty model
+			var oFileModel = new sap.ui.model.json.JSONModel();
+			oFileModel.loadData("../rest/browseapp/files/.");
+			this.getView().byId("idFiles").setModel(oFileModel); // empty model
 		},
 		onSelectDir : function(oEvent) {
 			var oContext = oEvent.getParameters().rowBindingContext;

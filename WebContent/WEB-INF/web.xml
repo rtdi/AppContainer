@@ -17,8 +17,15 @@
 		</auth-constraint>
 	</security-constraint>
 	<login-config>
-		<auth-method>BASIC</auth-method>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/login</form-login-page>
+			<form-error-page>/error</form-error-page>
+		</form-login-config>
 	</login-config>
+	<!--  <login-config>
+		<auth-method>BASIC</auth-method>
+	</login-config>  -->
 	<security-role>
 		<role-name>PUBLIC</role-name>
 	</security-role>

@@ -167,7 +167,7 @@ public class BrowseService {
 				if (filesmodified == null || filesmodified.size() == 0) {
 					return Response.ok(new SuccessMessage("Local directory is up to date")).build();
 				} else {			
-					DirCache files = git.add().addFilepattern(".").call();
+					DirCache files = git.add().setUpdate(true).addFilepattern(".").call();
 					RevCommit commit = git.commit().setMessage(message).call();
 					String url = git.getRepository().getConfig().getString("remote", "origin", "url");
 					if (url == null) {
