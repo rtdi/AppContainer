@@ -3,10 +3,11 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 	"use strict";
 
 	return Controller.extend("io.rtdi.hanaappcontainer.browseapp.Controller", {
+		resturl: sap.ui.require.toUrl("ui5rest"),
 
 		onInit : function() {
 			var oModel = new sap.ui.model.json.JSONModel();
-			oModel.loadData("../rest/activationapp/activateall/RTDI");
+			oModel.loadData(resturl+"/activationapp/activateall/RTDI");
 			this.getView().setModel(oModel);
 		},
 	});

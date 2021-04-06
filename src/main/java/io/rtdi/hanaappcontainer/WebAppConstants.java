@@ -20,4 +20,7 @@ public class WebAppConstants {
 		return rootdir.resolve(username);
 	}
 
+	public static Path getWebAppRootPath(ServletContext servletcontext) {
+		return Path.of(servletcontext.getRealPath("/"));
+	}
 }

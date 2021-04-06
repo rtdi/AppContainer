@@ -1,6 +1,6 @@
 <mvc:View height="100%" class="sapUiSizeCompact" 
 	id="mainview"
-	controllerName="io.rtdi.hanaappcontainer.editorapp.Controller"
+	controllerName="ui5.app.Controller"
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns="sap.m"
 	xmlns:codeeditor="sap.ui.codeeditor"

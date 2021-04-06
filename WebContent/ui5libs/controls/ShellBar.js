@@ -7,7 +7,7 @@ sap.ui.define([
 		},
 		renderer : {},
 		init : function() {
-			ShellBar.prototype.init.call(this, false);
+			ShellBar.prototype.init.call(this);
 			this.setHomeIcon(sap.ui.require.toUrl("ui5libs/controls/homeIcon.png"));
 			this.setProfile(new sap.f.Avatar({initials: "User"}));
 			this.attachAvatarPressed(this._showLogoutMenu);

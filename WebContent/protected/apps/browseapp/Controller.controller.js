@@ -4,9 +4,7 @@ sap.ui.define([
 	"ui5libs/ui5ajax"],
 function(Controller, ODataModel, ui5ajax) {
 	"use strict";
-
 	return Controller.extend("io.rtdi.hanaappcontainer.browseapp.Controller", {
-
 		onInit : function() {
 			this.onDirectoryRefresh();
 		},
@@ -85,24 +83,24 @@ function(Controller, ODataModel, ui5ajax) {
 		},
 		onDirectoryRefresh : function() {
 			var oModel = new sap.ui.model.json.JSONModel();
-			oModel.loadData("../rest/browseapp/browse");
+			oModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/browse");
 			this.getView().setModel(oModel);
 			var oFileModel = new sap.ui.model.json.JSONModel();
-			oFileModel.loadData("../rest/browseapp/files/.");
+			oFileModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/files/.");
 			this.getView().byId("idFiles").setModel(oFileModel); // empty model
 		},
 		onSelectDir : function(oEvent) {
 			var oContext = oEvent.getParameters().rowBindingContext;
 			if (typeof oContext !== 'undefined' && typeof oContext.getObject() !== 'undefined') {
 				var oModel = new sap.ui.model.json.JSONModel();
-				oModel.loadData("../rest/browseapp/files/" + oContext.getObject().path);
+				oModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/files/" + oContext.getObject().path);
 				this.getView().byId("idFiles").setModel(oModel);
 			}
 		},
 		onFilesRefresh : function(oEvent) {
 			var oControl = this.getView().byId("idFiles");
 			var oModel = oControl.getModel();
-			oModel.loadData("../rest/browseapp/files/" + oModel.getProperty("/path"));
+			oModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/files/" + oModel.getProperty("/path"));
 			oControl.setModel(oModel);
 		},
 		onAddSubdirectory : function(oEvent) {
@@ -147,7 +145,7 @@ function(Controller, ODataModel, ui5ajax) {
 			oModelAddDir.attachRequestFailed(function(oRespEvent) {
 				sap.m.MessageToast.show('Operation failed on the server ' + oRespEvent.getParameters().responseText);
 		    });
-			oModelAddDir.loadData("../rest/browseapp/mkdir/" + sPath);
+			oModelAddDir.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/mkdir/" + sPath);
 		},
 		onRenameDirectory : function(oEvent) {
 			var oControl = oEvent.getSource();
@@ -159,12 +157,9 @@ function(Controller, ODataModel, ui5ajax) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameDirectory : function(oDataExchange) {
-			var xmlhttp = new XMLHttpRequest();
-			xmlhttp.open("POST", "../rest/browseapp/mvfile/" + oDataExchange.currentpath);
-			xmlhttp.setRequestHeader("Content-Type", "application/json");
-			xmlhttp.onreadystatechange = function() {
-			    if (xmlhttp.readyState == 4) {
-			    	if (xmlhttp.status == 200) {
+			ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+				.then(
+					data => {
 			    		var oView = sap.ui.getCore().byId("__xmlview0");
 						var oFilesControl = oView.byId("idBrowseTree");
 						var oModel = oFilesControl.getModel();
@@ -183,13 +178,11 @@ function(Controller, ODataModel, ui5ajax) {
 							}
 						};
 						swappath(oDataExchange.modelpath, oModel, oDataExchange.currentpath.length, oDataExchange.newpath);
-				    } else {
-				    	sap.m.MessageToast.show('Operation failed on the server ' + xmlhttp.responseText);
-				    }
-				}
-			}
-			var oPost = { "name": oDataExchange.newname, "path": oDataExchange.newpath};
-			xmlhttp.send(JSON.stringify(oPost));
+					}, 
+					error => {
+						sap.m.MessageToast.show('Call failed with message "' + error + '"');
+					}
+				);
 		},
 		onDeleteDirectory : function(oEvent) {
 			var that = this;
@@ -215,7 +208,7 @@ function(Controller, ODataModel, ui5ajax) {
 				oModelRmDir.attachRequestFailed(function(oRespEvent) {
 					sap.m.MessageToast.show('Operation failed on the server ' + oRespEvent.getParameters().responseText);
 			    });
-				oModelRmDir.loadData("../rest/browseapp/rmdir/" + oDirectory.path);
+				oModelRmDir.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/rmdir/" + oDirectory.path);
 			}
 		},
 		onAddFile : function(oEvent) {
@@ -240,7 +233,7 @@ function(Controller, ODataModel, ui5ajax) {
 				oModelAddFile.attachRequestFailed(function(oRespEvent) {
 					sap.m.MessageToast.show('Operation failed on the server ' + oRespEvent.getParameters("responseText"));
 			    });
-				oModelAddFile.loadData("../rest/browseapp/touchfile/" + sPath + "/" + sNewFile);
+				oModelAddFile.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/touchfile/" + sPath + "/" + sNewFile);
 			}
 		},
 		onRenameFile : function(oEvent) {
@@ -253,23 +246,18 @@ function(Controller, ODataModel, ui5ajax) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameFile : function(oDataExchange) {
-			var xmlhttp = new XMLHttpRequest();
-			xmlhttp.open("POST", "../rest/browseapp/mvfile/" + oDataExchange.currentpath);
-			xmlhttp.setRequestHeader("Content-Type", "application/json");
-			xmlhttp.onreadystatechange = function() {
-			    if (xmlhttp.readyState == 4) {
-			    	if (xmlhttp.status == 200) {
+			ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+				.then(
+					data => {
 			    		var oView = sap.ui.getCore().byId("__xmlview0");
 						var oFilesControl = oView.byId("idFiles");
 						var oModel = oFilesControl.getModel();
 						oModel.setProperty(oDataExchange.modelpath, { "name": oDataExchange.newname, "path" : oDataExchange.newpath } );
-				    } else {
-				    	sap.m.MessageToast.show('Operation failed on the server ' + xmlhttp.responseText);
-				    }
-				}
-			}
-			var oPost = { "name": oDataExchange.newname, "path": oDataExchange.newpath};
-			xmlhttp.send(JSON.stringify(oPost));
+					}, 
+					error => {
+						sap.m.MessageToast.show('Call failed with message "' + error + '"');
+					}
+				);
 		},
 		onDeleteFile : function(oEvent) {
 			var oControl = oEvent.getSource();
@@ -290,7 +278,7 @@ function(Controller, ODataModel, ui5ajax) {
 				oModelRmFile.attachRequestFailed(function(oRespEvent) {
 					sap.m.MessageToast.show('Operation failed on the server' + oRespEvent.getParameters("responseText"));
 			    });
-				oModelRmFile.loadData("../rest/browseapp/rmfile/" + oFile.path);
+				oModelRmFile.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/rmfile/" + oFile.path);
 			}
 		},
 		onDropFile: function(oEvent) {
@@ -304,12 +292,9 @@ function(Controller, ODataModel, ui5ajax) {
 			
 			if (oSourceRow.folders === undefined) {
 				// dropped a file
-				var xmlhttp = new XMLHttpRequest();
-				xmlhttp.open("POST", "../rest/browseapp/mvfile/" + oSourceRow.path);
-				xmlhttp.setRequestHeader("Content-Type", "application/json");
-				xmlhttp.onreadystatechange = function() {
-				    if (xmlhttp.readyState == 4) {
-				    	if (xmlhttp.status == 200) {
+				ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name})
+					.then(
+						data => {
 				    		/*
 				    		 * Update the file counters and remove the file from the source model
 				    		 */
@@ -323,22 +308,16 @@ function(Controller, ODataModel, ui5ajax) {
 								aFiles.splice(index, 1);
 								oSourceModel.setProperty(oSourcePathParent, aFiles);
 							}
-					    } else {
-					    	sap.m.MessageToast.show('Operation failed on the server ' + xmlhttp.responseText);
-					    }
-					}
-				}
-				var oPost = { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name};
-				xmlhttp.send(JSON.stringify(oPost));
+						}, 
+						error => {
+							sap.m.MessageToast.show('Call failed with message "' + error + '"');
+						}
+					);
 			} else {
 				// dropped a directory				
-				
-				var xmlhttp = new XMLHttpRequest();
-				xmlhttp.open("POST", "../rest/browseapp/mvfile/" + oSourceRow.path);
-				xmlhttp.setRequestHeader("Content-Type", "application/json");
-				xmlhttp.onreadystatechange = function() {
-				    if (xmlhttp.readyState == 4) {
-				    	if (xmlhttp.status == 200) {
+				ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+					.then(
+						data => {
 				    		/*
 				    		 * Within the model tree add the folder to the new position and remove it from the old.
 				    		 * Then walk through the entire subelements to update the path with the new root location.
@@ -378,14 +357,11 @@ function(Controller, ODataModel, ui5ajax) {
 								aSubFolders.splice(index, 1);
 								oSourceModel.setProperty(oSourcePathParent, aSubFolders);
 							}
-
-					    } else {
-					    	sap.m.MessageToast.show('Operation failed on the server ' + xmlhttp.responseText);
-					    }
-					}
-				}
-				var oPost = { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name};
-				xmlhttp.send(JSON.stringify(oPost));
+						}, 
+						error => {
+							sap.m.MessageToast.show('Call failed with message "' + error + '"');
+						}
+					);
 			}
 		},
 		showRenameDialog: function (oDataExchange) {
@@ -408,8 +384,8 @@ function(Controller, ODataModel, ui5ajax) {
 						oDataExchange.newname = sap.ui.getCore().byId('renameInput').getValue();
 						oDataExchange.newpath = oDataExchange.currentpath.substring(0, oDataExchange.currentpath.lastIndexOf('/')) + "/" + oDataExchange.newname;
 						oDialog.close();
-						oDataExchange.callback(oDataExchange)
-					}
+						oDataExchange.callback(oDataExchange);
+					}.bind(this)
 				}),
 				endButton: new sap.m.Button({
 					text: 'Cancel',
@@ -433,7 +409,7 @@ function(Controller, ODataModel, ui5ajax) {
 					contentHeight: "300px",
 					customHeader: [ new sap.m.Toolbar(
 						{content: [ 
-							new sap.m.Image({src: "../../public/media/git-logo-64-64.png"}),
+							new sap.m.Image({src: "../../../public/media/git-logo-64-64.png"}),
 							new sap.m.Text({ text: 'Git configuration'})
 						]})
 					],
@@ -443,14 +419,16 @@ function(Controller, ODataModel, ui5ajax) {
 						new sap.m.Label({text: "Username/AccessKey"}),
 						new sap.m.Input({id: "dialogusername", value: "{/username}"}),
 						new sap.m.Label({text: "Password/AccessSecret"}),
-						new sap.m.Input({id: "dialogpassword", value: "{/password}"})
+						new sap.m.Input({id: "dialogpassword", value: "{/password}"}),
+						new sap.m.Label({text: "email"}),
+						new sap.m.Input({id: "email", value: "{/email}"})
 					],
 					beginButton: new sap.m.Button({
 						type: sap.m.ButtonType.Emphasized,
 						text: "OK",
 						press: function () {
 							var oModel = that.oGitSettingDialog.getModel();
-							ui5ajax.postModel("../rest/browseapp/gitconfig", oModel)
+							ui5ajax.postModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitconfig", oModel)
 								.then(
 									data => {
 										that.oGitSettingDialog.close();
@@ -486,7 +464,7 @@ function(Controller, ODataModel, ui5ajax) {
 					contentHeight: "300px",
 					customHeader: [ new sap.m.Toolbar(
 						{content: [ 
-							new sap.m.Image({src: "../../public/media/git-logo-64-64.png"}),
+							new sap.m.Image({src: "../../../public/media/git-logo-64-64.png"}),
 							new sap.m.Text({ text: 'Commit message'})
 						]})
 					],
@@ -498,7 +476,7 @@ function(Controller, ODataModel, ui5ajax) {
 						text: "Commit",
 						press: function () {
 							var oModel = that.oCommitDialog.getModel();
-							ui5ajax.postModel("../rest/browseapp/gitpush", oModel)
+							ui5ajax.postModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitpush", oModel)
 								.then(
 									data => {
 										that.oCommitDialog.close();
@@ -529,7 +507,7 @@ function(Controller, ODataModel, ui5ajax) {
 			this.oCommitDialog.open();
 		},
 		onGitPull: function() {
-			ui5ajax.ajaxGet("../rest/browseapp/gitpull")
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitpull")
 				.then(
 					data => {
 						sap.m.MessageToast.show('Pull succeeded');

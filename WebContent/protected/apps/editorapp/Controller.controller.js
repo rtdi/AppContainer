@@ -4,8 +4,7 @@ sap.ui.define([
 	"ui5libs/ui5ajax"], function(Controller, ODataModel, ui5ajax) {
 	"use strict";
 
-	return Controller.extend("io.rtdi.hanaappcontainer.browseapp.Controller", {
-
+	return Controller.extend("io.rtdi.hanaappcontainer.editorapp.Controller", {
 		onInit : function() {
 		    const queryString = window.location.search;
 		    const urlParams = new URLSearchParams(queryString);
@@ -36,10 +35,10 @@ sap.ui.define([
 		            oEditorControl.setValue(JSON.parse(this.responseText).content); 
 		        }
 		    };
-		    xhttp.open("GET", "../rest/editorapp/file/" + sFilename, true);
+		    xhttp.open("GET", sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename, true);
 		    xhttp.setRequestHeader("Content-type", "application/json");
 		    xhttp.send(); */
-			ui5ajax.ajaxGet("../rest/editorapp/file/" + sFilename)
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename)
 				.then(
 					data => {
 						oEditorControl.setValue(JSON.parse(data).content); 
@@ -57,7 +56,7 @@ sap.ui.define([
 		    const urlParams = new URLSearchParams(queryString);
 		    const sFilename = urlParams.get('filename');
 			var sContent = oEditorControl.getValue();
-			ui5ajax.postText("../rest/editorapp/file/" + sFilename, sContent)
+			ui5ajax.postText(sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename, sContent)
 				.then(
 					data => {
 						sap.m.MessageToast.show('Saved');
@@ -75,7 +74,7 @@ sap.ui.define([
 		    const queryString = window.location.search;
 		    const urlParams = new URLSearchParams(queryString);
 		    const sFilename = urlParams.get('filename');
-			ui5ajax.ajaxGet("../rest/activationapp/activate/" + sFilename)
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/activationapp/activate/" + sFilename)
 				.then(
 					data => {
 						sap.m.MessageToast.show('Activated');

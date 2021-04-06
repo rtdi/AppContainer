@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -36,14 +37,18 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.dircache.DirCache;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
@@ -161,27 +166,52 @@ public class BrowseService {
 			}
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
 			try (Git git = getGit(upath, true);) {
-				String result;
-				org.eclipse.jgit.api.Status modified = git.status().call();
-				Set<String> filesmodified = modified.getModified();
-				if (filesmodified == null || filesmodified.size() == 0) {
-					return Response.ok(new SuccessMessage("Local directory is up to date")).build();
-				} else {			
-					DirCache files = git.add().setUpdate(true).addFilepattern(".").call();
-					RevCommit commit = git.commit().setMessage(message).call();
-					String url = git.getRepository().getConfig().getString("remote", "origin", "url");
-					if (url == null) {
-						throw new IOException("No git remote url specified yet");
-					} else {
-						Iterable<PushResult> iter = git.push()
-							.setRemote(url)
-							.setCredentialsProvider(getGitCredentials(git, username))
-							.call();
-						PushResult pushResult = iter.iterator().next();
-						org.eclipse.jgit.transport.RemoteRefUpdate.Status status = pushResult.getRemoteUpdate( "refs/heads/master" ).getStatus();
-						result = status.name();
+				if (git != null) {
+					String result;
+					org.eclipse.jgit.api.Status status = git.status().call();
+					
+					int diffcount = 0;
+					/*
+					 * The git.addFilePattern(".") seems to read all files and takes a while hence 
+					 */
+					for(String file : status.getModified()) {
+						git.add().setUpdate(true).addFilepattern(file).call(); // add all modified files
+						diffcount++;
 					}
-					return Response.ok(new SuccessMessage("Changes pushed")).build();
+					for(String file : status.getMissing()) {
+						git.rm().addFilepattern(file).call(); // remove deleted files
+						diffcount++;
+					}
+					for(String file : status.getUntracked()) {
+						git.add().addFilepattern(file).call(); // add all untracked files
+						diffcount++;
+					}
+					if (diffcount == 0) {
+						return Response.ok(new SuccessMessage("Local directory is up to date")).build();
+					} else {			
+						git.commit().setMessage(message).call();
+						String url = git.getRepository().getConfig().getString("remote", "origin", "url");
+						if (url == null) {
+							throw new IOException("No git remote url specified yet");
+						} else {
+							Iterable<PushResult> iter = git.push()
+								.setRemote("origin")
+								.add("master")
+								.setCredentialsProvider(getGitCredentials(git, username))
+								.call();
+							PushResult pushResult = iter.iterator().next();
+							RemoteRefUpdate remoteref = pushResult.getRemoteUpdate( "refs/heads/master" );
+							if (remoteref != null) {
+								org.eclipse.jgit.transport.RemoteRefUpdate.Status remotestatus = remoteref.getStatus();
+								result = remotestatus.name();
+							} else {
+								result = "?";
+							}
+						}
+						return Response.ok(new SuccessMessage("Push result on " + String.valueOf(diffcount) + " files: " + result)).build();
+					}
+				} else {
+					throw new IOException("No git repository configured");
 				}
 			}
 		} catch (Exception e) {
@@ -235,16 +265,20 @@ public class BrowseService {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
 			try (Git git = getGit(upath, false);) {
-				String url = git.getRepository().getConfig().getString("remote", "origin", "url");
-				if (url == null) {
-					throw new IOException("No git remote url specified yet");
+				if (git != null) {
+					String url = git.getRepository().getConfig().getString("remote", "origin", "url");
+					if (url == null) {
+						throw new IOException("No git remote url specified yet");
+					} else {
+						git.pull()
+							.setRemote("origin")
+							.setCredentialsProvider(getGitCredentials(git, username))
+							.call();
+					}
+					return Response.ok(new SuccessMessage("pulled")).build();
 				} else {
-					git.pull()
-						.setRemote("origin")
-						.setCredentialsProvider(getGitCredentials(git, username))
-						.call();
+					throw new IOException("No git repository configured");
 				}
-				return Response.ok(new SuccessMessage("pulled")).build();
 			}
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
@@ -301,12 +335,14 @@ public class BrowseService {
 			// check if a git init or git clone is appropriate
 			FileRepositoryBuilder builder = getRepoBuilder(upath);
 			String[] localfiles = upath.toFile().list();
+			String message;
 			if (builder.getGitDir() != null || remoterepos == null || remoterepos.size() == 0) {
 				// Case #1: A local git exists already -> open git
 				// Case #2: A local git does not exist and the remote is empty -> git init
 				try (Git git = getGit(upath, true);) {
 					setGitRemote(git, gitconfig);
-					return Response.ok(new SuccessMessage("remote set")).build();
+					updateConfig(git, username, gitconfig);
+					message = "remote set";
 				}
 			} else if (localfiles == null || localfiles.length == 0) {
 				// Case #3: The local repo does not exist and the local folder is empty and the remote has data
@@ -315,7 +351,8 @@ public class BrowseService {
 						  .setDirectory(upath.toFile())
 						  .setCredentialsProvider(credentials)
 						  .call();) {
-					return Response.ok(new SuccessMessage("Cloned remote repo")).build();
+					updateConfig(git, username, gitconfig);
+					message = "Cloned remote repo";
 				}
 			} else {
 				// Case #4: The local filesystem has data and the remote has data
@@ -328,40 +365,31 @@ public class BrowseService {
 					git.checkout().setName(branchName).call();
 					git.fetch().call();
 					git.reset().setRef("origin/" + branchName).call();
-					return Response.ok(new SuccessMessage("Created local repo and fetched remote")).build();
+					updateConfig(git, username, gitconfig);
+					message = "Created local repo and fetched remote";
 				}
-
-				/*var git = Git.Init().SetDirectory(Location).Call();
-				Repository = git.GetRepository();
-				 
-				// Original code in question works, is shorter,
-				// but this is most likely the "proper" way to do it.
-				var config = Repository.GetConfig();
-				RemoteConfig remoteConfig = new RemoteConfig(config, "origin");
-				remoteConfig.AddURI(new URIish(cloneUrl));
-				// May use * instead of branch name to fetch all branches.
-				// Same as config.SetString("remote", "origin", "fetch", ...);
-				remoteConfig.AddFetchRefSpec(new RefSpec(
-				    "+refs/heads/" + Settings.Branch +
-				    ":refs/remotes/origin/" + Settings.Branch));
-				remoteConfig.Update(config);
-				config.Save();
-				 
-				git.Fetch().Call();
-				git.BranchCreate().SetName(branchName).SetStartPoint("origin/" + branchName)
-				    .SetUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).Call();
-				git.Checkout().SetName(branchName).Call();
-				 
-				// To update the branch:
-				 
-				git.Fetch().Call();
-				git.Reset().SetRef("origin/" + branchName).Call(); */
 			}
+			return Response.ok(new SuccessMessage(message)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
 		}
 	}
 
+	/**
+	 * The repo must have a username and email for git commands to work.
+	 * 
+	 * @param git
+	 * @param username
+	 * @param gitconfig
+	 * @throws IOException
+	 */
+	private void updateConfig(Git git, String username, GitConfig gitconfig) throws IOException {
+		StoredConfig config = git.getRepository().getConfig();
+        config.setString("user", null, "name", username);
+        config.setString("user", null, "email", gitconfig.getEmail());
+        config.save();
+	}
+	
 	private void setGitRemote(Git git, GitConfig gitconfig) throws GitAPIException, URISyntaxException {
 		boolean remoteoriginexists = false;
 		List<RemoteConfig> remotes = git.remoteList().call();
@@ -387,6 +415,7 @@ public class BrowseService {
 		private String remoteurl;
 		private String username;
 		private String password;
+		private String email;
 		
 		public GitConfig() {
 		}
@@ -425,6 +454,14 @@ public class BrowseService {
 		
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+		public String getEmail() {
+			return email;
+		}
+
+		public void setEmail(String email) {
+			this.email = email;
 		}
 		
 	}

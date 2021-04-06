@@ -11,14 +11,14 @@
 			"name": "Design Time Browser",
 			"description": "Browse all objects in your repository and modify them",
 			"tooltip": null,
-			"href": "protected/browseapp",
+			"href": "protected/apps/browseapp",
 			"icon": "sap-icon://sap-box"
 		},
 		{
 			"name": "Importer",
 			"description": "Import existing database objects into your repository",
 			"tooltip": null,
-			"href": "protected/importapp",
+			"href": "protected/apps/importapp",
 			"icon": "sap-icon://action"
 		},
 		{

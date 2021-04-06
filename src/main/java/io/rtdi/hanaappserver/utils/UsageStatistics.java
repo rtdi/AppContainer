@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.rtdi.hanaappcontainer.HanaRepoServlet;
 import io.rtdi.hanaappserver.rest.HanaStoredProcedure;
 import io.rtdi.hanaappserver.rest.odata.hanatable.ODataCollectionProcessor;
+import io.rtdi.hanaappserver.servlets.HanaRepoServlet;
 
 public class UsageStatistics {
 

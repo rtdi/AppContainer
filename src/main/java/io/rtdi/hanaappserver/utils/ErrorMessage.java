@@ -20,11 +20,7 @@ public class ErrorMessage {
 	}
 
 	public String getMessage() {
-		String message = exception.getMessage();
-		if (message == null) { // NullPointerExceptions and the such
-			message = exception.toString();
-		}
-		return message;
+		return exception.toString();
 	}
 	
 	public String getHint() {

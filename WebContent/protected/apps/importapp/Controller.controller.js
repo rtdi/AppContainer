@@ -3,6 +3,7 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 	"use strict";
 
 	return Controller.extend("io.rtdi.hanappcontainer.importapp.Controller", {
+		resturl: sap.ui.require.toUrl("ui5rest"),
 
 		onInit : function() {
 			var oModel = new ODataModel({
@@ -18,7 +19,7 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 			var cOwner = this.getView().byId("idOwner");
 			var sSchemaName = cOwner.getSelectedKey();
 			var oModel = new sap.ui.model.json.JSONModel();
-			oModel.loadData("../rest/importapp/" + encodeURI(sSchemaName) + "?type=ADDITIVE");
+			oModel.loadData(resturl + "/importapp/" + encodeURI(sSchemaName) + "?type=ADDITIVE");
 			this.getView().setModel(oModel);
 		}
 

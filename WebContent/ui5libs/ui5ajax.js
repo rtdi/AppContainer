@@ -12,6 +12,9 @@ sap.ui.define([
    		postModel : function (sUri, oJsonModel) {
    			return this.postJson(sUri, oJsonModel.getJSON());
    		},
+   		postObject : function (sUri, oObject) {
+   			return this.postJson(sUri, JSON.stringify(oObject));
+   		},
    		ajaxGet : function (sUri) {
    			return this.ajaxSend(sUri, undefined, undefined, "GET");
    		},
