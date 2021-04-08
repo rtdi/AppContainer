@@ -40,11 +40,14 @@ function(Controller, ODataModel, ui5ajax) {
 			}
 		},
 		formatterLinkRun: function(spath) {
-			if (spath && (spath.endsWith(".html") || spath.endsWith(".view.xml"))) {
-				return "../hanarepo/currentuser/" + spath.substring(0, spath.length - 9) + ".html";
-			} else {
-				return undefined;
+			if (spath) {
+				if (spath.endsWith(".html")) {
+					return "../../hanarepo/currentuser/" + spath;
+				} else if (spath.endsWith(".view.xml")) {
+					return "../../hanarepo/currentuser/" + spath.substring(0, spath.length - 9) + ".html";
+				}
 			}
+			return undefined;
 		},
 		onAddDirectory : function() {
 			var that = this;

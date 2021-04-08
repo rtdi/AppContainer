@@ -101,6 +101,8 @@ public abstract class HanaUI5Servlet extends HttpServlet {
 		out.println("  <head>");
 		out.println("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
 		out.println("    <meta charset=\"UTF-8\">");
+		out.println("    <script src=\"/HanaAppContainer/ui5libs/am4charts/dist/core.js\"></script>");
+		out.println("    <script src=\"/HanaAppContainer/ui5libs/am4charts/dist/charts.js\"></script>");
 		out.println("    <script");
 		out.println("       id=\"sap-ui-bootstrap\"");
 		out.println("       src=\"/openui5/resources/sap-ui-core.js\"");

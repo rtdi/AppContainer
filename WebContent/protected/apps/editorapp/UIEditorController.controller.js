@@ -69,7 +69,7 @@ sap.ui.define([
 					that._buildContentTree(xmlView.documentElement, that);
 		        }
 		    };
-		    xhttp.open("GET", "../rest/editorapp/file/" + sFilename, true);
+		    xhttp.open("GET", "../../rest/editorapp/file/" + sFilename, true);
 		    xhttp.setRequestHeader("Content-type", "application/xml");
 		    xhttp.send();
 		    var oModel = new sap.ui.model.odata.v4.ODataModel({
