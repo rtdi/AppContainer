@@ -82,7 +82,7 @@ public class HanaGroupQuery {
     public Response groupquery(
     		@QueryParam("$select")
    		 	@Parameter(
- 	    		description = "The select statement to execute, must start with \select\" as first keyword",
+ 	    		description = "The select statement to execute, must start with \"select\" as first keyword",
  	    		example = "select user_name from users"
  	    		)
     		String query,
