@@ -1,0 +1,9 @@
+<mvc:View height="100%" class="sapUiSizeCompact" 
+	id="mainview"
+	controllerName="ui5app.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:ui5libs.am4charts="ui5libs.am4charts"
+    >
+    <ui5libs.am4charts:Chart id="chart1" charttype="Sunburst" config="ui5app/Sunburst_ViewDataTypes.json" width="100%" height="100%" />
+</mvc:View>

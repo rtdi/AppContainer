@@ -7,10 +7,10 @@ sap.ui.define(
 	  'sap/m/InputType',
 	  'sap/ui/core/TextDirection',
 	  'sap/ui/core/ValueState',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Input, JSONModel, TextAlign, InputTextFormatMode, InputType, TextDirection, ValueState) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Input", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Input", {
 			metadata : {
 				properties: {
 					type : {type : "sap.m.InputType", group : "Data", defaultValue : InputType.Text},
@@ -50,7 +50,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Input(), true);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Input(), true);
 			}
 
 		});

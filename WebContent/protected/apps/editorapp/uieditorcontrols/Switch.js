@@ -2,10 +2,10 @@ sap.ui.define(
   [	  'sap/m/Switch',
 	  'sap/ui/model/json/JSONModel',
 	  'sap/m/SwitchType',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Switch, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Switch", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Switch", {
 			metadata : {
 				properties: {
 					state: { type: "boolean", group: "Misc", defaultValue: false },
@@ -18,7 +18,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Switch(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Switch(), false);
 			}
 
 		});

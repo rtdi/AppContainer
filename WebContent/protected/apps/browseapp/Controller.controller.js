@@ -4,7 +4,7 @@ sap.ui.define([
 	"ui5libs/ui5ajax"],
 function(Controller, ODataModel, ui5ajax) {
 	"use strict";
-	return Controller.extend("io.rtdi.hanaappcontainer.browseapp.Controller", {
+	return Controller.extend("io.rtdi.appcontainer.browseapp.Controller", {
 		onInit : function() {
 			this.onDirectoryRefresh();
 		},

@@ -13,7 +13,7 @@ sap.ui.define([
    				for( var oCustomdata of aCustomData) {
    					if (oCustomdata instanceof ui5libs.controls.ODataContainer) {
 		   				var oModel = new sap.ui.model.odata.v4.ODataModel({ 
-		    					"serviceUrl" : oCustomdata.getUrl(),  
+		    					"serviceUrl" : sap.ui.require.toUrl(oCustomdata.getUrl()),  
 		    					"autoExpandSelect": true, 
 								"operationMode": "Server", 
 								"groupId": "$direct", 

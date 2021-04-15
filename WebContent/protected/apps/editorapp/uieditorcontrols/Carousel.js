@@ -2,11 +2,11 @@ sap.ui.define(
   [
 	  'sap/m/Carousel',
 	  'sap/ui/model/json/JSONModel',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/HBox'
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/HBox'
 	  ],
   function(Carousel, JSONModel, dHBox) {
   return sap.m.Carousel.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Carousel", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Carousel", {
 			metadata : {
 				dnd : {
 					draggable : true,

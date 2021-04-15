@@ -2,11 +2,11 @@ sap.ui.define(
   [
 	  'sap/m/Panel',
 	  'sap/ui/model/json/JSONModel', 
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/OverflowToolbar'
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/OverflowToolbar'
 	  ],
   function(Panel, JSONModel, dOverflowToolbar) {
   return sap.m.Panel.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Panel", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Panel", {
 			metadata : {
 				dnd : {
 					draggable : true,

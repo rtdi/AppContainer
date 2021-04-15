@@ -5,7 +5,7 @@ sap.ui.define([
            	"io/rtdi/amchartsui5controls/library"
    ], function(Controller) {
    	"use strict";
-   	return Controller.extend("ui5.app.RadarController", {
+   	return Controller.extend("ui5app.RadarController", {
    		onInit : function() {
 			var oView = sap.ui.getCore().byId("mainview");
    			var oControl = oView.byId("radarchart");
@@ -14,7 +14,7 @@ sap.ui.define([
    			var chart = oControl.getChart();
    			
 		    /* var oModel = new sap.ui.model.odata.v4.ODataModel({
-	    		serviceUrl : "/HanaAppContainer/protected/odata/RTDI/SALES_DATA_WEEKLY/", 
+	    		serviceUrl : "/AppContainer/protected/odata/RTDI/SALES_DATA_WEEKLY/", 
 	    		"autoExpandSelect": true,
 				"operationMode": "Server",
 				"groupId": "$direct",
@@ -99,7 +99,7 @@ sap.ui.define([
    			var columnSeries = cs.getAm4ChartObject();
    			columnSeries.dataFields.dateX = "WEEK_START_DATE";
    			columnSeries.dataFields.valueY = "REVENUE";
-   			cs.setODataUrl("/HanaAppContainer/protected/odata/RTDI/SALES_DATA_WEEKLY/", "TABLE");
+   			cs.setODataUrl("/AppContainer/protected/odata/RTDI/SALES_DATA_WEEKLY/", "TABLE");
    			cs.addFilter(new io.rtdi.amchartsui5controls.DataProviderFilterEqual("YEAR_ID", "/year"));
 
    			columnSeries.columns.template.strokeOpacity = 0;
@@ -122,7 +122,7 @@ sap.ui.define([
    			bubbleSeries.dataFields.dateX = "ORDERDATE";
    			bubbleSeries.dataFields.categoryY = "DAY_IN_WEEK";
    			bubbleSeries.dataFields.value = "REVENUE";
-   			bs.setODataUrl("/HanaAppContainer/protected/odata/RTDI/SALES_DATA_DAILY/", "TABLE");
+   			bs.setODataUrl("/AppContainer/protected/odata/RTDI/SALES_DATA_DAILY/", "TABLE");
    			bs.addFilter(new io.rtdi.amchartsui5controls.DataProviderFilterEqual("YEAR_ID", "/year"));
    			
    			bubbleSeries.yAxis = weekDayAxis;

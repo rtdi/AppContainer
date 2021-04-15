@@ -1,6 +1,6 @@
 <mvc:View height="100%" class="sapUiSizeCompact" 
 	id="mainview"
-	controllerName="io.rtdi.hanaappcontainer.activationapp.Controller"
+	controllerName="io.rtdi.appcontainer.activationapp.Controller"
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns="sap.m"
 	xmlns:l="sap.ui.layout"
@@ -11,9 +11,9 @@
 	<FlexBox height="100%" direction="Column" >
 		<ui5libs.controls:ShellBar secondTitle="Activation App"/>
 		<Panel height="100%">
-			<l:layoutData>
+			<layoutData>
 				<FlexItemData growFactor="1"/>
-			</l:layoutData>
+			</layoutData>
 			<content>
 				<t:TreeTable id="idActivation"
 					rows="{path:'/', parameters: {arrayNames:['children']}}"

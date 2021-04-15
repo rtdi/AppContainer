@@ -1,0 +1,39 @@
+{
+	"dataSource": {
+		"url": "ui5rest/query?$select=SELECT view_name, count(*) count FROM view_columns WHERE schema_name = 'SYS' GROUP BY view_name ORDER BY 2 desc limit 10"
+	},
+	"xAxes": [
+		{
+			"type": "CategoryAxis",
+			"dataFields": {
+				"category": "VIEW_NAME",
+				"title": {
+					"text": "View name"
+				}
+			}
+		}
+	],
+	"yAxes": [
+		{
+			"type": "ValueAxis",
+			"title": {
+				"text": "Number of columns"
+			}
+		}
+	],
+	"series": [
+		{
+			"type": "ColumnSeries",
+			"dataFields": {
+				"valueY": "COUNT",
+				"categoryX": "VIEW_NAME"
+			},
+			"name": "Column Count",
+			"columns": {
+				"tooltipText": "Series: {name}\nView: {categoryX}\nColumnCount: {valueY}",
+				"stroke": "#ff0000",
+				"fill": "#00ff00"
+			}
+		}
+	]
+}

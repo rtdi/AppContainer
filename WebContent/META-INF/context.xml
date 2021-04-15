@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
     <JarScanner>
-        <JarScanFilter tldSkip="*.*, /WEB-INF/*" tldScan="HanaAppContainer*.jar" defaultTldScan="false" />
+        <JarScanFilter tldSkip="*.*, /WEB-INF/*" tldScan="AppContainer*.jar" defaultTldScan="false" />
     </JarScanner>
 </Context>

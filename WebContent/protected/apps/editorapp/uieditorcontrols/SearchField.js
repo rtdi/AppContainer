@@ -2,10 +2,10 @@ sap.ui.define(
   [
 	  'sap/m/SearchField',
 	  'sap/ui/model/json/JSONModel',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(SearchField, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.SearchField", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.SearchField", {
 			metadata : {
 				properties: {
 					value : {type : "string", group : "Data", defaultValue : null, bindable : "bindable"},
@@ -22,7 +22,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.SearchField(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.SearchField(), false);
 			}
 
 		});

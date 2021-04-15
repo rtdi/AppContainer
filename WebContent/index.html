@@ -16,7 +16,7 @@
 		data-sap-ui-xx-supportedLanguages="en"
 		data-sap-ui-resourceroots='{
 			"ui5libs": "./ui5libs",
-			"io.rtdi.hanaappcontainer": "./"
+			"io.rtdi.appcontainer": "./"
 		}'
 		data-sap-ui-async="true"
 		data-sap-ui-compatVersion="edge"
@@ -26,7 +26,7 @@
 		sap.ui.getCore().attachInit(function () {
 			document.body.innerHTML=''
 			new sap.ui.xmlview({
-				viewName: "io.rtdi.hanaappcontainer.View"
+				viewName: "io.rtdi.appcontainer.View"
 				}).placeAt("content");
 			});
 	</script>

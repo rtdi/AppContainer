@@ -1,9 +1,9 @@
 sap.ui.define(
   [
 	  'sap/m/List', 
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Text', 
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/HBox', 
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/OverflowToolbar', 
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/Text', 
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/HBox', 
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/OverflowToolbar', 
 	  'sap/ui/model/json/JSONModel',
 	  'sap/m/ListGrowingDirection',
 	  'sap/m/ListHeaderDesign',
@@ -13,7 +13,7 @@ sap.ui.define(
 	  'sap/ui/core/MessageType',
 	  'sap/ui/core/ValueState',
 	  'sap/m/ListType',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapperWithListItem'
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapperWithListItem'
 	  ],
   function(
 		  List, 
@@ -21,8 +21,8 @@ sap.ui.define(
 		  dHBox, 
 		  dOverflowToolbar,
 		  JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.List", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.List", {
 			metadata : {
 				properties: {
 					showHeaderToolbar: {type: "boolean", defaultValue: false},
@@ -78,7 +78,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.prototype.init.call(this, new sap.m.List(), true, sap.m.StandardListItem);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.prototype.init.call(this, new sap.m.List(), true, sap.m.StandardListItem);
 			},
 			setShowHeaderToolbar : function(vToolbar) {
 				this.setProperty("showHeaderToolbar", vToolbar, true);

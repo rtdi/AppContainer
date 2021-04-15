@@ -2,10 +2,10 @@ sap.ui.define(
   [
 	  'sap/m/TimePickerSliders', 
 	  'sap/ui/model/json/JSONModel',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(TimePickerSliders, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TimePickerSliders", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.TimePickerSliders", {
 			metadata : {
 				properties: {
 					// selectedValue: {type: "string", defaultValue: null},
@@ -16,7 +16,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.TimePickerSliders(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.TimePickerSliders(), false);
 			}
 		});
 });

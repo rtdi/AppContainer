@@ -2,10 +2,10 @@ sap.ui.define(
   [
 	  'sap/ui/core/Icon',
 	  'sap/ui/model/json/JSONModel',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Icon, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Icon", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Icon", {
 			metadata : {
 				properties: {
 					src : {type : "sap.ui.core.URI", group : "Data", defaultValue : null},
@@ -26,7 +26,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.ui.core.Icon());
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.ui.core.Icon());
 			}
 
 		});

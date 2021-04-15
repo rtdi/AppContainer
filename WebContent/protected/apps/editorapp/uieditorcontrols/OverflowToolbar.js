@@ -6,7 +6,7 @@ sap.ui.define(
 	  'sap/m/ToolbarStyle'],
   function(OverflowToolbar, JSONModel) {
   return sap.m.OverflowToolbar.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.OverflowToolbar", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.OverflowToolbar", {
 			metadata : {
 				dnd : {
 					draggable : true,

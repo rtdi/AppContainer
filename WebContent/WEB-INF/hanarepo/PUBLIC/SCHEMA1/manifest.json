@@ -8,7 +8,7 @@
 		"title": "List all Hana Users",
 		"dataSources": {
 			"userds": {
-				"uri": "/HanaAppContainer/protected/odata/SYS/USERS/",
+				"uri": "/AppContainer/protected/odata/SYS/USERS/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "4.0"
@@ -21,7 +21,7 @@
 	},
 	"sap.ui5": {
 		"rootView": {
-			"viewName": "ui5.app.Users",
+			"viewName": "ui5app.Users",
 			"type": "XML",
 			"async": true,
 			"id": "userview"

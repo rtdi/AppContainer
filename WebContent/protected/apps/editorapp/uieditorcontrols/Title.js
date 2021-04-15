@@ -5,11 +5,11 @@ sap.ui.define(
 	  'sap/ui/core/TextAlign',
 	  'sap/ui/core/TitleLevel',
 	  'sap/m/WrappingType',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'
   ],
   function(Title, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Title", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Title", {
 			metadata : {
 				properties: {
 					text : {type : "string", group : "Appearance", defaultValue : null},
@@ -23,7 +23,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Title(), true);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Title(), true);
 			}
 		});
 });

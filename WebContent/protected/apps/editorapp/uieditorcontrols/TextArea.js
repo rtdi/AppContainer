@@ -5,11 +5,11 @@ sap.ui.define(
 	  'sap/ui/core/TextAlign',
 	  'sap/ui/core/Wrapping',
 	  'sap/ui/core/ValueState',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'
   ],
   function(TextArea, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TextArea", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.TextArea", {
 			metadata : {
 				properties: {
 					rows : {type : "int", group : "Appearance", defaultValue : 2},
@@ -40,7 +40,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.TextArea(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.TextArea(), false);
 			}
 		});
 });

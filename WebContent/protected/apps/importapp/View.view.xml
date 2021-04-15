@@ -3,7 +3,7 @@
 	class="sapUiSizeCompact" 
 	displayBlock="true"
 	id="mainview"
-	controllerName="ui5.app.Controller"
+	controllerName="ui5app.Controller"
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns="sap.m"
 	xmlns:l="sap.ui.layout"
@@ -14,9 +14,9 @@
 	<FlexBox height="100%" direction="Column" >
 		<ui5libs.controls:ShellBar secondTitle="Import App"/>
 		<Panel height="100%">
-			<l:layoutData>
+			<layoutData>
 				<FlexItemData growFactor="1"/>
-			</l:layoutData>
+			</layoutData>
 			<content>
 				<Label text="Schema" labelFor="idOwnerFilter">
 					<layoutData>

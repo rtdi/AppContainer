@@ -2,7 +2,7 @@
 	class="sapUiSizeCompact" 
 	displayBlock="true"
 	id="mainview"
-	controllerName="ui5.app.Controller"
+	controllerName="ui5app.Controller"
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns="sap.m"
 	xmlns:l="sap.ui.layout"

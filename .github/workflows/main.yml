@@ -28,11 +28,11 @@ jobs:
         mvn -DskipTests=true --no-transfer-progress clean package
         
 #    - name: Build the Docker image
-#      run: docker build . --file docker/Dockerfile --tag rtdi/hanaappcontainer:latest
+#      run: docker build . --file docker/Dockerfile --tag rtdi/appcontainer:latest
 #    - name: Login to DockerHub Registry
 #      run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 #    - name: Push the latest Docker image
-#      run: docker push rtdi/hanaappcontainer:latest
+#      run: docker push rtdi/appcontainer:latest
       
     - name: Create Release
       id: create_release
@@ -51,6 +51,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: target/HanaAppContainer.war
-        asset_name: HanaAppContainer.war
+        asset_path: target/AppContainer.war
+        asset_name: AppContainer.war
         asset_content_type: application/war

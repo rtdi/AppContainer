@@ -11,7 +11,7 @@ sap.ui.define(
 	  ],
   function(FlexBox, JSONModel) {
   return sap.m.FlexBox.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.FlexBox", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.FlexBox", {
 			metadata : {
 				dnd : {
 					draggable : true,

@@ -2,7 +2,7 @@ sap.ui.define(
   ['sap/m/Image', 'sap/ui/model/json/JSONModel'],
   function(Image, JSONModel) {
   return sap.m.Image.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ToolPaletteImage", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.ToolPaletteImage", {
 			metadata : {
 				dnd : {
 					draggable : true,

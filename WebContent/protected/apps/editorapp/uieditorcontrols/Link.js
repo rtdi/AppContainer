@@ -4,10 +4,10 @@ sap.ui.define(
 	  'sap/ui/model/json/JSONModel',
 	  'sap/ui/core/TextAlign',
 	  'sap/ui/core/TextDirection',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Link, JSONModel, TextAlign, TextDirection) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Link", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Link", {
 			metadata : {
 				properties: {
 					text : {type : "string", group : "Data", defaultValue : ''},
@@ -25,7 +25,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Link(), true, true);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Link(), true, true);
 			}
 		});
 });

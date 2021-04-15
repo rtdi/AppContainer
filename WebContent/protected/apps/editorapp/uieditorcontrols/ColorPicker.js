@@ -4,10 +4,10 @@ sap.ui.define(
 	  'sap/ui/model/json/JSONModel',
 	  'sap/ui/unified/ColorPickerMode',
 	  'sap/ui/unified/ColorPickerDisplayMode',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(ColorPicker, JSONModel, ColorPickerMode, ColorPickerDisplayMode) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ColorPicker", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.ColorPicker", {
 			metadata : {
 				properties: {
 					colorString : {type: "string", group : "Misc", defaultValue : null},
@@ -17,7 +17,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.ui.unified.ColorPicker());
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.ui.unified.ColorPicker());
 			}
 		});
 });

@@ -12,7 +12,7 @@ sap.ui.define([
 		    	synchronizationMode : "None",
 		    	"autoExpandSelect": true,
 		    	"operationMode": "Server",
-			    serviceUrl : "/HanaAppContainer/protected/odata/SYS/USERS/"
+			    serviceUrl : "/AppContainer/protected/odata/SYS/USERS/"
 		    } );
 		    oTable.setModel(oModel);
 		}

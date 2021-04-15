@@ -2,7 +2,7 @@ sap.ui.define(
   ['sap/m/Button', 'sap/ui/model/json/JSONModel'],
   function(Button, JSONModel) {
   return sap.m.Button.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ToolPaletteButton", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.ToolPaletteButton", {
 			metadata : {
 				dnd : {
 					draggable : true,

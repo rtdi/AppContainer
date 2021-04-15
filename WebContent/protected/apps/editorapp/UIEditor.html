@@ -17,7 +17,7 @@
 		data-sap-ui-xx-bindingSyntax="complex"
 		data-sap-ui-xx-supportedLanguages="en"
 		data-sap-ui-resourceroots='{
-			"io.rtdi.hanaappcontainer.editorapp": "./"
+			"io.rtdi.appcontainer.editorapp": "./"
 		}'
 		data-sap-ui-async="true" >
 	</script>
@@ -25,7 +25,7 @@
 		sap.ui.getCore().attachInit(function () {
 			document.body.innerHTML=''
 			new sap.ui.xmlview({
-				viewName: "io.rtdi.hanaappcontainer.editorapp.UIEditor",
+				viewName: "io.rtdi.appcontainer.editorapp.UIEditor",
 				id: "mainview"
 				}).placeAt("content");
 			});

@@ -4,7 +4,7 @@ sap.ui.define([
 	"ui5libs/ui5ajax"], function(Controller, ODataModel, ui5ajax) {
 	"use strict";
 
-	return Controller.extend("io.rtdi.hanaappcontainer.editorapp.Controller", {
+	return Controller.extend("io.rtdi.appcontainer.editorapp.Controller", {
 		onInit : function() {
 		    const queryString = window.location.search;
 		    const urlParams = new URLSearchParams(queryString);

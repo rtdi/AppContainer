@@ -1,0 +1,10 @@
+{
+	"dataSource": {
+		"url": "ui5rest/query?$select=SELECT view_name, count(*) count FROM view_columns WHERE schema_name = 'SYS' GROUP BY view_name"
+	},
+	"type": "TreeMap",
+	"dataFields": {
+		"value": "COUNT",
+		"name": "VIEW_NAME"
+	}
+}

@@ -39,7 +39,7 @@
 
 	"sap.ui5": {
 		"rootView": {
-			"viewName": "ui5.app.View",
+			"viewName": "ui5app.View",
 			"type": "XML"
 		},
 		"dependencies": {

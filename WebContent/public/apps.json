@@ -4,7 +4,7 @@
 			"name": "README",
 			"description": "The central point for all problems and requests",
 			"tooltip": null,
-			"href": "https://github.com/rtdi/HanaAppContainer",
+			"href": "https://github.com/rtdi/AppContainer",
 			"icon": "sap-icon://document-text"
 		},
 		{
@@ -46,21 +46,21 @@
 			"name": "DockerHub",
 			"description": "A link to the DockerHub entry of this project",
 			"tooltip": null,
-			"href": "https://hub.docker.com/repository/docker/rtdi/hanaappcontainer",
+			"href": "https://hub.docker.com/repository/docker/rtdi/appcontainer",
 			"image": "./public/media/dockerhub_logo.png"
 		},
 		{
 			"name": "File Issues",
 			"description": "The central point for all problems and requests",
 			"tooltip": null,
-			"href": "https://github.com/rtdi/HanaAppContainer/issues",
+			"href": "https://github.com/rtdi/AppContainer/issues",
 			"image": "./public/media/github_issues.png"
 		},
 		{
 			"name": "SAP Blogs",
 			"description": "All SAP Blogs related to this project",
 			"tooltip": null,
-			"href": "https://blogs.sap.com/tag/hanaappcontainer/",
+			"href": "https://blogs.sap.com/tag/appcontainer/",
 			"image": "./public/media/sap_blogs.png"
 		}
 	]

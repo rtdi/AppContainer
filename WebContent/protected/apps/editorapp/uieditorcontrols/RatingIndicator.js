@@ -2,10 +2,10 @@ sap.ui.define(
   [	  'sap/m/RatingIndicator',
 	  'sap/ui/model/json/JSONModel',
 	  'sap/m/RatingIndicatorVisualMode',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper' ],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper' ],
   function(RatingIndicator, JSONModel, RatingIndicatorVisualMode) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RatingIndicator", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.RatingIndicator", {
 			metadata : {
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
@@ -24,7 +24,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.RatingIndicator());
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.RatingIndicator());
 			}
 
 		});

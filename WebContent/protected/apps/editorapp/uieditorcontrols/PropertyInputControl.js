@@ -2,7 +2,7 @@ sap.ui.define(
   ['sap/m/ComboBox', 'sap/m/InputType', 'sap/ui/core/Item', 'sap/ui/model/odata/v4/ODataMetaModel'],
   function(Control) {
   return sap.m.ComboBox.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.PropertyInputControl", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.PropertyInputControl", {
 			metadata : {
 				properties: {
 					datatype: { type: "Object", defaultValue: undefined },

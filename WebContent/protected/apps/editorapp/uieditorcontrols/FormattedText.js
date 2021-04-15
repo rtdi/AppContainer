@@ -5,7 +5,7 @@ sap.ui.define(
 	  'sap/m/LinkConversion'],
   function(FormattedText, JSONModel, LinkConversion) {
   return sap.m.FormattedText.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.FormattedText", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.FormattedText", {
 			metadata : {
 				properties: {
 					htmlText: {type: "string", group: "Misc", defaultValue: ""},
@@ -17,7 +17,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.FormattedText(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.FormattedText(), false);
 			}
 		});
 });

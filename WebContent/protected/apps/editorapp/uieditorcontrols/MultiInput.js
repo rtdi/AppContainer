@@ -8,10 +8,10 @@ sap.ui.define(
 	  'sap/ui/core/ValueState',
 	  'sap/ui/core/Item',
 	  'sap/m/Token',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(MultiInput, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.MultiInput", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.MultiInput", {
 			metadata : {
 				properties: {
 					enableMultiLineMode: {type: "boolean", group: "Behavior", defaultValue: false},
@@ -57,7 +57,7 @@ sap.ui.define(
 			renderer : {},
 			init : function() {
 				var oChild = new sap.m.MultiInput();
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, true);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, true);
 				oChild.setTokens([
 					new sap.m.Token({text: "Token 1", key: "0001"}),
 					new sap.m.Token({text: "Token 2", key: "0002"})

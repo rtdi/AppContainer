@@ -23,7 +23,7 @@ sap.ui.define([
 			this._oMenu.openBy(this.getProfile());
 		},
 		logout: function() {
-			window.location.href = "/HanaAppContainer/logout";
+			window.location.href = "/AppContainer/logout";
 		}
 	});
 });

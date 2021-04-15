@@ -1,0 +1,9 @@
+<mvc:View height="100%" class="sapUiSizeCompact" 
+	id="mainview"
+	controllerName="ui5app.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:ui5libs.am4charts="ui5libs.am4charts"
+    >
+    <ui5libs.am4charts:Chart id="chart1" charttype="ChordDiagram" config="ui5app/Chord_ObjectDependencies.json" width="100%" height="100%" />
+</mvc:View>

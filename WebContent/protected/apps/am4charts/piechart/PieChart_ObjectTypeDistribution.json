@@ -1,0 +1,14 @@
+{
+	"dataSource": {
+		"url": "ui5rest/query?$select=SELECT OBJECT_TYPE, count(*) as COUNT FROM objects GROUP BY OBJECT_TYPE"
+	},
+	"series": [
+		{
+			"type": "PieSeries",
+			"dataFields": {
+				"value": "COUNT",
+				"category": "OBJECT_TYPE"
+			}
+		}
+	]
+}

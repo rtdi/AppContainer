@@ -5,7 +5,7 @@ sap.ui.define(
 	  ],
   function(BlockLayoutCell, JSONModel) {
   return sap.ui.layout.BlockLayoutCell.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.BlockLayoutCell", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.BlockLayoutCell", {
 			metadata : {
 				dnd : {
 					draggable : false,

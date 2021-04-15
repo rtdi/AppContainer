@@ -3,10 +3,10 @@ sap.ui.define(
 	  'sap/m/SelectList',
 	  'sap/ui/model/json/JSONModel',
 	  'sap/ui/core/ListItem',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapperWithListItem'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapperWithListItem'],
   function(SelectList, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.SelectList", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.SelectList", {
 			metadata : {
 				properties: {
 					itemIcon: { type: "string", defaultValue: "", itemSetting: "icon" },
@@ -27,7 +27,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.prototype.init.call(this, new sap.m.SelectList(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem.prototype.init.call(this, new sap.m.SelectList(), false);
 			}
 
 		});

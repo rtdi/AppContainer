@@ -1,10 +1,10 @@
 <mvc:View height="100%" class="sapUiSizeCompact"
-	controllerName="io.rtdi.hanaappcontainer.editorapp.UIEditorController"
+	controllerName="io.rtdi.appcontainer.editorapp.UIEditorController"
 	xmlns:mvc="sap.ui.core.mvc" 
 	xmlns="sap.m"
 	xmlns:l="sap.ui.layout"
 	xmlns:dnd="sap.ui.core.dnd" 
-	xmlns:rtdi="io.rtdi.hanaappcontainer.editorapp.uieditorcontrols" 
+	xmlns:rtdi="io.rtdi.appcontainer.editorapp.uieditorcontrols" 
 	xmlns:core="sap.ui.core">
 	<l:DynamicSideContent
 		id="DynamicSideContent">

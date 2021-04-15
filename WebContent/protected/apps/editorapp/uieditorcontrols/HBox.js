@@ -11,7 +11,7 @@ sap.ui.define(
 	  ],
   function(HBox, JSONModel) {
   return sap.m.HBox.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.HBox", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.HBox", {
 			metadata : {
 				dnd : {
 					draggable : true,

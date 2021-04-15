@@ -4,10 +4,10 @@ sap.ui.define(
 	  'sap/ui/model/json/JSONModel',
 	  'sap/ui/core/Element',
 	  'sap/m/SegmentedButtonItem',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(SegmentedButton, JSONModel, Element) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.SegmentedButton", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.SegmentedButton", {
 			metadata : {
 				properties: {
 					buttonCount: { type: "int", defaultValue: "3" },
@@ -28,7 +28,7 @@ sap.ui.define(
 			renderer : {},
 			init : function() {
 				var oChild = new sap.m.SegmentedButton();
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, false);
 				this.setWidth("auto"); // Required workaround, else the style is width=100%
 			},
 			setButtonCount : function(value) {

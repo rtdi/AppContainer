@@ -2,7 +2,7 @@ sap.ui.define([
 	'sap/ui/base/Object'
 ], function (BaseObject) {
 	"use strict";    
-   	var lib =  BaseObject.extend("io.rtdi.hanaappcontainer.editorapp.libs.XMLHelper.XMLFormatter", { } );
+   	var lib =  BaseObject.extend("io.rtdi.appcontainer.editorapp.libs.XMLHelper.XMLFormatter", { } );
    	   	
    	lib.generateXML = function(oControl, buffer, level = 0) {
    	   	function indent(text, level) {

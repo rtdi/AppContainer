@@ -1,8 +1,8 @@
 sap.ui.define(
-  ['sap/m/Button', 'sap/ui/model/json/JSONModel', 'sap/m/ButtonType', 'sap/ui/core/TextDirection', 'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+  ['sap/m/Button', 'sap/ui/model/json/JSONModel', 'sap/m/ButtonType', 'sap/ui/core/TextDirection', 'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Button, JSONModel, ButtonType, TextDirection) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Button", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Button", {
 			metadata : {
 				properties: {
 					propertiesModel: { type: "sap.ui.model.json.JSONModel", defaultValue: undefined },
@@ -23,7 +23,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Button(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Button(), false);
 			}
 
 		});

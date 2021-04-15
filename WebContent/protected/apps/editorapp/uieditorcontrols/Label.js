@@ -7,10 +7,10 @@ sap.ui.define(
 	  'sap/ui/core/TextDirection',
 	  'sap/ui/core/VerticalAlign',
 	  'sap/m/WrappingType',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Label, JSONModel, LabelDesign, TextAlign, TextDirection, VerticalAlign, WrappingType) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Label", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Label", {
 			metadata : {
 				properties: {
 					design : {type : "sap.m.LabelDesign", group : "Appearance", defaultValue : LabelDesign.Standard},
@@ -27,7 +27,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Label(), true);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.Label(), true);
 			}
 		});
 });

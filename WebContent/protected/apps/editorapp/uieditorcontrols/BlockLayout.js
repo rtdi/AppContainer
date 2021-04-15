@@ -2,12 +2,12 @@ sap.ui.define(
   [
 	  'sap/ui/layout/BlockLayout',
 	  'sap/ui/model/json/JSONModel',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/BlockLayoutRow',
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/BlockLayoutRow',
 	  'sap/ui/layout/BlockBackgroundType'
 	  ],
   function(BlockLayout, JSONModel, BlockLayoutRow) {
   return sap.ui.layout.BlockLayout.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.BlockLayout", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.BlockLayout", {
 			metadata : {
 				dnd : {
 					draggable : true,

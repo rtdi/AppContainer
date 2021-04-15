@@ -5,10 +5,10 @@ sap.ui.define(
 	  'sap/ui/core/TextAlign',
 	  'sap/ui/core/TextDirection',
 	  'sap/ui/core/ValueState',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(CheckBox, JSONModel, TextAlign, TextDirection, ValueState) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.CheckBox", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.CheckBox", {
 			metadata : {
 				properties: {
 					selected : {type : "boolean", group : "Data", defaultValue : false},
@@ -30,7 +30,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.CheckBox(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.CheckBox(), false);
 			}
 
 		});

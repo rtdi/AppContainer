@@ -2,7 +2,7 @@ sap.ui.define(
   ['sap/ui/model/json/JSONModel'],
   function(JSONModel) {
   return sap.ui.core.Control.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper", {
 			metadata : {
 				dnd : {
 					draggable : true,

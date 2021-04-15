@@ -1,8 +1,8 @@
-# HanaAppContainer
+# AppContainer
 
 _Developing SAP Hana Applications quickly_
 
-Source code available here: [github](https://github.com/rtdi/HanaAppContainer)
+Source code available here: [github](https://github.com/rtdi/AppContainer)
 
 ## Design Thinking goal
 * As a developer I would like to build UI5 applications as quickly as possible. Everything the backend can do automatically, it should.
@@ -11,7 +11,7 @@ Source code available here: [github](https://github.com/rtdi/HanaAppContainer)
 
 ## Core thoughts
 
-For building a Hana application the following components are needed
+For building a web application the following components are needed
 
 - Graphical User Interface: Today that would be a web application utilizing SAPUI5, OpenUI5, Angular, React or pure HTML5.
 - Backend: The web application makes calls to a backend service which translates the actions into database commands. Example: A List-control for the order types should be populated with the list of all allowed order types. Hence a service is needed reading the respective table and returning that data in Json format allowing the control can render the data.
@@ -23,13 +23,13 @@ For building a Hana application the following components are needed
 
 On any computer install the Docker Daemon - if it is not already and download this docker image with
 
-    docker pull rtdi/hanaappcontainer:latest
+    docker pull rtdi/appcontainer:latest
 
 Then start the image via docker run. Only one parameter needs to be set, the environment variable HANAJDBCURL. This consist of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE).
 
-    docker run -d -p 80:8080 -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/hanaappcontainer
+    docker run -d -p 80:8080 -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
 
-From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/HanaAppContainer/ with a list of applications
+From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
 
 An even better docker run command is to add a few server directories, here all in the hosts /dockermountpoints directory, and point them into various predefined points.
 
@@ -38,17 +38,12 @@ An even better docker run command is to add a few server directories, here all i
        -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
        -v /dockermountpoints/hanarepo:/usr/local/tomcat/hanarepo \
        -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
-       -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/hanaappcontainer
+       -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
 
 - /usr/local/tomcat/conf/rtdiconfig: The directory where tomcat related settings can go. Usually not needed.
 - /usr/local/tomcat/conf/security: The directory with ssl settings. The tomcat-users.xml user database is not used.
 - /usr/local/tomcat/hanarepo: This is where all developed files are located, one directory per user and a global PUBLIC directory.
 - /usr/local/tomcat/webapps/ui5externallibs: A place to put all additional ui5 libraries and files not part of the deployed web application.
-
-## Help!
-
-The source code of this project is available at [github](https://github.com/rtdi/HanaAppContainer).
-As an OpenSource project it grows with the interactions. Hence I invite all to file [issues](https://github.com/rtdi/HanaAppContainer/issues) in github, no matter if it is a request for help or product suggestions and to spread the word. The more people are using it, the faster progress will be made to your benefit.
 
 
 ## Capabilities
@@ -63,7 +58,7 @@ The complete solution consists of the following modules:
 * Backend services to invoke stored procedures, which usually trigger business logic, e.g. create a booking
 * Lots of extension points at all levels to use for custom projects
 
-<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 01 - Home page.png" width="50%">
+<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/Screenshot 01 - Home page.png" width="50%">
 
 
 
@@ -71,7 +66,7 @@ The complete solution consists of the following modules:
 
 A file system based repository where new development artifacts can be managed and edited. The goal is to support all file types, e.g. hdbtable files to create tables from scratch, html files,... It is file system based to allow easy integration with git source code control. 
 
-<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 02 - Designtime Browser.png" width="50%">
+<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/Screenshot 02 - Designtime Browser.png" width="50%">
 
 
 
@@ -79,7 +74,7 @@ A file system based repository where new development artifacts can be managed an
 
 Just like Hana XS Classic and Hana XS Advanced or the Cloud Application Programming Model artifacts of SAP, the same objects can be activated to create Hana objects easily.
 
-<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 03 - hdbtable.png" width="50%">
+<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/Screenshot 03 - hdbtable.png" width="50%">
 
 
 
@@ -87,15 +82,28 @@ Just like Hana XS Classic and Hana XS Advanced or the Cloud Application Programm
 
 All files within the repository can be opened via the web browser, if permissions allow that.
 
-<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/SampleUI.png" width="50%">
+<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/SampleUI.png" width="50%">
 
+
+### UI5 Application Development
+
+When building UI5 apps, a lot of common preparation work must be performed. This AppContainer aims to simplify as much as possible without creating limitations.
+The approach is generally speaking one of
+
+- If a mandatory file is missing, it is generated automatically. Example: The MyApp.html file is missing but a manifest.json exists -> create a default html and component.js file when such file is requested by the browser.
+- Controls and fragments to be reused
+- Especially the [am4charts library](https://www.amcharts.com/demos/) is available via UI5 controls
+
+For the details see [UI5Development](UI5Development.md)
 
 
 ### Graphical UI Editor
 
 Allows to edit normal XMLView files by drag and drop of control and changing their properties via a double click.
 
-<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/XMLViewEditor.gif">
+ATTENTION: PoC only.
+
+<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/XMLViewEditor.gif">
 
 
 
@@ -103,14 +111,66 @@ Allows to edit normal XMLView files by drag and drop of control and changing the
 
 Every single table or view is exposed as oData endpoint and as Restful service. See the swagger definitions.
 
-<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/Screenshot 16 - odata.png" width="50%">
+<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/Screenshot 16 - odata.png" width="50%">
 
 
 ### Procedures as Restful endpoints
 
 Every stored procedure the user has permissions on can be invoked via a Restful service.
 
-<img src="https://github.com/rtdi/HanaAppContainer/raw/master/docs/media/procedure-invocation.png" width="50%">
+<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/procedure-invocation.png" width="50%">
+
+### Rest Lookup
+
+To return at most a single record from a table, lookup endpoint exists. It supports custom where clauses using the $where query parameter and via $select a reduced list of column.
+
+Example:
+http://localhost:8080/AppContainer/protected/rest/lookup/SYS/USERS
+
+### Rest Query
+
+In case needed, data can also be queried via a rest interface. The endpoint is called query and it expects a parameter query= with the select statement to be executed.
+
+Example:
+http://localhost:8080/AppContainer/protected/rest/query?$select=select%20*%20from%20users
+
+### Rest Group-Query
+
+Similar to the Rest Query, except that it returns the data in a hierarchical manner. 
+
+For this to work properly, the call must meet multiple conditions:
+1. The columns with less distinct values come before the other
+1. The parameter $levelcolumns specifies the number of levels the diagram has a the most
+1. All columns after the $levelcolumns specified number go into the leaf node
+
+Example:
+http://localhost:8080/AppContainer/protected/rest/groupquery?$select=SELECT%20schema_name,%20data_type_name,%20count(*)%20AS%20count%20FROM%20VIEW_columns%20GROUP%20BY%20schema_name,%20data_type_name&$levelcolumns=2
+
+The select statement returns in that column order:
+
+| schema | datatype | count |
++ ------ + -------- + ----- +
+| SYS    | VARCHAR  |    10 |
+| SYS    | INTEGER  |     5 |
+
+The $levelcolumns tells two levels at most. Hence the output Json looks like
+
+[ { "name": "SYS",
+    "children": [
+        {
+            "name": "VARCHAR",
+            "count": 10
+        },
+        {
+            "name": INTEGER",
+            "count": 5
+        }
+    ]
+} ]
+
+It is a tree with name/children and all columns at position >2 are added to the leaf node.
+
+If one level has a value of NULL it is skipped.
 
 
 ### Extension points
@@ -124,7 +184,7 @@ To extend this application and use it beyond the editing capabilities, own code 
 ## Licensing
 
 This application is provided as dual license. For all users with less than 10'000 API calls per month the application can be used free of charge and the code falls under a Gnu Public License. Users with more than 10'000 API calls are asked to get a commercial license to support further development of this solution. The commercial license is on a pay-per-use basis.
-One API call is one invocation of any of the backend services, oData or Restful, in any running container hosted within the company. In other words, when then containers are active and used equally, once all got more than 1'000 calls they exceed overall the 10'000 api call limit.
+One API call is one invocation of any of the backend services, oData or Restful, in any running container hosted within the company. In other words, when 10 containers are active and used equally, once all got more than 1'000 calls they exceed overall the 10'000 api call limit.
 
 ## Data protection and privacy
 

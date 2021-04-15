@@ -3,7 +3,7 @@ cacheTTL: 0
 openAPI:
   info:
     version: '1.0'
-    title: HanaAppContainer
+    title: AppContainer
 servers:
-- url: /HanaAppContainer
-- url: http://locahost:8080/HanaAppContainer
+- url: /AppContainer
+- url: http://locahost:8080/AppContainer

@@ -1,5 +1,5 @@
 <mvc:View
-	controllerName="ui5.app.Users"
+	controllerName="ui5app.Users"
 	xmlns="sap.m"
 	xmlns:mvc="sap.ui.core.mvc">
 	<Table

@@ -2,54 +2,54 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller", 
 	"sap/ui/base/DataType",
 	"sap/ui/core/XMLTemplateProcessor",
-	"io/rtdi/hanaappcontainer/editorapp/libs/XMLHelper/XMLFormatter",
+	"io/rtdi/appcontainer/editorapp/libs/XMLHelper/XMLFormatter",
 	"sap/ui/model/Sorter",
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Button", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/CheckBox", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ComboBox", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/FormattedText", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Icon", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Image", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Input", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Label", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Link", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/List", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/MaskInput", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/MultiComboBox", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/MultiInput", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/SearchField", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/SegmentedButton", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Select", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/SelectList", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Text", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/TextArea", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Title", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Table",
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/HBox", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/VBox", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/FlexBox", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/BlockLayout", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Carousel", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Panel", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ColorPalette", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ColorPicker", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Currency", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/DatePicker", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/DateRangeSelection", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/DateTimePicker", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/RadioButton", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/RangeSlider", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Slider", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/RatingIndicator", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Switch", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/TimePicker", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/TimePickerSliders", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/StepInput", 
-	"io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/PropertyInputControl"
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Button", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/CheckBox", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/ComboBox", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/FormattedText", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Icon", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Image", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Input", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Label", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Link", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/List", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/MaskInput", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/MultiComboBox", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/MultiInput", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/SearchField", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/SegmentedButton", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Select", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/SelectList", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Text", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/TextArea", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Title", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Table",
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/HBox", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/VBox", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/FlexBox", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/BlockLayout", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Carousel", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Panel", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/ColorPalette", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/ColorPicker", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Currency", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/DatePicker", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/DateRangeSelection", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/DateTimePicker", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/RadioButton", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/RangeSlider", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Slider", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/RatingIndicator", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/Switch", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/TimePicker", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/TimePickerSliders", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/StepInput", 
+	"io/rtdi/appcontainer/editorapp/uieditorcontrols/PropertyInputControl"
 	], function(Controller, DataType, XMLTemplateProcessor, XMLFormatter) {
 	"use strict";
 
-	return Controller.extend("io.rtdi.hanaappcontainer.editorapp.UIEditorController", {
+	return Controller.extend("io.rtdi.appcontainer.editorapp.UIEditorController", {
 		onInit : function() {
 			var oView = sap.ui.getCore().byId("mainview");
 		    const queryString = window.location.search;
@@ -73,7 +73,7 @@ sap.ui.define([
 		    xhttp.setRequestHeader("Content-type", "application/xml");
 		    xhttp.send();
 		    var oModel = new sap.ui.model.odata.v4.ODataModel({
-		    		serviceUrl : "/HanaAppContainer/protected/catalog/odataendpoints/", 
+		    		serviceUrl : "/AppContainer/protected/catalog/odataendpoints/", 
 		    		"autoExpandSelect": true,
 					"operationMode": "Server",
 					"groupId": "$direct",
@@ -83,7 +83,7 @@ sap.ui.define([
 		    oModelControl.setModel(oModel);
 		    
 		    var oModelSchema = new sap.ui.model.odata.v4.ODataModel({
-	    		serviceUrl : "/HanaAppContainer/protected/odata/SYS/SCHEMAS/", 
+	    		serviceUrl : "/AppContainer/protected/odata/SYS/SCHEMAS/", 
 	    		"autoExpandSelect": true,
 				"operationMode": "Server",
 				"groupId": "$direct",
@@ -483,7 +483,7 @@ sap.ui.define([
 					XMLFormatter.generateXML(oItem, buffer, 1);
 				});
 				var viewcontent = '<mvc:View height="100%" class="sapUiSizeCompact"\r\n' +
-						'    controllerName="ui5.app.' + sViewName + '"\r\n' + 
+						'    controllerName="ui5app.' + sViewName + '"\r\n' + 
 						'    xmlns:mvc="sap.ui.core.mvc"\r\n' + 
 						'    xmlns:sap.m="sap.m"\r\n' + 
 						'    xmlns:sap.ui.layout="sap.ui.layout"\r\n' + 
@@ -555,87 +555,87 @@ sap.ui.define([
 		_getClass : function(vClassName) {
 			switch (vClassName) {
 			case "sap.m.Button":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Button;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Button;
 			case "sap.m.CheckBox":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.CheckBox;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.CheckBox;
 			case "sap.m.ComboBox":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ComboBox;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.ComboBox;
 			case "sap.m.FormattedText":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.FormattedText;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.FormattedText;
 			case "sap.ui.core.Icon":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Icon;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Icon;
 			case "sap.m.Image":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Image;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Image;
 			case "sap.m.Input":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Input;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Input;
 			case "sap.m.Label":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Label;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Label;
 			case "sap.m.Link":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Link;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Link;
 			case "sap.m.List":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.List;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.List;
 			case "sap.m.MaskInput":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.MaskInput;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.MaskInput;
 			case "sap.m.MultiComboBox":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.MultiComboBox;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.MultiComboBox;
 			case "sap.m.MultiInput":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.MultiInput;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.MultiInput;
 			case "sap.m.SearchField":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.SearchField;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.SearchField;
 			case "sap.m.SegmentedButton":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.SegmentedButton;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.SegmentedButton;
 			case "sap.m.Select":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Select;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Select;
 			case "sap.m.SelectList":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.SelectList;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.SelectList;
 			case "sap.m.Table":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Table;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Table;
 			case "sap.m.Text":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Text;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Text;
 			case "sap.m.TextArea":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TextArea;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.TextArea;
 			case "sap.m.Title":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Title;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Title;
 			case "sap.m.HBox":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.HBox;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.HBox;
 			case "sap.m.VBox":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.VBox;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.VBox;
 			case "sap.m.FlexBox":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.FlexBox;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.FlexBox;
 			case "sap.ui.layout.BlockLayout":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.BlockLayout;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.BlockLayout;
 			case "sap.m.Carousel":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Carousel;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Carousel;
 			case "sap.m.Panel":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Panel;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Panel;
 			case "sap.m.ColorPalette":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ColorPalette;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.ColorPalette;
 			case "sap.ui.unified.ColorPicker":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ColorPicker;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.ColorPicker;
 			case "sap.ui.unified.Currency":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Currency;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Currency;
 			case "sap.m.DatePicker":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DatePicker;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.DatePicker;
 			case "sap.m.DateRangeSelection":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DateRangeSelection;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.DateRangeSelection;
 			case "sap.m.DateTimePicker":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DateTimePicker;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.DateTimePicker;
 			case "sap.m.RadioButton":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RadioButton;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.RadioButton;
 			case "sap.m.RangeSlider":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RangeSlider;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.RangeSlider;
 			case "sap.m.Slider":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Slider;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Slider;
 			case "sap.m.RatingIndicator":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RatingIndicator;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.RatingIndicator;
 			case "sap.m.Switch":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Switch;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.Switch;
 			case "sap.m.TimePicker":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TimePicker;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.TimePicker;
 			case "sap.m.TimePickerSliders":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.TimePickerSliders;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.TimePickerSliders;
 			case "sap.m.StepInput":
-				return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.StepInput;
+				return io.rtdi.appcontainer.editorapp.uieditorcontrols.StepInput;
 			case "sap.ui.core.ListItem":
 				return sap.ui.core.ListItem;
 			case "sap.m.ColumnListItem":

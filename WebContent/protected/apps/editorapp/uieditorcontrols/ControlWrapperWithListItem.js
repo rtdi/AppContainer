@@ -6,10 +6,10 @@ sap.ui.define(
 	  'sap/m/SelectType',
 	  'sap/ui/core/ValueState',
 	  'sap/ui/core/ListItem',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(Select, JSONModel) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapperWithListItem", {
 			metadata : {
 				properties: {
 					oDataURL: { type: "string", defaultValue: "" },
@@ -32,7 +32,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function(oChild, bAnchor = false, oItemClass = sap.ui.core.ListItem) {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, bAnchor);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, bAnchor);
 				this.setProperty("_itemfactory", oItemClass, true);
 				var oView = sap.ui.getCore().byId("mainview");
 				var dropinfo2 = new sap.ui.core.dnd.DropInfo(
@@ -141,7 +141,7 @@ sap.ui.define(
 					
 					this.setModel(oModel);
 					/*
-					 * Assuming the oData Service used in one from the HanaAppContainer, the 
+					 * Assuming the oData Service used in one from the AppContainer, the 
 					 * modelColumns property should be updated to support the user picking the
 					 * proper binding. It does not refresh the properties pane, no event fired.
 					 */

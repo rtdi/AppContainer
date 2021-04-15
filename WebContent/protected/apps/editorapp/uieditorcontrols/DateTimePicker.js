@@ -5,10 +5,10 @@ sap.ui.define(
 	  'sap/ui/core/TextAlign',
 	  'sap/ui/core/TextDirection',
 	  'sap/ui/core/ValueState',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(DateTimePicker, JSONModel, TextAlign, TextDirection, ValueState) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.DateTimePicker", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.DateTimePicker", {
 			metadata : {
 				properties: {
 					minutesStep: {type: "int", group: "Misc", defaultValue: 1 },
@@ -38,7 +38,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.DateTimePicker(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.DateTimePicker(), false);
 			}
 		});
 });

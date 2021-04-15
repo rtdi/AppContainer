@@ -1,9 +1,9 @@
 sap.ui.define(
   [
 	  'sap/m/Table', 
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/Text', 
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/HBox', 
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/OverflowToolbar', 
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/Text', 
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/HBox', 
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/OverflowToolbar', 
 	  'sap/ui/model/json/JSONModel', 
 	  'sap/m/Column', 
 	  'sap/m/ColumnListItem',
@@ -19,7 +19,7 @@ sap.ui.define(
 		  JSONModel, 
 		  Column) {
   return sap.m.Table.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.Table", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.Table", {
 			metadata : {
 				dnd : {
 					draggable : true,
@@ -176,7 +176,7 @@ sap.ui.define(
 					this.setModel(oModel);
 					// this.rebindTemplate(); // TODO: Why is this neccessary??? Template is bound at that time and setModel fires an context event...
 					/*
-					 * Assuming the oData Service used in one from the HanaAppContainer, the 
+					 * Assuming the oData Service used in one from the AppContainer, the 
 					 * modelColumns property should be updated to support the user picking the
 					 * proper binding. It does not refresh the properties pane, no event fired.
 					 */

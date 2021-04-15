@@ -5,10 +5,10 @@ sap.ui.define(
 	  'sap/ui/core/TextAlign',
 	  'sap/ui/core/TextDirection',
 	  'sap/ui/core/ValueState',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(RadioButton, JSONModel, TextAlign, TextDirection, ValueState) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.RadioButton", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.RadioButton", {
 			metadata : {
 				properties: {
 					enabled : {type : "boolean", group : "Behavior", defaultValue : true},
@@ -26,7 +26,7 @@ sap.ui.define(
 			},
 			renderer : {},
 			init : function() {
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.RadioButton(), false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, new sap.m.RadioButton(), false);
 			}
 
 		});

@@ -11,7 +11,7 @@ sap.ui.define(
 	  ],
   function(VBox, JSONModel) {
   return sap.m.VBox.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.VBox", {
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.VBox", {
 			metadata : {
 				dnd : {
 					draggable : true,

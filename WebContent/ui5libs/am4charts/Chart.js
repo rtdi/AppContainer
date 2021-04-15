@@ -1,15 +1,38 @@
-/* global am4core:true */
-/* global am4charts:true */
+sap.ui.require([
+	"ui5libs/am4charts/library",
+	'am4charts/core',
+	'am4charts/charts',
+	'am4charts/themes/animated',
+	'am4charts/plugins/timeline',
+	'am4charts/plugins/sunburst',
+	'am4charts/plugins/venn',
+	'am4charts/plugins/wordCloud',
+	'am4charts/plugins/forceDirected'
+], function(library, am4core, am4charts, am4themes_animated, am4plugins_timeline, am4plugins_sunburst, am4plugins_venn, am4plugins_wordCloud, am4plugins_forceDirected) {
+});
+
 sap.ui.define([
 	'sap/ui/core/Control',
 	"jquery.sap.global",
-	"ui5libs/am4charts/library"], function(Control, jQuery, library) {
+	"ui5libs/am4charts/library",
+	"ui5libs/ui5ajax",
+	'am4charts/core',
+	'am4charts/charts',
+	'am4charts/themes/animated',
+	'am4charts/plugins/timeline',
+	'am4charts/plugins/sunburst',
+	'am4charts/plugins/venn',
+	'am4charts/plugins/wordCloud',
+	'am4charts/plugins/forceDirected'
+], function(Control, jQuery, library, ui5ajax, am4core, am4charts, am4themes_animated, am4plugins_timeline, am4plugins_sunburst, am4plugins_venn, am4plugins_wordCloud, am4plugins_forceDirected) {
 	return Control.extend("ui5libs.am4charts.Chart", {
 		_chart: undefined,
 		metadata: {
             properties: {
                 width: { type: "sap.ui.core.CSSSize", defaultValue: "100%" },
                 height: { type: "sap.ui.core.CSSSize", defaultValue: "100%" },
+                charttype: { type: "string", defaultValue: undefined },
+                config: { type: "any", defaultValue: undefined },
             }, 
             aggregations: {
             },
@@ -17,53 +40,112 @@ sap.ui.define([
 		constructor : function() {
 			Control.prototype.constructor.apply(this, arguments);
 		},
-		renderer : function(oRm, oControl) {
-			oRm.write("<div");
-			oRm.write(" style=\"width: " + oControl.getWidth() + "; height: " + oControl.getHeight() + ";\" ");
-            oRm.writeControlData(oControl);
-            oRm.write(">");
-			oRm.write("</div>");
-		},
 		onAfterRendering : function() {
 			sap.ui.core.Control.prototype.onAfterRendering.apply(this, arguments);
-			this._chart = am4core.create(this.getId(), am4charts.PieChart);
-			var series = this._chart.series.push(new am4charts.PieSeries());
-			series.dataFields.value = "litres";
-			series.dataFields.category = "country";
-			this._chart.data = [{
-				  "country": "Lithuania",
-				  "litres": 501.9
-				}, {
-				  "country": "Czech Republic",
-				  "litres": 301.9
-				}, {
-				  "country": "Ireland",
-				  "litres": 201.1
-				}, {
-				  "country": "Germany",
-				  "litres": 165.8
-				}, {
-				  "country": "Australia",
-				  "litres": 139.9
-				}, {
-				  "country": "Austria",
-				  "litres": 128.3
-				}, {
-				  "country": "UK",
-				  "litres": 99
-				}, {
-				  "country": "Belgium",
-				  "litres": 60
-				}, {
-				  "country": "The Netherlands",
-				  "litres": 50
-				}];
-			this._chart.legend = new am4charts.Legend();
+			var oConfig = this.getProperty("config");
+			var oCharttype = this.getProperty("charttype");
+			var that = this;
+			if (typeof oCharttype === 'string') {
+				oCharttype = this._getChartTypeObject(oCharttype);
+			}
+			if (oConfig && oCharttype) {
+				am4core.useTheme(am4themes_animated);
+				if (typeof oConfig === 'string') {
+					ui5ajax.ajaxGet(sap.ui.require.toUrl(oConfig))
+						.then(
+							data => {
+								oConfig = JSON.parse(data);
+								if (oConfig) {
+									if (oConfig.dataSource && oConfig.dataSource.url) {
+										if (!oConfig.dataSource.url.startsWith("/")) {
+											oConfig.dataSource.url = sap.ui.require.toUrl(oConfig.dataSource.url);
+										}
+									}
+									if (oConfig.series) {
+										for (let oSeries of oConfig.series) {
+											if (oSeries.dataSource && oSeries.dataSource.url) {
+												if (!oSeries.dataSource.url.startsWith("/")) {
+													oSeries.dataSource.url = sap.ui.require.toUrl(oSeries.dataSource.url);
+												}
+											}
+										}
+									}
+									if (oConfig.xAxis) {
+										for (let oAxis of oConfig.xAxis) {
+											if (oAxis.dataSource && oAxis.dataSource.url) {
+												if (!oAxis.dataSource.url.startsWith("/")) {
+													oAxis.dataSource.url = sap.ui.require.toUrl(oAxis.dataSource.url);
+												}
+											}
+										}
+									}
+									if (oConfig.yAxis) {
+										for (let oAxis of oConfig.yAxis) {
+											if (oAxis.dataSource && oAxis.dataSource.url) {
+												if (!oAxis.dataSource.url.startsWith("/")) {
+													oAxis.dataSource.url = sap.ui.require.toUrl(oAxis.dataSource.url);
+												}
+											}
+										}
+									}
+								}
+								if (that._chart) {
+									that._chart.moveHtmlContainer(that.getId());
+								} else {
+									that._chart = am4core.createFromConfig(oConfig, that.getId(), oCharttype);
+								} 
+							},
+							error => {
+								sap.m.MessageToast.show('Config data cannot be loaded from given URL: "' + oConfig + '"; Error: "' + error + '"');
+							}
+						);
+				} else {
+					if (this._chart) {
+						this._chart.moveHtmlContainer(this.getId());
+					} else {
+						this._chart = am4core.createFromConfig(oConfig, this.getId(), oCharttype);
+					}
+				}
+			}
+		},
+		_getChartTypeObject : function(sCharttype) {
+			var l = library; 
+			switch (sCharttype) {
+				case "PieChart": return am4charts.PieChart;
+				case "XYChart" : return am4charts.XYChart;
+				case "MapChart": return am4charts.MapChart;
+				case "RadarChart" : return am4charts.RadarChart;
+				case "TreeMap" : return am4charts.TreeMap;
+				case "SankeyDiagram" : return am4charts.SankeyDiagram;
+				case "GaugeChart" : return am4charts.GaugeChart;
+				case "ChordDiagram" : return am4charts.ChordDiagram;
+				case "SlicedChart": return am4charts.SlicedChart;
+				case "Sunburst": return am4plugins_sunburst.Sunburst;
+				case "WordCloud": return am4plugins_wordCloud.WordCloud;
+				case "ForceDirectedTree": return am4plugins_forceDirected.ForceDirectedTree;
+				case "CurveChart": return am4plugins_timeline.CurveChart;
+				case "VennDiagram": return am4plugins_venn.VennDiagram;
+			}
+		},
+		getChart : function() {
+			return this._chart;
 		},
 		dispose : function() {
-			this._chart.destroy();
+			if (this._chart) {
+				this._chart.dispose();
+			}
 		},
-		executeQuery : function() {
-		}
+		getAm4charts : function() {
+			return am4charts;
+		},
+		getAm4core : function() {
+			return am4core;
+		},
+		setCharttype : function(oType) {
+			this.setProperty("charttype", oType, false);
+		},
+		setConfig : function(oConfig) {
+			this.setProperty("config", oConfig, false);
+		},
 	});
 });

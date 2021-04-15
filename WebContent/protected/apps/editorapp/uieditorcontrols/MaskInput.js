@@ -6,10 +6,10 @@ sap.ui.define(
 	  'sap/ui/core/TextDirection',
 	  'sap/m/MaskInputRule',
 	  'sap/ui/core/ValueState',
-	  'io/rtdi/hanaappcontainer/editorapp/uieditorcontrols/ControlWrapper'],
+	  'io/rtdi/appcontainer/editorapp/uieditorcontrols/ControlWrapper'],
   function(MaskInput, JSONModel, TextAlign, TextDirection, MaskInputRule, ValueState) {
-  return io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
-		"io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.MaskInput", {
+  return io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.extend(
+		"io.rtdi.appcontainer.editorapp.uieditorcontrols.MaskInput", {
 			metadata : {
 				properties: {
 					regex: { type: "string", defaultValue: "[^_]" },
@@ -37,7 +37,7 @@ sap.ui.define(
 			renderer : {},
 			init : function() {
 				var oChild = new sap.m.MaskInput();
-				io.rtdi.hanaappcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, false);
+				io.rtdi.appcontainer.editorapp.uieditorcontrols.ControlWrapper.prototype.init.call(this, oChild, false);
 				var oRule = new sap.m.MaskInputRule( {regex: this.getRegex(), maskFormatSymbol: this.getMaskFormatSymbol() } );
 				oChild.addRule(oRule);
 			},
