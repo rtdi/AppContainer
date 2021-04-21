@@ -3,6 +3,7 @@ package io.rtdi.appcontainer.rest.odata.hanatable;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -69,7 +70,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.sap.db.jdbc.HanaClob;
 
 import io.rtdi.appcontainer.rest.odata.ODataFilterExpressionVisitor;
 import io.rtdi.appcontainer.rest.odata.ODataSQLProjectionBuilder;
@@ -297,8 +297,8 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 						case BOOLEAN:
 						default:
 							value = rs.getObject(i+1);
-							if (value instanceof HanaClob) {
-								HanaClob clob = (HanaClob) value;
+							if (value instanceof Clob) {
+								Clob clob = (Clob) value;
 								Reader r = clob.getCharacterStream();
 								char[] arr = new char[8 * 1024];
 							    StringBuilder buffer = new StringBuilder();
