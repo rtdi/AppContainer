@@ -20,9 +20,11 @@
 			</releases>
 		</repository>
 		<repository>
-			<id>rtdi_hanaappserver</id>
-			<name>rtdi/hanaappserver</name>
-			<url>https://maven.pkg.github.com/rtdi/hanaappserver</url>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/rtdi/*</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 	<build>
@@ -186,7 +188,6 @@
 			<groupId>io.rtdi.appcontainer</groupId>
 			<artifactId>appcontainerrealm</artifactId>
 			<version>0.9.1</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
