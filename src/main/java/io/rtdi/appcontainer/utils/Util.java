@@ -2,7 +2,18 @@ package io.rtdi.appcontainer.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
+
+import javax.servlet.http.HttpServletRequest;
+
+import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 
 public class Util {
 
@@ -139,11 +150,15 @@ public class Util {
 	
 	public static String fileToSchemaname(File file, File rootdir) {
 		String schemaname = null;
-		while (file != null && file.getParentFile() != null && !file.getParentFile().equals(rootdir)) {
-			file = file.getParentFile();
-			schemaname = file.getName();
+		if (file.equals(rootdir)) {
+			return file.getName();
+		} else {
+			while (file != null && file.getParentFile() != null && !file.equals(rootdir)) {
+				file = file.getParentFile();
+				schemaname = file.getName();
+			}
+			return schemaname;
 		}
-		return schemaname;
 	}
 
 	public static String getFileExtension(File file) {
@@ -216,5 +231,43 @@ public class Util {
 		} else {
 			return path;
 		}
+	}
+	
+	public static void rmDirRecursive(Path rootPath) throws IOException {
+		try (Stream<Path> walk = Files.walk(rootPath)) {
+		    walk.sorted(Comparator.reverseOrder())
+		        .map(Path::toFile)
+		        .forEach(File::delete);
+		}
+	}
+	
+	public static String getAppSchemaFromReferrer(HttpServletRequest req) throws URISyntaxException {
+		String referrer = req.getHeader("referer");
+		if (referrer != null) {
+			URI uri = new URI(referrer);
+			String referrerpath = uri.getPath();
+			String[] parts = referrerpath.split("/");
+			// parts = [, AppContainer, protected, repo, currentuser, WEBPROJEKT, index.html]
+			if (parts.length > 5 && parts[3].equals("repo")) {
+				return parts[5];
+			}
+		}
+		return null;
+	}
+	
+	public static String getSchema(String schemaname, HttpServletRequest req) throws URISyntaxException {
+		if (schemaname.equals(".") || schemaname.equals("currentuser")) {
+			Principal p = req.getUserPrincipal();
+			if (p instanceof IAppContainerPrincipal) {
+				IAppContainerPrincipal apppricipal = (IAppContainerPrincipal) p;
+				schemaname = apppricipal.getDBUser();
+			}
+		} else if (schemaname.equals("appschema")) {
+			String referrerschema = getAppSchemaFromReferrer(req);
+			if (referrerschema != null) {
+				schemaname = referrerschema;
+			}
+		}
+		return schemaname;
 	}
 }

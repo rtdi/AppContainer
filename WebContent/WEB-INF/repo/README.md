@@ -1,6 +1,6 @@
 ## Folder structure
 
-The  _hanarepo_  folder is the root folder of all development artifacts.
+The  _repo_  folder is the root folder of all development artifacts.
 It is meant to be used by git, hence every developer has its own personal version of the repository.
 Therefore, the first directory level is about the Hana username of the logged in user.
 Within the development objects are separated by the schema each object should be deployed into.
@@ -22,5 +22,5 @@ When deploying objects and using other elements the following cases should be po
  
  Therefore the deployment process supports schema mappings. The development object is placed in one schema and using 
  objects from different owners, e.g. the SCHEMA3.VIEW_A is a select on SCHEMA2.TABLE_A. At activation time the logic tries to find these two 
- schema names first in the hanarepo/{user}/global.schemamapping file, if not present, in the hanarepo/global.schemamapping and does a textual replacement 
+ schema names first in the repo/{user}/global.schemamapping file, if not present, in the repo/global.schemamapping and does a textual replacement 
  of the schema names of the development file. 

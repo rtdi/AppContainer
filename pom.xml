@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.rtdi.hanaappserver</groupId>
 	<artifactId>AppContainer</artifactId>
-	<version>0.9.25</version>
+	<version>0.9.26</version>
 	<packaging>war</packaging>
 	<scm>
 		<connection>scm:git:git://github.com/rtdi/AppContainer.git</connection>
@@ -46,20 +46,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr4-runtime</artifactId>
-			<version>4.9.2</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jdbc</artifactId>
-			<version>9.0.43</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sap.cloud.db.jdbc</groupId>
-			<artifactId>ngdbc</artifactId>
-			<version>2.7.15</version>
-			<scope>provided</scope>
+			<version>9.0.45</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -77,12 +66,6 @@
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
 			<version>3.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.rtdi.hanaappserver</groupId>
-			<artifactId>hanarealm</artifactId>
-			<version>0.8.5</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -198,6 +181,12 @@
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>5.11.0.202103091610-r</version>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>appcontainerrealm</artifactId>
+			<version>0.9.1</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

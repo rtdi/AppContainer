@@ -52,10 +52,10 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import io.rtdi.appcontainer.WebAppConstants;
+import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 import io.rtdi.appcontainer.utils.ErrorMessage;
 import io.rtdi.appcontainer.utils.SuccessMessage;
 import io.rtdi.appcontainer.utils.Util;
-import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -148,8 +148,8 @@ public class BrowseService {
    	 	    		example = "Initial commit"
    	 	    		)
     		GitCommit gitcommit) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		String message = gitcommit.getMessage();
 		try {
 			username = Util.validateFilename(username);
@@ -251,8 +251,8 @@ public class BrowseService {
             })
 	@Tag(name = "Filesystem")
     public Response gitPull() {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -312,8 +312,8 @@ public class BrowseService {
    	 	    		example = "{ url: 'https://github.com/my/repo', username: 'hello', passwd: 'world' }"
    	 	    		)
     		GitConfig gitconfig) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -486,8 +486,8 @@ public class BrowseService {
             })
 	@Tag(name = "Filesystem")
     public Response browse() {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -537,8 +537,8 @@ public class BrowseService {
     	    		example = "SCHEMAXYZ/dir1/subdirA"
     	    		)
     		 String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -592,8 +592,8 @@ public class BrowseService {
  	    		example = "SCHEMAXYZ/dir1/subdirA/fileX"
  	    		)
     		String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -644,8 +644,8 @@ public class BrowseService {
    	 	    		example = "SCHEMAXYZ/dir1/subdirA"
    	 	    		)
     		String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -702,8 +702,8 @@ public class BrowseService {
    	 	    		example = "SCHEMAXYZ/dir1/subdirA"
    	 	    		)
     		String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -711,7 +711,7 @@ public class BrowseService {
 			if (!filedir.toFile().isDirectory()) {
 				throw new IOException("The directory is not accessible on the server \"" + filedir.toAbsolutePath().toString() + "\"");
 			}
-			Files.delete(filedir);
+			Util.rmDirRecursive(filedir);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
@@ -752,8 +752,8 @@ public class BrowseService {
    	 	    		example = "SCHEMAXYZ/dir1/subdirA/fileX"
    	 	    		)
     		String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
@@ -808,8 +808,8 @@ public class BrowseService {
    	 	    		example = "{ path: \"SCHEMAXYZ/dir1/subdirA/fileY\" }"
    	 	    		)
     		FileData target) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);

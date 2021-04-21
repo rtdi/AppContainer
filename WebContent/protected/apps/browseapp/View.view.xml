@@ -30,8 +30,7 @@
 		                        <ToolbarSpacer/>
 								<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush" />
 								<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull" />
-								<Button icon="sap-icon://activate" tooltip="Configure git remote" press="onGitRemote" />
-								<Button icon="sap-icon://add" tooltip="Add new root directory" press="onAddDirectory" />
+								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote" />
 		                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
 		                    </OverflowToolbar>
 		                </t:extension>
@@ -62,9 +61,14 @@
 								<Label text="Actions"/>
 								<t:template>
 									<HBox fitContainer="true" justifyContent="End" >
+										<core:Icon src="sap-icon://edit" tooltip="Rename folder" press="onRenameDirectory" class="sapUiTinyMargin" 
+											visible="{= ${path} !== '.' }" 
+										/>
+										<core:Icon src="sap-icon://delete" tooltip="Delete folder" press="onDeleteDirectory" class="sapUiTinyMargin"
+											visible="{= ${path} !== '.' }" 
+										/>
 										<core:Icon src="sap-icon://add-folder" tooltip="Add sub folder" press="onAddSubdirectory" class="sapUiTinyMargin" />
-										<core:Icon src="sap-icon://edit" tooltip="Rename folder" press="onRenameDirectory" class="sapUiTinyMargin" />
-										<core:Icon src="sap-icon://delete" tooltip="Delete folder" press="onDeleteDirectory" class="sapUiTinyMargin" />
+										<core:Icon src="sap-icon://activate" tooltip="Activate all" press="onActivateDirectory" class="sapUiTinyMargin" />
 									</HBox>
 								</t:template>
 							</t:Column>

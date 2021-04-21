@@ -2,8 +2,6 @@ package io.rtdi.appcontainer.importapp;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,13 +25,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.rtdi.appcontainer.WebAppConstants;
-import io.rtdi.appcontainer.designtimeobjects.hdbtable.HDBTable;
-import io.rtdi.appcontainer.objects.table.HanaTable;
+import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 import io.rtdi.appcontainer.utils.ErrorMessage;
 import io.rtdi.appcontainer.utils.HanaSQLException;
 import io.rtdi.appcontainer.utils.SessionHandler;
 import io.rtdi.appcontainer.utils.Util;
-import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -82,8 +78,8 @@ public class ImportService {
             })
 	@Tag(name = "Filesystem")
     public Response runImport(@PathParam("schema") String schemaraw, @QueryParam("type") ImportType importtype) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
-		String username = user.getHanaUser();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
+		String username = user.getDBUser();
 		ArrayList<String> importresult = new ArrayList<>();
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
 			username = Util.validateFilename(username);
@@ -102,8 +98,8 @@ public class ImportService {
 				try (ResultSet rs = stmt.executeQuery();) {
 					while (rs.next()) {
 						String tablename = rs.getString(1);
-						HanaTable table = HanaTable.createDefinitionFromDatabase(conn, schemaname, tablename);
-						String hdbtablecontent = HDBTable.getHDBTableDefinition(table);
+						// HanaTable table = HanaTable.createDefinitionFromDatabase(conn, schemaname, tablename);
+						// String hdbtablecontent = HDBTable.getHDBTableDefinition(table);
 						String path = Util.packageToPath(tablename);
 						String filename = Util.packageToFilename(tablename);
 						filename = filename + ".hdbtable";
@@ -115,7 +111,7 @@ public class ImportService {
 							}
 						}
 						
-						Files.writeString(ppath.resolve(filename), hdbtablecontent, StandardOpenOption.CREATE);
+						// Files.writeString(ppath.resolve(filename), hdbtablecontent, StandardOpenOption.CREATE);
 					}
 				}
 			} catch (SQLException e) {

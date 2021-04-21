@@ -23,10 +23,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.rtdi.appcontainer.WebAppConstants;
+import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 import io.rtdi.appcontainer.utils.ErrorMessage;
 import io.rtdi.appcontainer.utils.SuccessMessage;
 import io.rtdi.appcontainer.utils.Util;
-import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -81,9 +81,9 @@ public class EditorService {
  	    		example = "SCHEMAXYZ/dir1/subdirA/fileX"
  	    		)
     		String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
 		try {
-			String username = user.getHanaUser();
+			String username = user.getDBUser();
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
 			File file = upath.resolve(path).toFile();
@@ -136,9 +136,9 @@ public class EditorService {
  	    		example = "This is a free form text"
  	    		)
     		String content) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
 		try {
-			String username = user.getHanaUser();
+			String username = user.getDBUser();
 			username = Util.validateFilename(username);
 			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
 			java.nio.file.Path ppath = upath.resolve(path);

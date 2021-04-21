@@ -16,7 +16,7 @@ import io.rtdi.appcontainer.utils.Util;
 
 
 @WebServlet("/protected/apps/*")
-public class HanaAppServlet extends HanaUI5Servlet {
+public class AppServlet extends UI5Servlet {
 
 	private static final long serialVersionUID = -221309277266654L;
 
@@ -24,10 +24,10 @@ public class HanaAppServlet extends HanaUI5Servlet {
      * This servlet returns the requested file (or the index.html file in case a directory was requested) if the user
      * has the permissions to do so.
      * Permissions are evaluated via two options
-     * 1. The user has access to all files within his protected/hanarepo/{loggedin user}/ folder
+     * 1. The user has access to all files within his protected/repo/{loggedin user}/ folder
      * 2. The user is part of a group the allow file in the requested directory lists.
      * 
-     * Example for use case 2: The requested file was protected/hanarepo/FRITZ/SCHEMA1/dir1/index.html
+     * Example for use case 2: The requested file was protected/repo/FRITZ/SCHEMA1/dir1/index.html
      * In the dir1 is a file called allow and it contains the line PUBLIC. All users are part of the Hana group PUBLIC, hence the file is served by the servlet. 
      */
     @Override
@@ -43,7 +43,7 @@ public class HanaAppServlet extends HanaUI5Servlet {
 			Path requestedpath = rootpath.resolve(Util.makeRelativePath(relativepath.toString()));
 			process(request, response, requestedpath, relativepath, getServletContext());
     	} catch (IOException e) {
-    		response.sendError(Response.SC_NOT_FOUND, "HanaRepoServlet throw an error: " + e.getMessage());
+    		response.sendError(Response.SC_NOT_FOUND, "RepoServlet throw an error: " + e.getMessage());
     	}
     }
 

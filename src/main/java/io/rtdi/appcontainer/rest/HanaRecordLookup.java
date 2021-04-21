@@ -103,9 +103,10 @@ public class HanaRecordLookup {
    	 	    		example = "USER_NAME = 'SYSTEM'"
    	 	    		)
 			String where) {
-		String schema = Util.decodeURIfull(schemaraw);
 		String name = Util.decodeURIfull(nameraw);
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
 			StringBuffer sql = new StringBuffer();
 			sql.append("select top 1 ");
 			if (select != null) {

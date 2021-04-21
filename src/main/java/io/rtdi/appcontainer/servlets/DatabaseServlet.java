@@ -15,12 +15,12 @@ import org.apache.logging.log4j.Logger;
 
 import io.rtdi.appcontainer.utils.SessionHandler;
 
-public abstract class HanaServlet extends HttpServlet {
+public abstract class DatabaseServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 8662275676633639191L;
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
 
-	public HanaServlet() {
+	public DatabaseServlet() {
 	}
 
 	@Override

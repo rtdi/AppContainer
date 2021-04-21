@@ -32,7 +32,7 @@
 			"name": "Sample UI5 App",
 			"description": "A first UI5 sample application",
 			"tooltip": null,
-			"href": "protected/hanarepo/PUBLIC/SCHEMA1/Users.html",
+			"href": "protected/repo/PUBLIC/SCHEMA1/Users.html",
 			"icon": "sap-icon://employee-pane"
 		},
 		{

@@ -17,6 +17,8 @@ The generated component.js file for an UI5 app contains the following resource r
 
 Models in XMLView
 
+Data queries support alias appschema
+
 App Header Shell bar
 
 Security

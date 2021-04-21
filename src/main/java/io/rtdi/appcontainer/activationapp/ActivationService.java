@@ -2,32 +2,12 @@ package io.rtdi.appcontainer.activationapp;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import io.rtdi.appcontainer.WebAppConstants;
-import io.rtdi.appcontainer.designtimeobjects.csv.CSVImport;
-import io.rtdi.appcontainer.designtimeobjects.hdbcds.HDBCDS;
-import io.rtdi.appcontainer.designtimeobjects.hdbtable.HDBTable;
-import io.rtdi.appcontainer.objects.table.HanaTable;
-import io.rtdi.appcontainer.utils.ErrorMessage;
-import io.rtdi.appcontainer.utils.HanaSQLException;
-import io.rtdi.appcontainer.utils.SessionHandler;
-import io.rtdi.appcontainer.utils.Util;
-import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,6 +17,23 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.rtdi.appcontainer.WebAppConstants;
+import io.rtdi.appcontainer.designtimeobjects.csv.CSVImport;
+import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
+import io.rtdi.appcontainer.utils.ErrorMessage;
+import io.rtdi.appcontainer.utils.HanaSQLException;
+import io.rtdi.appcontainer.utils.SessionHandler;
+import io.rtdi.appcontainer.utils.Util;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("/activationapp")
 public class ActivationService {
@@ -85,21 +82,21 @@ public class ActivationService {
     	    		example = "USER1/SCHEMA1/dir1/dir2/mytable.hdbtable"
     	    		)
     		String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
 		try {
-			String username = user.getHanaUser();
+			String username = user.getDBUser();
 			try (Connection conn = SessionHandler.handleSession(request, log);) {
 				username = Util.validateFilename(username);
 				java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-				java.nio.file.Path ppath = upath.resolve(path);
-				File file = ppath.toFile();
+				java.nio.file.Path fpath = upath.resolve(path);
+				File file = fpath.toFile();
 				if (!file.isFile()) {
-					throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
+					throw new IOException("The file \"" + file.getAbsolutePath() + "\" is not a regular file");
 				}
-				File rootdir = upath.toFile();
-				String schemaname = Util.fileToSchemaname(file, rootdir);
+				String schemaname = Util.fileToSchemaname(file, upath.toFile());
 				ActivationResult cdsactivationresult = new ActivationResult("Activating the file", null, ActivationSuccess.SUCCESS, null);
-				activateFile(file, schemaname, conn, cdsactivationresult, rootdir);
+				java.nio.file.Path ppath = upath.getParent().resolve("PUBLIC").resolve(schemaname);
+				activateFile(file, schemaname, conn, cdsactivationresult, upath, ppath);
 				return Response.ok(cdsactivationresult).build();
 			} catch (SQLException e) {
 				throw new HanaSQLException(e, "Activation failed", null);
@@ -137,26 +134,31 @@ public class ActivationService {
             })
 	@Tag(name = "Filesystem")
     public Response activateAll(@PathParam("path") String path) {
-		HanaPrincipal user = (HanaPrincipal) request.getUserPrincipal();
+		IAppContainerPrincipal user = (IAppContainerPrincipal) request.getUserPrincipal();
 		try {
-			String username = user.getHanaUser();
+			String username = user.getDBUser();
 			try (Connection conn = SessionHandler.handleSession(request, log);) {
 				username = Util.validateFilename(username);
 				java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
-				java.nio.file.Path ppath = upath.resolve(path);
-				File file = ppath.toFile();
+				java.nio.file.Path filepath = upath.resolve(path);
+				File file = filepath.toFile();
 				if (!file.exists()) {
 					throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
 				}
-				File rootdir = upath.toFile();
-				String schemaname = Util.fileToSchemaname(file, rootdir);
+				String schemaname = Util.fileToSchemaname(file, upath.toFile());
 				if (schemaname != null) {
-					ActivationResult result = new ActivationResult("Activating the CDS file", null, ActivationSuccess.SUCCESS, null);
+					ActivationResult result = new ActivationResult("Activating the directory", null, ActivationSuccess.SUCCESS, null);
 					try {
+						java.nio.file.Path ppath = upath.getParent().resolve("PUBLIC").resolve(schemaname);
 						if (file.isDirectory()) {
-							activateRecursive(file, schemaname, conn, result, rootdir);
+							java.nio.file.Path relativepath = upath.relativize(filepath);
+							// delete all existing files in repo/PUBLIC/schema that are going to be activated
+							Util.rmDirRecursive(ppath.resolve(relativepath));
+							result.addResult("Deleted all existing files in the matching PUBLIC repo space", relativepath.toString(), ActivationSuccess.SUCCESS, null);
+							// copy the files in case there are any
+							activateRecursive(file, schemaname, conn, result, upath, ppath);
 						} else {
-							activateFile(file, schemaname, conn, result, rootdir);
+							activateFile(file, schemaname, conn, result, upath, ppath);
 						}
 						return Response.ok(result).build();
 					} catch (HanaSQLException e) {
@@ -179,54 +181,37 @@ public class ActivationService {
 			String schemaname, 
 			Connection conn, 
 			ActivationResult cdsactivationresult,
-			File rootdir) 
-					throws HanaParsingException, HanaSQLException, IOException {
+			java.nio.file.Path upath,
+			java.nio.file.Path ppath) throws HanaParsingException, HanaSQLException, IOException {
 		if (file != null && file.isDirectory()) {
 			File[] files = file.listFiles();
+			Arrays.sort(files);
 			for (File f : files) {
 				if (f.isDirectory()) {
-					activateRecursive(f, schemaname, conn, cdsactivationresult, rootdir);
+					activateRecursive(f, schemaname, conn, cdsactivationresult, upath, ppath);
 				} else {
-					activateFile(f, schemaname, conn, cdsactivationresult, rootdir);
+					activateFile(f, schemaname, conn, cdsactivationresult, upath, ppath);
 				}
 			}
 		}
 	}
 
 	private void activateFile(
-			File file, String schemaname,
+			File file,
+			String schemaname,
 			Connection conn,
 			ActivationResult result,
-			File rootdir) 
-					throws HanaParsingException, HanaSQLException, IOException {
+			java.nio.file.Path upath,
+			java.nio.file.Path ppath) throws HanaParsingException, HanaSQLException, IOException {
 		FileTypes filetype = getFileType(file);
 		if (filetype != null) {
-			String text = new String(Files.readAllBytes(file.toPath()));
 			switch (filetype) {
-			case HDBCDS:
-				HDBCDS cds = HDBCDS.parseHBDCDSFile(text, schemaname);
-				cds.valid(result);
-				cds.activate(result, conn, ActivationStyle.RECONCILE);
-				break;
-			case HDBPROCEDURE:
-				break;
-			case HDBTABLE: {
-				String tablename = Util.fileToTablename(file, rootdir);
-				HanaTable table = HDBTable.parseHDBTableText(text, schemaname, tablename);
-				table.valid(result);
-				table.activate(result, conn, ActivationStyle.RECONCILE);
-				break;
-			}
-			case HDBVIEW:
-				break;
 			case CSV: {
 				String tablename = file.getName().substring(0, file.getName().length()-4);
 				CSVImport imp = new CSVImport(result, conn, ActivationStyle.RECONCILE);
 				imp.csvImport(file, schemaname, tablename);
 			}
 			case SQL:
-				break;
-			default:
 				break;
 			}
 		}

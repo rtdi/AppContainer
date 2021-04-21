@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.rtdi.appcontainer.rest.HanaStoredProcedure;
 import io.rtdi.appcontainer.rest.odata.hanatable.ODataCollectionProcessor;
-import io.rtdi.appcontainer.servlets.HanaRepoServlet;
+import io.rtdi.appcontainer.servlets.RepoServlet;
 
 public class UsageStatistics {
 
@@ -53,7 +53,7 @@ public class UsageStatistics {
 		public Connection() {
 			connectionname = System.getenv("HANAJDBCURL");
 			producers = new ArrayList<>();
-			producers.add(new Producer("HanaRepoServlet"));
+			producers.add(new Producer("RepoServlet"));
 			producers.add(new Producer("ODataCollection"));
 			producers.add(new Producer("RestfulStoredProcedure"));
 			update();
@@ -107,9 +107,9 @@ public class UsageStatistics {
 			if (instances != null) {
 				ProducerInstance i = instances.get(0);
 				switch (producername) {
-				case "HanaRepoServlet":
-					i.lastdatatimestamp = HanaRepoServlet.getLastProcessedtime();
-					i.pollcalls = HanaRepoServlet.getInvocations() - i.pollcalls;
+				case "RepoServlet":
+					i.lastdatatimestamp = RepoServlet.getLastProcessedtime();
+					i.pollcalls = RepoServlet.getInvocations() - i.pollcalls;
 					break;
 				case "ODataCollection":
 					i.lastdatatimestamp = ODataCollectionProcessor.getLastProcessedtime();

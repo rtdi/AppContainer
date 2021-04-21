@@ -42,47 +42,12 @@ function(Controller, ODataModel, ui5ajax) {
 		formatterLinkRun: function(spath) {
 			if (spath) {
 				if (spath.endsWith(".html")) {
-					return "../../hanarepo/currentuser/" + spath;
+					return "../../repo/currentuser/" + spath;
 				} else if (spath.endsWith(".view.xml")) {
-					return "../../hanarepo/currentuser/" + spath.substring(0, spath.length - 9) + ".html";
+					return "../../repo/currentuser/" + spath.substring(0, spath.length - 9) + ".html";
 				}
 			}
 			return undefined;
-		},
-		onAddDirectory : function() {
-			var that = this;
-			var oModel = this.getView().getModel();
-			var oCurrentSubDirs = oModel.getProperty("/folders/0/folders");
-			var sNewDir = "newschema";
-			if (oCurrentSubDirs != null) {
-				// find the subdirectory called "newfolder" with the highest number suffix
-				for(let i = 0; i < oCurrentSubDirs.length; i++) {
-					var sName = oCurrentSubDirs[i].name;
-					if (sName === sNewDir) {
-						sap.m.MessageToast.show('Directory with name "' + sNewDir + '" exists already');
-						return; // has a sub directory of that name already
-					}
-				}
-			}
-			var oEntry = {"name" : sNewDir, "path": sNewDir, "folders" : null, "filecount" : 0 };
-			
-			var oModelAddDir = new sap.ui.model.json.JSONModel();
-			oModelAddDir.attachRequestCompleted(function(oRespEvent) {
-				if (oRespEvent.getParameters().success) {
-					if (oCurrentSubDirs == null) {
-						oCurrentSubDirs = [ oEntry ];
-					} else {
-						oCurrentSubDirs.push(oEntry);
-					}
-					oModel.setProperty("/folders", oCurrentSubDirs);
-				} else {
-					sap.m.MessageToast.show('Operation failed on the server ' + oRespEvent.getParameters().responseText);
-				}
-		    });
-			oModelAddDir.attachRequestFailed(function(oRespEvent) {
-				sap.m.MessageToast.show('Operation failed on the server ' + oRespEvent.getParameters().responseText);
-		    });
-			oModelAddDir.loadData("../rest/browseapp/mkdir/" + sNewDir);
 		},
 		onDirectoryRefresh : function() {
 			var oModel = new sap.ui.model.json.JSONModel();
@@ -98,6 +63,21 @@ function(Controller, ODataModel, ui5ajax) {
 				var oModel = new sap.ui.model.json.JSONModel();
 				oModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/files/" + oContext.getObject().path);
 				this.getView().byId("idFiles").setModel(oModel);
+			}
+		},
+		onActivateDirectory : function(oEvent) {
+			var oControl = oEvent.getSource();
+			var oContext = oControl.getBindingContext();
+			if (typeof oContext !== 'undefined' && typeof oContext.getObject() !== 'undefined') {
+				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/activationapp/activateall/" + oContext.getObject().path)
+					.then(
+						data => {
+							sap.m.MessageToast.show('Activation completed "' + data + '"');
+						}, 
+						error => {
+							sap.m.MessageToast.show('Call failed with message "' + error + '"');
+						}
+					);
 			}
 		},
 		onFilesRefresh : function(oEvent) {
@@ -196,7 +176,7 @@ function(Controller, ODataModel, ui5ajax) {
 			var oDirectory = oModel.getProperty(sModelPath);
 			var sFoldersPath = sModelPath.substring(0, sModelPath.lastIndexOf('/')); // .....folders/7/folders/5
 			var index = Number(sModelPath.substring(sModelPath.lastIndexOf('/')+1));
-			if (index !== NaN && index != -1) {
+			if (index !== NaN && index != -1 && oDirectory.path !== '.') {
 				var oFolders = oModel.getProperty(sFoldersPath);
 				var oModelRmDir = new sap.ui.model.json.JSONModel();
 				oModelRmDir.attachRequestCompleted(function(oRespEvent) {
@@ -318,7 +298,7 @@ function(Controller, ODataModel, ui5ajax) {
 					);
 			} else {
 				// dropped a directory				
-				ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+				ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name })
 					.then(
 						data => {
 				    		/*

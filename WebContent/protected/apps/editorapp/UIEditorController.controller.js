@@ -57,7 +57,7 @@ sap.ui.define([
 		    const sFilename = urlParams.get('filename');
 			var oOpenFileLink = oView.byId("openfile");
 			if (sFilename.endsWith(".view.xml")) {
-				oOpenFileLink.setHref("../hanarepo/%5Bcurrentuser%5D/" + sFilename.substring(0, sFilename.length-9) + ".html");
+				oOpenFileLink.setHref("../repo/%5Bcurrentuser%5D/" + sFilename.substring(0, sFilename.length-9) + ".html");
 			}
 			
 			var that = this;

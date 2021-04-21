@@ -54,14 +54,14 @@ public class WebAppStartListener implements ServletContextListener {
      */
     public void contextInitialized(ServletContextEvent sce)  { 
     	String webapprootpath = sce.getServletContext().getRealPath("/");
-    	Path rootpath = Path.of(webapprootpath, "..", "..", "hanarepo").toAbsolutePath();
+    	Path rootpath = Path.of(webapprootpath, "..", "..", "repo").toAbsolutePath();
     	WebAppConstants.setHanaRepo(sce.getServletContext(), rootpath);
     	File rootdir = rootpath.toFile();
     	if (!rootdir.exists()) {
     		rootdir.mkdirs();
     	}
     	if (rootdir.listFiles().length == 0) {
-    		Path temppath = rootpath.resolve("WEB-INF/hanarepo");
+    		Path temppath = rootpath.resolve("WEB-INF/repo");
     		try {
 				copyFolder(temppath, rootpath);
 			} catch (IOException e) {

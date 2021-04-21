@@ -1,5 +1,6 @@
 package io.rtdi.appcontainer.utils;
 
+import java.security.Principal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
-import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
+import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 
 public class SessionHandler {
 
@@ -27,22 +28,33 @@ public class SessionHandler {
 		HttpSession session = req.getSession();
 		DataSource datasource = (DataSource) session.getAttribute("io.rtdi.datasource");
 		if (datasource == null) {
-			datasource = getDataSource((HanaPrincipal) req.getUserPrincipal(), session, log);
+			datasource = getDataSource(req.getUserPrincipal(), session, log);
 		}
 		return datasource.getConnection();
 	}
 
-	public static synchronized DataSource getDataSource(HanaPrincipal principal, HttpSession session, Logger log) throws SQLException {
+	public static synchronized DataSource getDataSource(Principal principal, HttpSession session, Logger log) throws SQLException {
 		if (principal == null) {
 			throw new SQLException("User is not logged in");
 		}
 		DataSource datasource = (DataSource) session.getAttribute("io.rtdi.datasource");
 		if (datasource == null) {
+			String jdbcurl;
+			String password;
+			String drivername;
+			if (principal instanceof IAppContainerPrincipal) {
+				IAppContainerPrincipal appprincipal = (IAppContainerPrincipal) principal;
+				jdbcurl = appprincipal.getJDBCURL();
+				drivername = appprincipal.getDriverURL();
+				password = appprincipal.getPassword();
+			} else {
+				throw new SQLException("Configured DataSource is not of a known class");
+			}
 	        PoolProperties p = new PoolProperties();
-	        p.setUrl(principal.getHanaJDBCURL());
-	        p.setDriverClassName("com.sap.db.jdbc.Driver");
+	        p.setUrl(jdbcurl);
+	        p.setDriverClassName(drivername);
 	        p.setUsername(principal.getName());
-	        p.setPassword(principal.getPassword());
+	        p.setPassword(password);
 	        p.setJmxEnabled(false);
 	        p.setTestWhileIdle(false);
 	        // p.setTestOnBorrow(true);

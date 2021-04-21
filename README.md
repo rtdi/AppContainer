@@ -23,11 +23,12 @@ For building a web application the following components are needed
 
 On any computer install the Docker Daemon - if it is not already and download this docker image with
 
-    docker pull rtdi/appcontainer:latest
+    docker pull rtdi/appcontainer:latest-hana
+    docker pull rtdi/appcontainer:latest-snowflake
 
-Then start the image via docker run. Only one parameter needs to be set, the environment variable HANAJDBCURL. This consist of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE).
+Then start the image via docker run. Only one parameter needs to be set, the environment variable JDBCURL. For Hana this consist of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE). For Snowflake see the [Snowflake JDBC documentation](https://docs.snowflake.com/en/user-guide/jdbc-configure.html#jdbc-driver-connection-string).
 
-    docker run -d -p 80:8080 -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
+    docker run -d -p 80:8080 -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
 
 From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
 
@@ -36,13 +37,13 @@ An even better docker run command is to add a few server directories, here all i
     docker run -d --name appcontainer  -p 80:8080 -p 443:8443 \
        -v /dockermountpoints/rtdiconfig:/usr/local/tomcat/conf/rtdiconfig \
        -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
-       -v /dockermountpoints/hanarepo:/usr/local/tomcat/hanarepo \
+       -v /dockermountpoints/repo:/usr/local/tomcat/repo \
        -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
-       -e HANAJDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
+       -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
 
 - /usr/local/tomcat/conf/rtdiconfig: The directory where tomcat related settings can go. Usually not needed.
 - /usr/local/tomcat/conf/security: The directory with ssl settings. The tomcat-users.xml user database is not used.
-- /usr/local/tomcat/hanarepo: This is where all developed files are located, one directory per user and a global PUBLIC directory.
+- /usr/local/tomcat/repo: This is where all developed files are located, one directory per user and a global PUBLIC directory.
 - /usr/local/tomcat/webapps/ui5externallibs: A place to put all additional ui5 libraries and files not part of the deployed web application.
 
 
@@ -64,7 +65,7 @@ The complete solution consists of the following modules:
 
 ### Repository
 
-A file system based repository where new development artifacts can be managed and edited. The goal is to support all file types, e.g. hdbtable files to create tables from scratch, html files,... It is file system based to allow easy integration with git source code control. 
+A file system resp. git based repository where new development artifacts can be managed and edited. The goal is to support all file types to create tables from scratch, html files,... 
 
 <img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/Screenshot 02 - Designtime Browser.png" width="50%">
 
@@ -72,15 +73,14 @@ A file system based repository where new development artifacts can be managed an
 
 ### Activation
 
-Just like Hana XS Classic and Hana XS Advanced or the Cloud Application Programming Model artifacts of SAP, the same objects can be activated to create Hana objects easily.
-
-<img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/Screenshot 03 - hdbtable.png" width="50%">
+The goal of a CI/CD pipeline is to allow deploying the same code in an automated way, thus it makes sure that moving code to production is as simple as a click of a button.
+This begs the question who executes the code and manages all dependencies? The activation application does. 
 
 
 
 ### Webserver
 
-All files within the repository can be opened via the web browser, if permissions allow that.
+All files within the repository can be opened via the web browser, assuming the user has the required permissions.
 
 <img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/SampleUI.png" width="50%">
 
@@ -109,7 +109,7 @@ ATTENTION: PoC only.
 
 ### oData/Restful service endpoint
 
-Every single table or view is exposed as oData endpoint and as Restful service. See the swagger definitions.
+Every single table or view is exposed as oData endpoint and as Restful service. See the swagger definitions and oData metadata.
 
 <img src="https://github.com/rtdi/AppContainer/raw/master/docs/media/Screenshot 16 - odata.png" width="50%">
 
@@ -149,7 +149,7 @@ http://localhost:8080/AppContainer/protected/rest/groupquery?$select=SELECT%20sc
 The select statement returns in that column order:
 
 | schema | datatype | count |
-+ ------ + -------- + ----- +
+| ------ | -------- | ----- |
 | SYS    | VARCHAR  |    10 |
 | SYS    | INTEGER  |     5 |
 

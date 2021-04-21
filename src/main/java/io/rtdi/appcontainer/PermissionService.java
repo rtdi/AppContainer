@@ -31,8 +31,8 @@ import org.apache.logging.log4j.Logger;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
+import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 import io.rtdi.appcontainer.utils.ErrorMessage;
-import io.rtdi.hanaappserver.hanarealm.HanaPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -103,7 +103,7 @@ public class PermissionService {
 	}
 	
 	public static Permissions getPermissions(HttpServletRequest request, String user) throws ServletException, IOException {
-		HanaPrincipal hanauser = (HanaPrincipal) request.getUserPrincipal();
+		IAppContainerPrincipal hanauser = (IAppContainerPrincipal) request.getUserPrincipal();
 		if (hanauser == null) {
 			throw new ServletException("No login information found?");
 		}
@@ -131,7 +131,7 @@ public class PermissionService {
 		private String[] roles;
 		private Set<String> directories = new HashSet<>();
 		
-		public Permissions(HanaPrincipal hanauser, String user, String rootpath) throws IOException {
+		public Permissions(IAppContainerPrincipal hanauser, String user, String rootpath) throws IOException {
 			super();
 			roles = hanauser.getRoles();
 
@@ -145,7 +145,7 @@ public class PermissionService {
 				throw new IOException("The path \"" + requestedpath.toString() + "\" is not a directory");
 			} else {
 				addDirectories(requestedpath, directories, assignedroles, requestedpath,
-						user.equals(hanauser.getHanaUser()) || user.equals("PUBLIC"), false);
+						user.equals(hanauser.getDBUser()) || user.equals("PUBLIC"), false);
 			}
 		}
 

@@ -1,6 +1,7 @@
 package io.rtdi.appcontainer.servlets;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,7 +50,9 @@ public class ODataServlet extends HttpServlet {
 			if (p2 == -1) { // no trailing '/' char
 				p2 = path.length();
 			}
+			
 			String schemaname = Util.decodeURIfull(path.substring(1, p1));
+			schemaname = Util.getSchema(schemaname, req);
 			String viewname = Util.decodeURIfull(path.substring(p1+1, p2));
 
 			ServiceMetadata edm = cache.getIfPresent(schemaname + "." + viewname);
@@ -63,7 +66,7 @@ public class ODataServlet extends HttpServlet {
 			handler.register(new ODataEntityProcessor(conn, schemaname, viewname, edm));
 			handler.register(new ODataPrimitiveProcessor(conn, schemaname, viewname));
 			handler.process(req, resp);
-		} catch (RuntimeException | SQLException | HanaSQLException e) {
+		} catch (RuntimeException | SQLException | HanaSQLException | URISyntaxException e) {
 			log.error("Server Error occurred in ODataServlet", e);
 			throw new ServletException(e);
 		}

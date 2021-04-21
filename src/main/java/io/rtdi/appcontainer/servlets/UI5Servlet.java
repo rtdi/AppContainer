@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.connector.Response;
 
 
-public abstract class HanaUI5Servlet extends HttpServlet {
+public abstract class UI5Servlet extends HttpServlet {
 
 	private static final long serialVersionUID = -2213196309276654L;
 	private static int invocations = 0;

@@ -15,14 +15,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -46,9 +44,9 @@ import io.rtdi.appcontainer.utils.SessionHandler;
 import io.rtdi.appcontainer.utils.Util;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -181,10 +179,11 @@ public class HanaStoredProcedure {
     				)
     		)
     		JsonNode data) {
-		String schema = Util.decodeURIfull(schemaraw);
 		String procedurename = Util.decodeURIfull(procedurenameraw);
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
 			boolean setcache = false;
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
 			String cachekey = schema + "." + procedurename;
 			ProcedureMetadata metadata = cache.getIfPresent(cachekey);
 			if (metadata == null) {

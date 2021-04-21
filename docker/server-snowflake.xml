@@ -139,7 +139,7 @@
       <!-- Use the LockOutRealm to prevent attempts to guess user passwords
            via a brute-force attack -->
       <Realm className="org.apache.catalina.realm.LockOutRealm">
-              <Realm className="io.rtdi.hanaappserver.hanarealm.HanaRealm" />
+              <Realm className="io.rtdi.appcontainer.snowflakerealm.SnowflakeRealm" />
       </Realm>
 
       <Host name="localhost"  appBase="webapps"
