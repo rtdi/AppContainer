@@ -33,29 +33,29 @@ public class RepoServlet extends UI5Servlet {
      * 2. The user is part of a group the allow file in the requested directory lists.
      * 
      * Example for use case 2: The requested file was protected/repo/FRITZ/SCHEMA1/dir1/index.html
-     * In the dir1 is a file called allow and it contains the line PUBLIC. All users are part of the Hana group PUBLIC, hence the file is served by the servlet. 
+     * In the dir1 is a file called allow and it contains the line PUBLIC. All users are part of the database group PUBLIC, hence the file is served by the servlet. 
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
     	try {
-    		IAppContainerPrincipal hanauser = (IAppContainerPrincipal) request.getUserPrincipal();
+    		IAppContainerPrincipal dbuser = (IAppContainerPrincipal) request.getUserPrincipal();
 	        String filename = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
 	        if (filename.startsWith("currentuser/")) {
-	        	filename = hanauser.getDBUser() + filename.substring(11);
+	        	filename = dbuser.getDBUser() + filename.substring(11);
 	        }
 	    	Path relativepath = Paths.get(filename);
 	    	if (relativepath.getNameCount() < 1) {
-				response.sendError(Response.SC_NOT_FOUND, "requested file has to follow the pattern /protected/repo/{hanauser}/*");
+				response.sendError(Response.SC_NOT_FOUND, "requested file has to follow the pattern /protected/repo/{dbuser}/*");
 				return;
 	    	}
 	        String userdir = relativepath.getName(0).toString();
-			Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), userdir);
+			Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), userdir);
 	
-	        Path rootpath = WebAppConstants.getHanaRepo(request.getServletContext());
+	        Path rootpath = WebAppConstants.getJDBCRepo(request.getServletContext());
 			Path requestedpath = rootpath.resolve(Util.makeRelativePath(relativepath.toString()));
 			// The user is allowed if the requested path is within its own home directory
-	        if (!userdir.equals(hanauser.getDBUser())) {
+	        if (!userdir.equals(dbuser.getDBUser())) {
 	    		Permissions permissions = PermissionService.getPermissions(request, userdir);
 	    		Set<String> dirs = permissions.getDirectories();
 	    		Path r = upath.relativize(requestedpath.getParent()); // find the directory of the requested file

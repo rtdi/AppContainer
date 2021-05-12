@@ -1,7 +1,9 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/odata/v4/ODataModel",
-	"ui5libs/ui5ajax"], function(Controller, ODataModel, ui5ajax) {
+	"ui5libs/ui5ajax",
+	"ui5libs/errorfunctions",
+], function(Controller, ODataModel, ui5ajax, errorfunctions) {
 	"use strict";
 
 	return Controller.extend("io.rtdi.appcontainer.editorapp.Controller", {
@@ -44,7 +46,7 @@ sap.ui.define([
 						oEditorControl.setValue(JSON.parse(data).content); 
 					},
 					error => {
-						sap.m.MessageToast.show('Call failed with message "' + error + '"');
+						errorfunctions.addError(this.getView(), error);
 					}
 				);
 		},
@@ -59,10 +61,10 @@ sap.ui.define([
 			ui5ajax.postText(sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename, sContent)
 				.then(
 					data => {
-						sap.m.MessageToast.show('Saved');
+						errorfunctions.uiSuccess(this.getView(), { message: 'Saved' } );
 					},
 					error => {
-						sap.m.MessageToast.show('Call failed with message "' + error + '"');
+						errorfunctions.addError(this.getView(), error);
 					}
 				);
 		},
@@ -77,10 +79,10 @@ sap.ui.define([
 			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/activationapp/activate/" + sFilename)
 				.then(
 					data => {
-						sap.m.MessageToast.show('Activated');
+						errorfunctions.uiSuccess(this.getView(), { message: 'Activated' });
 					},
 					error => {
-						sap.m.MessageToast.show('Call failed with message "' + error + '"');
+						errorfunctions.addError(this.getView(), error);
 					}
 				);
 		}

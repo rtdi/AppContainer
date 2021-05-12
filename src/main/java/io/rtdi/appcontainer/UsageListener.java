@@ -39,7 +39,7 @@ public class UsageListener implements ServletContextListener {
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
     public void contextInitialized(ServletContextEvent sce)  {
-    	if (System.getenv("HANAAPPCONTAINERSTATISTICS") == null || !System.getenv("HANAAPPCONTAINERSTATISTICS").equalsIgnoreCase("FALSE") ) {
+    	if (System.getenv("APPCONTAINERSTATISTICS") == null || !System.getenv("APPCONTAINERSTATISTICS").equalsIgnoreCase("FALSE") ) {
 	    	this.executor = Executors.newSingleThreadScheduledExecutor();
 	    	executor.scheduleAtFixedRate(new UsageStatisticSender(), 1, 10, TimeUnit.MINUTES);
     	}

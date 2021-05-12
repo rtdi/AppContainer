@@ -12,23 +12,21 @@ public class ActivationResult {
 	private String sqltext;
 	private String info;
 	private ActivationSuccess success;
-	private HanaObject object;
 
 	public ActivationResult() {
 	}
 	
-	public ActivationResult(String info, String sqltext, ActivationSuccess success, HanaObject object) {
+	public ActivationResult(String info, String sqltext, ActivationSuccess success) {
 		this.sqltext = sqltext;
 		this.info = info;
 		this.success = success;
-		this.object = object;
 	}
 	
-	public ActivationResult addResult(String info, String sqltext, ActivationSuccess success, HanaObject object) {
+	public ActivationResult addResult(String info, String sqltext, ActivationSuccess success) {
 		if (children == null) {
 			children = new ArrayList<>();
 		}
-		ActivationResult r = new ActivationResult(info, sqltext, success, object);
+		ActivationResult r = new ActivationResult(info, sqltext, success);
 		children.add(r);
 		return r;
 	}
@@ -60,13 +58,12 @@ public class ActivationResult {
 		return success;
 	}
 
-	public HanaObject getObject() {
-		return object;
-	}
-
 	@Override
 	public String toString() {
-		return "ActivationResult [info=" + info + ", success=" + getSuccess() + ", object="
-				+ object + ", children=" + children + "]";
+		return "ActivationResult [info=" + info + ", success=" + getSuccess() + ", children=" + children + "]";
+	}
+
+	public void setActivationSuccess(ActivationSuccess success) {
+		this.success = success;
 	}
 }

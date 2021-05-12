@@ -36,7 +36,7 @@ import org.apache.olingo.server.api.uri.UriResourceEntitySet;
 import org.apache.olingo.server.api.uri.UriResourceProperty;
 
 import io.rtdi.appcontainer.rest.odata.ODataUtils;
-import io.rtdi.appcontainer.utils.HanaSQLException;
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
 
 public class ODataCatalogEndpointsPrimitiveProcessor implements PrimitiveProcessor {
 	private OData odata;
@@ -95,7 +95,7 @@ public class ODataCatalogEndpointsPrimitiveProcessor implements PrimitiveProcess
 					}
 				}
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql, "Execution of the query failed");
+				throw new AppContainerSQLException(e, sql, "Execution of the query failed");
 			}
 	
 			if (row == null) { // Bad request
@@ -130,7 +130,7 @@ public class ODataCatalogEndpointsPrimitiveProcessor implements PrimitiveProcess
 				// in case there's no value for the property, we can skip the serialization
 				response.setStatusCode(HttpStatusCode.NO_CONTENT.getStatusCode());
 			}
-		} catch (HanaSQLException e) {
+		} catch (AppContainerSQLException e) {
 			throw new ODataApplicationException(e.getMessage(), 500, Locale.ENGLISH);
 		}
 	}

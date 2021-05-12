@@ -32,7 +32,8 @@ import org.apache.olingo.server.api.uri.UriParameter;
 import org.apache.olingo.server.api.uri.UriResource;
 import org.apache.olingo.server.api.uri.UriResourceEntitySet;
 
-import io.rtdi.appcontainer.utils.HanaSQLException;
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
+import io.rtdi.appcontainer.utils.DatabaseSQL;
 import io.rtdi.appcontainer.utils.Util;
 
 public class ODataCatalogEndpointsEntityProcessor implements EntityProcessor {
@@ -63,7 +64,7 @@ public class ODataCatalogEndpointsEntityProcessor implements EntityProcessor {
 		    // 2. retrieve the data from backend
 		    List<UriParameter> keyPredicates = uriResourceEntitySet.getKeyPredicates();
 			Entity row = null;
-			String sql = "select schema_name, object_name, object_type from objects where schema_name = ? and object_name = ? and object_type in ('VIEW', TABLE')";
+			String sql = DatabaseSQL.getAllObjects(conn);
 			try (PreparedStatement stmt = conn.prepareStatement(sql);) {
 				stmt.setString(1, keyPredicates.get(0).getText());
 				stmt.setString(2, keyPredicates.get(1).getText());
@@ -78,7 +79,7 @@ public class ODataCatalogEndpointsEntityProcessor implements EntityProcessor {
 					}
 				}
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql, "Execution of the query failed");
+				throw new AppContainerSQLException(e, sql, "Execution of the query failed");
 			}
 	
 		    // 3. serialize
@@ -96,7 +97,7 @@ public class ODataCatalogEndpointsEntityProcessor implements EntityProcessor {
 		    response.setContent(entityStream);
 		    response.setStatusCode(HttpStatusCode.OK.getStatusCode());
 		    response.setHeader(HttpHeader.CONTENT_TYPE, responseFormat.toContentTypeString());
-		} catch (HanaSQLException e) {
+		} catch (AppContainerSQLException | SQLException e) {
 			throw new ODataApplicationException(e.getMessage(), 500, Locale.ENGLISH);
 		}
 	}

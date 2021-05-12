@@ -27,7 +27,8 @@ import org.apache.logging.log4j.Logger;
 import io.rtdi.appcontainer.WebAppConstants;
 import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 import io.rtdi.appcontainer.utils.ErrorMessage;
-import io.rtdi.appcontainer.utils.HanaSQLException;
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
+import io.rtdi.appcontainer.utils.ErrorCode;
 import io.rtdi.appcontainer.utils.SessionHandler;
 import io.rtdi.appcontainer.utils.Util;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,7 +68,7 @@ public class ImportService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "500", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -85,7 +86,7 @@ public class ImportService {
 			username = Util.validateFilename(username);
 			String schemaname = Util.decodeURIfull(schemaraw);
 			schemaname = Util.validateFilename(schemaname);
-			java.nio.file.Path spath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path spath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			File rootdir = spath.toFile();
 			if (!rootdir.isDirectory()) {
 				if (!rootdir.mkdirs()) {
@@ -107,7 +108,7 @@ public class ImportService {
 						File d = ppath.toFile();
 						if (!d.exists()) {
 							if (!d.mkdirs()) {
-								throw new HanaSQLException("Failed to create the directory", d.getAbsolutePath());
+								throw new AppContainerSQLException("Failed to create the directory", d.getAbsolutePath());
 							}
 						}
 						
@@ -115,11 +116,11 @@ public class ImportService {
 					}
 				}
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql, "Please file an issue");
+				throw new AppContainerSQLException(e, sql, "Please file an issue");
 			}
 			return Response.ok(importresult).build();
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 	

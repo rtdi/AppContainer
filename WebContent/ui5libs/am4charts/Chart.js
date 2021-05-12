@@ -16,6 +16,7 @@ sap.ui.define([
 	"jquery.sap.global",
 	"ui5libs/am4charts/library",
 	"ui5libs/ui5ajax",
+	"ui5libs/errorfunctions",
 	'am4charts/core',
 	'am4charts/charts',
 	'am4charts/themes/animated',
@@ -24,7 +25,7 @@ sap.ui.define([
 	'am4charts/plugins/venn',
 	'am4charts/plugins/wordCloud',
 	'am4charts/plugins/forceDirected'
-], function(Control, jQuery, library, ui5ajax, am4core, am4charts, am4themes_animated, am4plugins_timeline, am4plugins_sunburst, am4plugins_venn, am4plugins_wordCloud, am4plugins_forceDirected) {
+], function(Control, jQuery, library, ui5ajax, errorfunctions, am4core, am4charts, am4themes_animated, am4plugins_timeline, am4plugins_sunburst, am4plugins_venn, am4plugins_wordCloud, am4plugins_forceDirected) {
 	return Control.extend("ui5libs.am4charts.Chart", {
 		_chart: undefined,
 		metadata: {
@@ -96,7 +97,7 @@ sap.ui.define([
 								} 
 							},
 							error => {
-								sap.m.MessageToast.show('Config data cannot be loaded from given URL: "' + oConfig + '"; Error: "' + error + '"');
+								errorfunctions.addError(this.getView(), error);
 							}
 						);
 				} else {

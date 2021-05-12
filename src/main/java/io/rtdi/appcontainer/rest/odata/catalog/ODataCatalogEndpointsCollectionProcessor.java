@@ -45,7 +45,7 @@ import org.apache.olingo.server.api.uri.queryoption.expression.Member;
 
 import io.rtdi.appcontainer.rest.odata.ODataFilterExpressionVisitor;
 import io.rtdi.appcontainer.rest.odata.ODataSQLProjectionBuilder;
-import io.rtdi.appcontainer.utils.HanaSQLException;
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
 
 public class ODataCatalogEndpointsCollectionProcessor implements EntityCollectionProcessor {
 
@@ -166,7 +166,7 @@ public class ODataCatalogEndpointsCollectionProcessor implements EntityCollectio
 					}
 				}
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql.toString(), "Execution of the query failed");
+				throw new AppContainerSQLException(e, sql.toString(), "Execution of the query failed");
 			}
 			
 			CountOption countOption = uriInfo.getCountOption();
@@ -201,7 +201,7 @@ public class ODataCatalogEndpointsCollectionProcessor implements EntityCollectio
 			response.setContent(serializedContent);
 			response.setStatusCode(HttpStatusCode.OK.getStatusCode());
 			response.setHeader(HttpHeader.CONTENT_TYPE, responseFormat.toContentTypeString());
-		} catch (HanaSQLException e) {
+		} catch (AppContainerSQLException e) {
 			throw new ODataApplicationException("SQL Error: " + e.getMessage(), 500, Locale.ENGLISH, e);
 		}
 	}

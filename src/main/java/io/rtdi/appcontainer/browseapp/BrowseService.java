@@ -53,6 +53,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import io.rtdi.appcontainer.WebAppConstants;
 import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
+import io.rtdi.appcontainer.utils.ErrorCode;
 import io.rtdi.appcontainer.utils.ErrorMessage;
 import io.rtdi.appcontainer.utils.SuccessMessage;
 import io.rtdi.appcontainer.utils.Util;
@@ -132,7 +133,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -156,7 +157,7 @@ public class BrowseService {
 			if (message == null || message.length() == 0) {
 				message = username + " at " + DateFormat.getInstance().format(new Date()); 
 			}
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			try (Git git = getGit(upath, true);) {
 				if (git != null) {
 					String result;
@@ -207,7 +208,7 @@ public class BrowseService {
 				}
 			}
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 	
@@ -240,7 +241,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -255,7 +256,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			try (Git git = getGit(upath, false);) {
 				if (git != null) {
 					String url = git.getRepository().getConfig().getString("remote", "origin", "url");
@@ -273,7 +274,7 @@ public class BrowseService {
 				}
 			}
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -296,7 +297,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown, e.g. file at path does not exist",
 		                    content = {
 		                            @Content(
@@ -316,7 +317,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			CredentialsProvider credentials = new UsernamePasswordCredentialsProvider(gitconfig.getUsername(), gitconfig.getPassword());
 			Collection<Ref> remoterepos = new LsRemoteCommand(null)
 					.setRemote(gitconfig.getRemoteurl())
@@ -363,7 +364,7 @@ public class BrowseService {
 			}
 			return Response.ok(new SuccessMessage(message)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -475,7 +476,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -490,7 +491,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			File rootdir = upath.toFile();
 			if (!rootdir.isDirectory()) {
 				log.debug("Root directory is not accessible on the server \"{}\"", rootdir.getAbsolutePath());
@@ -499,7 +500,7 @@ public class BrowseService {
 			Directory directorytree = new Directory(username, rootdir); 
 			return Response.ok(directorytree).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -520,7 +521,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -541,8 +542,11 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			File filedir = upath.resolve(Util.makeRelativePath(path)).toFile();
+			if (!upath.toFile().exists()) {
+				Files.createDirectories(upath);
+			}
 			if (!filedir.isDirectory()) {
 				throw new IOException("The directory is not accessible on the server \"" + filedir.getAbsolutePath() + "\"");
 			}
@@ -554,7 +558,7 @@ public class BrowseService {
 			Collections.sort(directorylist.getFiles());
 			return Response.ok(directorylist).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -575,7 +579,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown, e.g. file exists already",
 		                    content = {
 		                            @Content(
@@ -596,7 +600,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			java.nio.file.Path fpath = upath.resolve(Util.makeRelativePath(path));
 			if (fpath.toFile().exists()) {
 				throw new IOException("The file exists on the server already \"" + fpath.toAbsolutePath().toString() + "\"");
@@ -606,7 +610,7 @@ public class BrowseService {
 			FileData data = new FileData(newfile.toFile(), upath.toFile());
 			return Response.ok(data).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -627,7 +631,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown, e.g. path exists already",
 		                    content = {
 		                            @Content(
@@ -648,7 +652,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			File filedir = upath.resolve(Util.makeRelativePath(path)).toFile();
 			File rootdir = upath.toFile();
 			if (!rootdir.exists()) {
@@ -664,7 +668,7 @@ public class BrowseService {
 			filedir.mkdir();
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -685,7 +689,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown, e.g. path does not exist",
 		                    content = {
 		                            @Content(
@@ -706,7 +710,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			java.nio.file.Path filedir = upath.resolve(Util.makeRelativePath(path));
 			if (!filedir.toFile().isDirectory()) {
 				throw new IOException("The directory is not accessible on the server \"" + filedir.toAbsolutePath().toString() + "\"");
@@ -714,7 +718,7 @@ public class BrowseService {
 			Util.rmDirRecursive(filedir);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -735,7 +739,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown, e.g. path exists already",
 		                    content = {
 		                            @Content(
@@ -756,7 +760,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			java.nio.file.Path filedir = upath.resolve(Util.makeRelativePath(path));
 			if (!filedir.toFile().isFile()) {
 				throw new IOException("The file does not exist or is a directory \"" + filedir.toAbsolutePath().toString() + "\"");
@@ -764,7 +768,7 @@ public class BrowseService {
 			Files.delete(filedir);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -786,7 +790,7 @@ public class BrowseService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown, e.g. file at path does not exist",
 		                    content = {
 		                            @Content(
@@ -812,7 +816,7 @@ public class BrowseService {
 		String username = user.getDBUser();
 		try {
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			java.nio.file.Path sourcefile = upath.resolve(Util.makeRelativePath(path));
 			java.nio.file.Path targetfile = upath.resolve(Util.makeRelativePath(target.path));
 			Util.validatePathWithin(targetfile.toFile(), upath.toFile());
@@ -825,7 +829,7 @@ public class BrowseService {
 			Files.move(sourcefile, targetfile);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 	

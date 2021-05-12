@@ -153,13 +153,13 @@ sap.ui.define(
 								 * {
 								 *   $kind: "EntityContainer",
 								 *   TABLE: {
-								 *     $Type: "HANAOBJECT.ROW"
+								 *     $Type: "DBOBJECT.ROW"
 							  	 *     $kind: "EntitySet"
 							  	 *   }
 							  	 * }
 								 *
 							} ); */
-					oMetamodel.requestObject("/HANAOBJECT.ROW").then(
+					oMetamodel.requestObject("/DBOBJECT.ROW").then(
 							function(meta) { 
 								var oColumns = [];
 								Object.keys(meta).forEach( function(item) {

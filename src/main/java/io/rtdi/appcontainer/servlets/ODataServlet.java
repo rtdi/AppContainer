@@ -23,11 +23,11 @@ import org.apache.olingo.server.api.ServiceMetadata;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
-import io.rtdi.appcontainer.rest.odata.hanatable.ODataCollectionProcessor;
-import io.rtdi.appcontainer.rest.odata.hanatable.ODataEdm;
-import io.rtdi.appcontainer.rest.odata.hanatable.ODataEntityProcessor;
-import io.rtdi.appcontainer.rest.odata.hanatable.ODataPrimitiveProcessor;
-import io.rtdi.appcontainer.utils.HanaSQLException;
+import io.rtdi.appcontainer.rest.odata.table.ODataCollectionProcessor;
+import io.rtdi.appcontainer.rest.odata.table.ODataEdm;
+import io.rtdi.appcontainer.rest.odata.table.ODataEntityProcessor;
+import io.rtdi.appcontainer.rest.odata.table.ODataPrimitiveProcessor;
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
 import io.rtdi.appcontainer.utils.SessionHandler;
 import io.rtdi.appcontainer.utils.Util;
 
@@ -66,7 +66,7 @@ public class ODataServlet extends HttpServlet {
 			handler.register(new ODataEntityProcessor(conn, schemaname, viewname, edm));
 			handler.register(new ODataPrimitiveProcessor(conn, schemaname, viewname));
 			handler.process(req, resp);
-		} catch (RuntimeException | SQLException | HanaSQLException | URISyntaxException e) {
+		} catch (RuntimeException | SQLException | AppContainerSQLException | URISyntaxException e) {
 			log.error("Server Error occurred in ODataServlet", e);
 			throw new ServletException(e);
 		}

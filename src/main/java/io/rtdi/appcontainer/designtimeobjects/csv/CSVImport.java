@@ -19,28 +19,17 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 import io.rtdi.appcontainer.activationapp.ActivationResult;
-import io.rtdi.appcontainer.activationapp.ActivationStyle;
 import io.rtdi.appcontainer.activationapp.ActivationSuccess;
+import io.rtdi.appcontainer.designtimeobjects.ActivationException;
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
 import io.rtdi.appcontainer.utils.Describe;
-import io.rtdi.appcontainer.utils.HanaSQLException;
 import io.rtdi.appcontainer.utils.Describe.ColumnDefinition;
 
 public class CSVImport {
 
-	private ActivationResult result;
-	private Connection conn;
-	private String owner;
-	private String tablename;
 
-	public CSVImport(ActivationResult result, Connection conn, ActivationStyle style) {
-		this.result = result;
-		this.conn = conn;
-	}
-
-	public void csvImport(File file, String owner, String tablename) {
+	public static void csvImport(Connection conn, File file, String owner, String tablename, ActivationResult result) throws ActivationException {
 		try {
-			this.owner = owner;
-			this.tablename = tablename;
 			CsvParserSettings settings = new CsvParserSettings();
 			settings.getFormat().setQuoteEscape('\\');
 			settings.getFormat().setCharToEscapeQuoteEscaping('\\');
@@ -50,52 +39,90 @@ public class CSVImport {
 			settings.setLineSeparatorDetectionEnabled(true);
 			settings.setHeaderExtractionEnabled(true);
 			// settings.detectFormatAutomatically();
-			settings.setProcessorErrorHandler(new RowProcessorErrorHandler() {
-				int warningcount = 0;
-	
-				@Override
-			    public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
-			    	result.addResult(error.getMessage(), null, ActivationSuccess.WARNING, null);
-			    	warningcount++;
-			    	if (warningcount > 20) {
-				    	result.addResult("Too many input errors, stopping", null, ActivationSuccess.FAILED, null);
-			    		context.stop();
-			    	}
-			    }
-			});
+			SQLRowProcessorErrorHandler errorhandler = new SQLRowProcessorErrorHandler(result);
+			settings.setProcessorErrorHandler(errorhandler);
 			
-			HanaImportRowProcessor rowprocessor = new HanaImportRowProcessor();
+			DBImportRowProcessor rowprocessor = new DBImportRowProcessor(conn, owner, tablename);
 			settings.setProcessor(rowprocessor);
 			CsvParser parser = new CsvParser(settings);
 			parser.parse(file);
-			conn.commit();
+			if (errorhandler.getWarningCount() == 0) {
+				conn.commit();
+			} else {
+				conn.rollback();
+				throw new ActivationException("Failed to import the data of file \"" + file.getName() + "\"");
+			}
 		} catch (SQLException e) {
-			result.addResult("SQLException when executing commit", null, ActivationSuccess.FAILED, null);
+			result.addResult("SQLException when committing the data", null, ActivationSuccess.FAILED);
+			throw new ActivationException("Failed to commit the data of file \"" + file.getName() + "\"");
 		} finally {
 			try {
 				conn.rollback();
 			} catch (SQLException e) {
-				result.addResult("SQLException when executing rollback", null, ActivationSuccess.FAILED, null);
+				result.addResult("SQLException when executing rollback", null, ActivationSuccess.FAILED);
 			}
 		}
 	}
 	
-	public class HanaImportRowProcessor extends ObjectRowProcessor {
+	public static class SQLRowProcessorErrorHandler implements RowProcessorErrorHandler {
+		private int warningcount = 0;
+		private ActivationResult result;
+		
+		public SQLRowProcessorErrorHandler(ActivationResult result) {
+			this.result = result;
+		}
+		
+		@Override
+	    public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
+	    	result.addResult(error.getMessage(), null, ActivationSuccess.FAILED);
+	    	warningcount++;
+	    	if (warningcount > 20) {
+	    		context.stop();
+	    	}
+	    }
+		
+		public int getWarningCount() {
+			return warningcount;
+		}
+	}
+	
+	public static class DBImportRowProcessor extends ObjectRowProcessor {
 		private PreparedStatement insert;
 		private PreparedStatement upsert;
 		private PreparedStatement delete;
 		private int indexChangeType = -1;
 		private List<Integer> keyindexes; 
-		private List<Integer> columnindexes; 
+		private List<Integer> columnindexes;
+		private Connection conn;
+		private String owner;
+		private String tablename;
+		private int batchrowcount = 0;
 		
-	    @Override
+	    public DBImportRowProcessor(Connection conn, String owner, String tablename) {
+			this.conn = conn;
+			this.owner = owner;
+			this.tablename = tablename;
+		}
+	    
+	    private void executeBatch() throws SQLException {
+	    	delete.executeBatch();
+	    	insert.executeBatch();
+	    	upsert.executeBatch();
+	    	batchrowcount = 0;
+	    }
+
+		@Override
 	    public void rowProcessed(Object[] row, ParsingContext context) {
 			try {
+				batchrowcount++;
+				if (batchrowcount > 1000) {
+					executeBatch();
+				}
 				if (indexChangeType == -1 || row[indexChangeType].equals("I")) {
 					for (int i=0; i<columnindexes.size(); i++) {
 						insert.setObject(i+1, row[columnindexes.get(i)]);
 					}
-					insert.execute();
+					insert.addBatch();
 				} else {
 					switch (row[indexChangeType].toString()) {
 					case "U":
@@ -107,7 +134,7 @@ public class CSVImport {
 						for (int i=0; i<columnindexes.size(); i++) {
 							upsert.setObject(i+1, row[columnindexes.get(i)]);
 						}
-						upsert.execute();
+						upsert.addBatch();
 						break;
 					case "D":
 					case "X":
@@ -118,7 +145,7 @@ public class CSVImport {
 							int index = keyindexes.get(i);
 							delete.setObject(i+1, row[index]);
 						}
-						delete.execute();
+						delete.addBatch();
 						break;
 					case "T":
 						/*
@@ -155,7 +182,7 @@ public class CSVImport {
 						for (int i=0; i<deleteindex.size(); i++) {
 							del.setObject(i+1, row[deleteindex.get(i)]);
 						}
-						del.execute();
+						del.execute(); // must be executed immediately
 						break;
 					}
 				}
@@ -181,10 +208,10 @@ public class CSVImport {
 						PreparedStatement stmt = conn.prepareStatement(sql);
 						stmt.execute();
 					} catch (SQLException e) {
-						throw new HanaSQLException(e, sql, "Failed to truncate the table");
+						throw new AppContainerSQLException(e, sql, "Failed to truncate the table");
 					}
 				}
-			} catch (HanaSQLException e) {
+			} catch (AppContainerSQLException e) {
 				DataProcessingException ex = new DataProcessingException("Generating the SQL DML statements failed with SQLException: \"" + e.getMessage() + "\"", e);
 				throw ex;
 			}
@@ -192,10 +219,16 @@ public class CSVImport {
 
 		@Override
 		public void processEnded(ParsingContext context) {
+			try {
+				executeBatch(); // send the last few rows as well
+			} catch (SQLException e) {
+				DataProcessingException ex = new DataProcessingException("SQLException when sending the last batch of records \"" + e.getMessage() + "\"", e);
+				throw ex;
+			}
 		}
 		
 	
-		private void setStatements(List<String> headers, String owner, String tablename) throws HanaSQLException {
+		private void setStatements(List<String> headers, String owner, String tablename) throws AppContainerSQLException {
 			StringBuffer sqlinsert = new StringBuffer();
 			StringBuffer sqlupsert = new StringBuffer();
 			StringBuffer sqldelete = new StringBuffer();
@@ -205,7 +238,7 @@ public class CSVImport {
 			try {
 				columnindexes = new ArrayList<>();
 				for (int i=0; i<headers.size(); i++) {
-					String columnname = headers.get(i);
+					String columnname = headers.get(i).trim(); // trim leading and trailing spaces
 					if (columnlist.length() != 0) {
 						columnlist.append(", ");
 						paramlist.append(", ");
@@ -230,7 +263,7 @@ public class CSVImport {
 					.append(")");
 				insert = conn.prepareStatement(sqlinsert.toString());
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, "Failed creating the insert statement for this table", sqlinsert.toString());
+				throw new AppContainerSQLException(e, "Failed creating the insert statement for this table", sqlinsert.toString());
 			}
 
 				/*
@@ -268,17 +301,17 @@ public class CSVImport {
 						}
 					}
 					if (keyindexes.size() == 0) {
-						throw new HanaSQLException("The CSV files has a _CHANGE_TYPE column but the database table does not have a primary key", null);
+						throw new AppContainerSQLException("The CSV files has a _CHANGE_TYPE column but the database table does not have a primary key", null);
 					}
 					try {
 						upsert = conn.prepareStatement(sqlupsert.toString());
 					} catch (SQLException e) {
-						throw new HanaSQLException(e, "Failed creating the upsert statement for this table", sqlupsert.toString());
+						throw new AppContainerSQLException(e, "Failed creating the upsert statement for this table", sqlupsert.toString());
 					}
 					try {
 						delete = conn.prepareStatement(sqldelete.toString());
 					} catch (SQLException e) {
-						throw new HanaSQLException(e, "Failed creating the delete statement for this table", sqldelete.toString());
+						throw new AppContainerSQLException(e, "Failed creating the delete statement for this table", sqldelete.toString());
 					}
 				}
 				
@@ -289,14 +322,14 @@ public class CSVImport {
 			for (int i=0; i<collist.size(); i++) {
 				ColumnDefinition columndef = collist.get(i);
 				switch (columndef.getDatatype()) {
-				case ALPHANUM:
+				case ARRAY:
 					break;
 				case BIGINT:
 					convertIndexes(Conversions.toBigInteger()).set(i);
 					break;
 				case BINARY:
 					break;
-				case BINTEXT:
+				case BIT:
 					break;
 				case BLOB:
 					break;
@@ -306,46 +339,66 @@ public class CSVImport {
 					break;
 				case CLOB:
 					break;
+				case DATALINK:
+					break;
 				case DATE:
 					convertIndexes(Conversions.toDate(TimeZone.getTimeZone("UTC"), Locale.ENGLISH, null, null, "MM/dd/yyyy", "yyyy.MM.dd")).set(i);
 					break;
 				case DECIMAL:
 					break;
+				case DISTINCT:
+					break;
 				case DOUBLE:
 					convertIndexes(Conversions.toDouble()).set(i);
 					break;
-				case IGNORE:
+				case FLOAT:
+					convertIndexes(Conversions.toFloat()).set(i);
 					break;
 				case INTEGER:
+					break;
+				case JAVA_OBJECT:
+					break;
+				case LONGNVARCHAR:
+					break;
+				case LONGVARBINARY:
+					break;
+				case LONGVARCHAR:
 					break;
 				case NCHAR:
 					break;
 				case NCLOB:
 					break;
+				case NULL:
+					break;
+				case NUMERIC:
+					break;
 				case NVARCHAR:
 					break;
+				case OTHER:
+					break;
 				case REAL:
-				case SMALLDECIMAL:
-					convertIndexes(Conversions.toFloat()).set(i);
 					break;
-				case SECONDDATE:
-					convertIndexes(Conversions.toDate(TimeZone.getTimeZone("UTC"), Locale.ENGLISH, null, null, "MM/dd/yyyy HH:mm:ss", "yyyy.MM.dd HH:mm:ss")).set(i);
+				case REF:
 					break;
-				case SHORTTEXT:
+				case REF_CURSOR:
+					break;
+				case ROWID:
 					break;
 				case SMALLINT:
 					break;
-				case ST_GEOMETRY:
+				case SQLXML:
 					break;
-				case ST_POINT:
-					break;
-				case TEXT:
+				case STRUCT:
 					break;
 				case TIME:
 					convertIndexes(Conversions.toDate(TimeZone.getTimeZone("UTC"), Locale.ENGLISH, null, null, "HH:mm:ss", "HH:mm:ss.SSS")).set(i);
 					break;
 				case TIMESTAMP:
 					convertIndexes(Conversions.toDate(TimeZone.getTimeZone("UTC"), Locale.ENGLISH, null, null, "MM/dd/yyyy HH:mm:ss.SSS", "yyyy.MM.dd HH:mm:ss.SSS")).set(i);
+					break;
+				case TIMESTAMP_WITH_TIMEZONE:
+					break;
+				case TIME_WITH_TIMEZONE:
 					break;
 				case TINYINT:
 					break;

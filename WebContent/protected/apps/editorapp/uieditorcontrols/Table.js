@@ -181,7 +181,7 @@ sap.ui.define(
 					 * proper binding. It does not refresh the properties pane, no event fired.
 					 */
 					var oMetamodel = oModel.getMetaModel();
-					oMetamodel.requestObject("/HANAOBJECT.ROW").then(
+					oMetamodel.requestObject("/DBOBJECT.ROW").then(
 							function(meta) { 
 								var oColumns = [];
 								Object.keys(meta).forEach( function(item) {

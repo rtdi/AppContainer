@@ -1,6 +1,6 @@
 # AppContainer
 
-_Developing SAP Hana Applications quickly_
+_Developing database applications quickly_
 
 Source code available here: [github](https://github.com/rtdi/AppContainer)
 
@@ -28,7 +28,7 @@ On any computer install the Docker Daemon - if it is not already and download th
 
 Then start the image via docker run. Only one parameter needs to be set, the environment variable JDBCURL. For Hana this consist of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE). For Snowflake see the [Snowflake JDBC documentation](https://docs.snowflake.com/en/user-guide/jdbc-configure.html#jdbc-driver-connection-string).
 
-    docker run -d -p 80:8080 -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
+    docker run -d -p 80:8080 -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE rtdi/appcontainer
 
 From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
 
@@ -39,7 +39,7 @@ An even better docker run command is to add a few server directories, here all i
        -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
        -v /dockermountpoints/repo:/usr/local/tomcat/repo \
        -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
-       -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/HXE rtdi/appcontainer
+       -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE rtdi/appcontainer
 
 - /usr/local/tomcat/conf/rtdiconfig: The directory where tomcat related settings can go. Usually not needed.
 - /usr/local/tomcat/conf/security: The directory with ssl settings. The tomcat-users.xml user database is not used.
@@ -52,7 +52,7 @@ An even better docker run command is to add a few server directories, here all i
 The complete solution consists of the following modules:
 
 * Repository to create new files or change them
-* Activation of Hana files like hdbtable
+* Activation of database files
 * Webserver to provide html files, xml views and other files needed for web development
 * Graphical UI Editor for XMLViews
 * Backend services to read data via oData or Restful calls
@@ -189,4 +189,4 @@ One API call is one invocation of any of the backend services, oData or Restful,
 ## Data protection and privacy
 
 Every ten minutes the application does send the api call statistics via a http call to a central server where the data is stored for information along with the public IP address (usually the IP addess the router got assigned). It is just a count which service was invoked how often, no information about endpoints, users or URL parameters. This information is collected to get an idea about the adoption.
-To disable that, set the environment variable HANAAPPCONTAINERSTATISTICS=FALSE.
+To disable that, set the environment variable APPCONTAINERSTATISTICS=FALSE.

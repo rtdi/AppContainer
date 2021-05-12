@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/m/MessageToast"
+	
 ], function () {
 	"use strict";    
    	return {
@@ -26,13 +26,15 @@ sap.ui.define([
 					xhr.setRequestHeader("Content-Type", sPayloadType);
 				}
 		        xhr.onload = () => {
-		            if (xhr.status >= 200 && xhr.status < 300) {
-		                resolve(xhr.response);
+		            if (xhr.status == 202) {
+		                reject( { text: xhr.response, code: xhr.status } ); // http is fine but the rest call returned a ErrorMessage object
+		            } else if (xhr.status >= 200 && xhr.status < 300) {
+		                resolve( { text: xhr.response, code: xhr.status } );
 		            } else {
-		                reject(xhr.statusText);
+		                reject( { text: xhr.response, code: xhr.status } );
 		            }
 		        };
-		        xhr.onerror = () => reject(xhr.statusText);
+		        xhr.onerror = () => reject( { text: xhr.response, code: xhr.status } );
 		        xhr.send(sText);
 		    });
 		}

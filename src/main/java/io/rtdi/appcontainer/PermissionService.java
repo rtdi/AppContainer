@@ -32,6 +32,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
+import io.rtdi.appcontainer.utils.ErrorCode;
 import io.rtdi.appcontainer.utils.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -59,7 +60,7 @@ public class PermissionService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(
 			summary = "Produce the permission tree",
-			description = "In the Hana repository each user has its own objects organized by schemas. "
+			description = "In the database repository each user has its own objects organized by schemas. "
 					+ "The USER1 might have cloned the files for schema XYZ and the "
 					+ "currently requesting user might or might not have access.",
 			responses = {
@@ -73,7 +74,7 @@ public class PermissionService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -86,25 +87,25 @@ public class PermissionService {
     public Response getPermissionObject(
     		@PathParam("user") 
     	    @Parameter(
-    	    		description = "Hana repository owner",
+    	    		description = "Database repository owner",
     	    		example = "<currently logged in user to see his own files>"
     	    		)
     		String user) {
 		try {
-			java.nio.file.Path spath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), user);
+			java.nio.file.Path spath = WebAppConstants.getRepoUserDir(request.getServletContext(), user);
 			File file = spath.toFile();
 			if (!file.isDirectory()) {
 				throw new IOException("Cannot find directory \"" + file.getAbsolutePath() + "\" on the server");
 			}
 			return Response.ok(getPermissions(request, user)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 	
 	public static Permissions getPermissions(HttpServletRequest request, String user) throws ServletException, IOException {
-		IAppContainerPrincipal hanauser = (IAppContainerPrincipal) request.getUserPrincipal();
-		if (hanauser == null) {
+		IAppContainerPrincipal dbuser = (IAppContainerPrincipal) request.getUserPrincipal();
+		if (dbuser == null) {
 			throw new ServletException("No login information found?");
 		}
     	HttpSession session = request.getSession(true);
@@ -117,10 +118,10 @@ public class PermissionService {
     		    .build();
     		session.setAttribute(FILEPERMISSIONCACHE, permissioncache);
     	}
-    	java.nio.file.Path rootpath = WebAppConstants.getHanaRepo(request.getServletContext());
+    	java.nio.file.Path rootpath = WebAppConstants.getJDBCRepo(request.getServletContext());
 		Permissions permissions = permissioncache.getIfPresent(user);
 		if (permissions == null) {
-			permissions = new Permissions(hanauser, user, rootpath.toString());
+			permissions = new Permissions(dbuser, user, rootpath.toString());
 			permissioncache.put(user, permissions);
 		}
 		return permissions;
@@ -131,12 +132,12 @@ public class PermissionService {
 		private String[] roles;
 		private Set<String> directories = new HashSet<>();
 		
-		public Permissions(IAppContainerPrincipal hanauser, String user, String rootpath) throws IOException {
+		public Permissions(IAppContainerPrincipal dbuser, String user, String rootpath) throws IOException {
 			super();
-			roles = hanauser.getRoles();
+			roles = dbuser.getRoles();
 
     		HashSet<String> assignedroles = new HashSet<>();
-    		assignedroles.addAll(Arrays.asList(hanauser.getRoles()));
+    		assignedroles.addAll(Arrays.asList(dbuser.getRoles()));
     		assignedroles.add("PUBLIC");
 			java.nio.file.Path requestedpath = Paths.get(rootpath, user);
 			if (!requestedpath.toFile().exists()) {
@@ -145,14 +146,14 @@ public class PermissionService {
 				throw new IOException("The path \"" + requestedpath.toString() + "\" is not a directory");
 			} else {
 				addDirectories(requestedpath, directories, assignedroles, requestedpath,
-						user.equals(hanauser.getDBUser()) || user.equals("PUBLIC"), false);
+						user.equals(dbuser.getDBUser()) || user.equals("PUBLIC"), false);
 			}
 		}
 
 		/**
 		 * A directory is added as allowed if either
 		 * 1. The directory is within the same user
-		 * 2. There is an allow file with at least one group the user has assigned in Hana
+		 * 2. There is an allow file with at least one group the user has assigned in the database
 		 * 3. There is no allow file but the parent directory allowed the user
 		 * 
 		 * @param dirpath

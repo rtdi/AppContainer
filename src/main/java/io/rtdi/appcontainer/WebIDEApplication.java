@@ -25,9 +25,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         ),
         tags = {
                 @Tag(name = "Filesystem", description = "APIs used to manipulate files"),
-                @Tag(name = "ReadHana", description = "APIs to read data from Hana"),
-                @Tag(name = "WriteHana", description = "APIs to write data into Hana"),
-                @Tag(name = "Information", description = "APIs to get dictionary like data from Hana")
+                @Tag(name = "ReadDB", description = "APIs to read data from the database"),
+                @Tag(name = "WriteDB", description = "APIs to write data into the database"),
+                @Tag(name = "Information", description = "APIs to get dictionary like data from the database")
         },
         servers = {
                 @Server(

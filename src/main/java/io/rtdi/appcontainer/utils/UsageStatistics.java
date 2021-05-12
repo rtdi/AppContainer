@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.rtdi.appcontainer.rest.HanaStoredProcedure;
-import io.rtdi.appcontainer.rest.odata.hanatable.ODataCollectionProcessor;
+import io.rtdi.appcontainer.rest.odata.table.ODataCollectionProcessor;
 import io.rtdi.appcontainer.servlets.RepoServlet;
 
 public class UsageStatistics {
@@ -51,7 +51,7 @@ public class UsageStatistics {
 		private List<Producer> producers;
 
 		public Connection() {
-			connectionname = System.getenv("HANAJDBCURL");
+			connectionname = System.getenv("JDBCURL");
 			producers = new ArrayList<>();
 			producers.add(new Producer("RepoServlet"));
 			producers.add(new Producer("ODataCollection"));

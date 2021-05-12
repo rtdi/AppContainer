@@ -2,7 +2,7 @@ sap.ui.define([ "sap/ui/core/mvc/Controller",
 		"sap/ui/model/odata/v4/ODataModel"], function(Controller, ODataModel) {
 	"use strict";
 
-	return Controller.extend("io.rtdi.hanappcontainer.importapp.Controller", {
+	return Controller.extend("io.rtdi.appcontainer.importapp.Controller", {
 		resturl: sap.ui.require.toUrl("ui5rest"),
 
 		onInit : function() {

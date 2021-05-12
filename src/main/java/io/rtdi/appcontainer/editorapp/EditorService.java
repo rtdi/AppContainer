@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.rtdi.appcontainer.WebAppConstants;
 import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
+import io.rtdi.appcontainer.utils.ErrorCode;
 import io.rtdi.appcontainer.utils.ErrorMessage;
 import io.rtdi.appcontainer.utils.SuccessMessage;
 import io.rtdi.appcontainer.utils.Util;
@@ -64,7 +65,7 @@ public class EditorService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -85,14 +86,14 @@ public class EditorService {
 		try {
 			String username = user.getDBUser();
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			File file = upath.resolve(path).toFile();
 			if (!file.isFile()) {
 				throw new IOException("Cannot find file \"" + file.getAbsolutePath() + "\" on the server");
 			}
 			return Response.ok(new FileContent(file, path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -114,7 +115,7 @@ public class EditorService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "400", 
+							responseCode = "202", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -140,7 +141,7 @@ public class EditorService {
 		try {
 			String username = user.getDBUser();
 			username = Util.validateFilename(username);
-			java.nio.file.Path upath = WebAppConstants.getHanaRepoUserDir(request.getServletContext(), username);
+			java.nio.file.Path upath = WebAppConstants.getRepoUserDir(request.getServletContext(), username);
 			java.nio.file.Path ppath = upath.resolve(path);
 			if (!ppath.toFile().isFile()) {
 				throw new IOException("Cannot find file \"" + ppath.toAbsolutePath().toString() + "\" on the server");
@@ -148,7 +149,7 @@ public class EditorService {
 			Files.writeString(ppath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			return Response.ok(new SuccessMessage(path)).build();
 		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 

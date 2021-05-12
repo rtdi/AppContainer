@@ -2,54 +2,54 @@ package io.rtdi.appcontainer.utils;
 
 import java.util.List;
 
-import io.rtdi.appcontainer.activationapp.DesignTimeParsingResult;
-import io.rtdi.appcontainer.activationapp.HanaParsingException;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description="Detailed error information from the server")
 public class ErrorMessage {
 	private Exception exception;
+	private ErrorCode code;
 
 	public ErrorMessage() {
 		super();
 	}
 
-	public ErrorMessage(Exception e) {
+	public ErrorMessage(Exception e, ErrorCode code) {
 		super();
 		exception = e;
+		this.code = code;
 	}
 
 	public String getMessage() {
 		return exception.toString();
 	}
 	
+	public int getErrorCode() {
+		return code.getCode();
+	}
+	
+	public boolean isRecoverable() {
+		return code.isRecoverable();
+	}
+	
 	public String getHint() {
-		if (exception instanceof HanaSQLException) {
-			return ((HanaSQLException) exception).getHint();
+		if (exception instanceof AppContainerSQLException) {
+			return ((AppContainerSQLException) exception).getHint();
 		} else {
 			return null;
 		}
 	}
 
 	public String getSQLStatement() {
-		if (exception instanceof HanaSQLException) {
-			return ((HanaSQLException) exception).getSQLStatement();
-		} else {
-			return null;
-		}
-	}
-
-	public DesignTimeParsingResult getParsingMessages() {
-		if (exception instanceof HanaParsingException) {
-			return ((HanaParsingException) exception).getDesignTimeParsingResult();
+		if (exception instanceof AppContainerSQLException) {
+			return ((AppContainerSQLException) exception).getSQLStatement();
 		} else {
 			return null;
 		}
 	}
 
 	public List<String> getMsgList() {
-		if (exception instanceof HanaSQLException) {
-			return ((HanaSQLException) exception).getMsglist();
+		if (exception instanceof AppContainerSQLException) {
+			return ((AppContainerSQLException) exception).getMsglist();
 		} else {
 			return null;
 		}

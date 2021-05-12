@@ -2,6 +2,7 @@ package io.rtdi.appcontainer.rest.odata;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.JDBCType;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,8 +12,7 @@ import org.apache.olingo.commons.api.edm.EdmType;
 import org.apache.olingo.commons.api.edm.constants.EdmTypeKind;
 import org.apache.olingo.commons.api.ex.ODataRuntimeException;
 
-import io.rtdi.appcontainer.utils.HanaDataType;
-import io.rtdi.appcontainer.utils.HanaSQLException;
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
 
 public class ODataUtils {
 	private static final String ESC_START = "__x";
@@ -30,40 +30,36 @@ public class ODataUtils {
 	    }
 	}
 
-	public static HanaDataType getHanaDataType(EdmType type) throws HanaSQLException {
+	public static JDBCType getJDBCDataType(EdmType type) throws AppContainerSQLException {
 		if (type.getKind() == EdmTypeKind.PRIMITIVE) {
 			EdmPrimitiveTypeKind edmprimitive = EdmPrimitiveTypeKind.valueOf(type.getName());
 			switch (edmprimitive) {
 			case String:
-				return HanaDataType.NVARCHAR;
+				return JDBCType.NVARCHAR;
 			case Int64:
-				return HanaDataType.BIGINT;
+				return JDBCType.BIGINT;
 			case Boolean:
-				return HanaDataType.BOOLEAN;
+				return JDBCType.BOOLEAN;
 			case Binary:
-				return HanaDataType.BLOB;
+				return JDBCType.BLOB;
 			case Date:
-				return HanaDataType.DATE;
+				return JDBCType.DATE;
 			case Decimal:
-				return HanaDataType.DECIMAL;
+				return JDBCType.DECIMAL;
 			case Double:
-				return HanaDataType.DOUBLE;
+				return JDBCType.DOUBLE;
 			case Int16:
-				return HanaDataType.SMALLINT;
+				return JDBCType.SMALLINT;
 			case Int32:
-				return HanaDataType.INTEGER;
+				return JDBCType.INTEGER;
 			case Single:
-				return HanaDataType.REAL;
-			case Geometry:
-				return HanaDataType.ST_GEOMETRY;
-			case GeometryPoint:
-				return HanaDataType.ST_POINT;
+				return JDBCType.REAL;
 			case TimeOfDay:
-				return HanaDataType.TIME;
+				return JDBCType.TIME;
 			case DateTimeOffset:
-				return HanaDataType.TIMESTAMP;
+				return JDBCType.TIMESTAMP;
 			case SByte:
-				return HanaDataType.TINYINT;
+				return JDBCType.TINYINT;
 			default:
 				return null;
 			}

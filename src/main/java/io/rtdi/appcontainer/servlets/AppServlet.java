@@ -28,7 +28,7 @@ public class AppServlet extends UI5Servlet {
      * 2. The user is part of a group the allow file in the requested directory lists.
      * 
      * Example for use case 2: The requested file was protected/repo/FRITZ/SCHEMA1/dir1/index.html
-     * In the dir1 is a file called allow and it contains the line PUBLIC. All users are part of the Hana group PUBLIC, hence the file is served by the servlet. 
+     * In the dir1 is a file called allow and it contains the line PUBLIC. All users are part of the database group PUBLIC, hence the file is served by the servlet. 
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException

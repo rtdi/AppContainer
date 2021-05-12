@@ -17,40 +17,6 @@ import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
 
 public class Util {
 
-	public static String getDataTypeString(String datatypename, Integer length, Integer scale) throws HanaSQLException {
-		return getDataTypeString(datatypename, length, length, scale);
-	}
-	
-	public static String getDataTypeString(String datatypename, Integer length, Integer precision, Integer scale) throws HanaSQLException {
-		HanaDataType d = HanaDataType.valueOf(datatypename);
-		return getDataTypeString(d, length, precision, scale);
-	}
-	
-	public static String getDataTypeString(HanaDataType datatype, Integer length, Integer precision, Integer scale) throws HanaSQLException {
-		switch (datatype.getGroup()) {
-		case NOPARAM:
-			return datatype.name();
-		case LENGTHPARAM:
-			if (length == null || length.intValue() == 0) {
-				throw new HanaSQLException("The datatype needs a length information", datatype.name());
-			}
-			return datatype.name() + " (" + String.valueOf(length) + ")";
-		case DECIMALPARAM:
-			if (precision == null || precision.intValue() == 0) {
-				if (length == null || length.intValue() == 0) {
-					throw new HanaSQLException("The datatype needs a length/precision information", datatype.name());
-				}
-				precision = length;
-			}
-			if (scale == null) {
-				scale = 0;
-			}
-			return datatype.name() + " (" + String.valueOf(precision) + "," + String.valueOf(scale) + ")";
-		default:
-			throw new HanaSQLException("The datatype is not known", datatype.name());
-		}
-	}
-
 	/**
 	 * Tomcat prevents encoded / chars (as %2f) for security reasons. Therefore this character sequence is encoded a second time.
 	 * 
@@ -149,15 +115,13 @@ public class Util {
 	}
 	
 	public static String fileToSchemaname(File file, File rootdir) {
-		String schemaname = null;
 		if (file.equals(rootdir)) {
-			return file.getName();
+			return null;
 		} else {
-			while (file != null && file.getParentFile() != null && !file.equals(rootdir)) {
+			while (file != null && file.getParentFile() != null && !file.getParentFile().equals(rootdir)) {
 				file = file.getParentFile();
-				schemaname = file.getName();
 			}
-			return schemaname;
+			return file.getName();
 		}
 	}
 

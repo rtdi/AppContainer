@@ -38,10 +38,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
+import io.rtdi.appcontainer.utils.AppContainerSQLException;
+import io.rtdi.appcontainer.utils.ErrorCode;
 import io.rtdi.appcontainer.utils.ErrorMessage;
-import io.rtdi.appcontainer.utils.HanaSQLException;
 import io.rtdi.appcontainer.utils.SessionHandler;
 import io.rtdi.appcontainer.utils.Util;
+import io.rtdi.appcontainer.utils.hana.HanaDataTypes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -88,26 +90,23 @@ public class HanaStoredProcedure {
 		                            )
 		                    }
 	                    ),
-						@ApiResponse(responseCode = "500", description = "Any exception thrown")
+						@ApiResponse(responseCode = "202", description = "Any exception thrown")
 			})
 	@Tag(name = "Information")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProcedures() {
 		try (Connection conn = SessionHandler.handleSession(request, log);) {
-			String sql = "select schema_name, procedure_name from procedures";
-			try (PreparedStatement stmt = conn.prepareStatement(sql);) {
-				try (ResultSet rs = stmt.executeQuery(); ) {
-					List<HanaProcedure> elements = new ArrayList<>();
-					while (rs.next()) {
-						elements.add(new HanaProcedure(rs.getString(1), rs.getString(2)));
-					}
-					return Response.ok(elements).build();
+			try (ResultSet rs = conn.getMetaData().getProcedures(null, null, null); ) {
+				List<HanaProcedure> elements = new ArrayList<>();
+				while (rs.next()) {
+					elements.add(new HanaProcedure(rs.getString(2), rs.getString(3)));
 				}
+				return Response.ok(elements).build();
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql, "Executed SQL statement threw an error");
+				throw new AppContainerSQLException(e, "JDBC getProcedures()", "Executed SQL statement threw an error");
 			}
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
@@ -151,10 +150,10 @@ public class HanaStoredProcedure {
 	                            )
 	                    }
                     ),
-					@ApiResponse(responseCode = "500", description = "Any exception thrown")
+					@ApiResponse(responseCode = "202", description = "Any exception thrown")
             })
-	@Tag(name = "ReadHana")
-	@Tag(name = "WriteHana")
+	@Tag(name = "ReadDB")
+	@Tag(name = "WriteDB")
     public Response callProcedure(
     		@PathParam("schema") 
     	    @Parameter(
@@ -202,7 +201,7 @@ public class HanaStoredProcedure {
 						}
 					}
 				} catch (SQLException e) {
-					throw new HanaSQLException(e, paramsql, "Executed SQL statement threw an error");
+					throw new AppContainerSQLException(e, paramsql, "Executed SQL statement threw an error");
 				}
 			}
 			
@@ -258,12 +257,18 @@ public class HanaStoredProcedure {
 					}
 				}
 				/*
-				 * Scalar output parameters are prepared
+				 * Scalar and table output parameters are prepared
 				 */
 				for ( String outputparameter : metadata.getOutputParameters().keySet()) {
 					String datatype = metadata.getOutputParameters().get(outputparameter);
 					if (datatype != null) {
-						stmt.registerOutParameter(outputparameter, Types.NVARCHAR);
+						switch (datatype) {
+						case "TABLE_TYPE":
+							stmt.registerOutParameter(outputparameter, Types.STRUCT); // actually not used, data is returned as result set in Hana
+							break;
+						default:
+							stmt.registerOutParameter(outputparameter, Types.NVARCHAR);
+						}
 					}
 				}
 				boolean hasrs = stmt.execute();
@@ -272,19 +277,26 @@ public class HanaStoredProcedure {
 				ObjectMapper objectMapper = new ObjectMapper();
 				ObjectNode rootnode = objectMapper.createObjectNode();
 				/*
-				 * Table Output Parameters read via this method
+				 * Table Output Parameters read via this method.
+				 * Adds one arraynode per table with 0..n rows each
 				 */
 				if (hasrs) {
-					int rscount = 1;
+					int rscount = 0;
 					while (hasrs) {
-						ObjectNode rsnode = objectMapper.createObjectNode();
+						ArrayNode anode = objectMapper.createArrayNode();
 					    try (ResultSet rs = stmt.getResultSet();) {
 					    	while (rs.next()) {
+								ObjectNode rsnode = objectMapper.createObjectNode();
+								anode.add(rsnode);
 					    		for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
 					    			rsnode.put(rs.getMetaData().getColumnName(i), rs.getString(i));
 					    		}
 					    	}
-							rootnode.set("OUT" + String.valueOf(rscount), rsnode);
+					    	String outname = metadata.getOutTableParameterName(rscount);
+					    	if (outname == null) {
+					    		outname = "OUT" + String.valueOf(rscount + 1 - metadata.getOutTableParameterCount());
+					    	}
+				    		rootnode.set(outname, anode);
 							rscount++;
 					    }
 					    if (stmt.isClosed()) {
@@ -300,19 +312,25 @@ public class HanaStoredProcedure {
 				for ( String outputparameter : metadata.getOutputParameters().keySet()) {
 					String datatype = metadata.getOutputParameters().get(outputparameter);
 					if (datatype != null) {
-						rootnode.put(outputparameter, stmt.getString(outputparameter));
+						switch (datatype) {
+						case "TABLE_TYPE":
+							// ignore
+							break;
+						default:
+							rootnode.put(outputparameter, stmt.getString(outputparameter));
+						}
 					}
 				}
 				return Response.ok(rootnode).build();
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, sql.toString(), "Executed SQL statement threw an error");
+				throw new AppContainerSQLException(e, sql.toString(), "Executed SQL statement threw an error");
 			}
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(e)).build();
+			return Response.status(Status.ACCEPTED).entity(new ErrorMessage(e, ErrorCode.LOWLEVELEXCEPTION)).build();
 		}
 	}
 
-	private String create_temporary_table(Connection conn, String schema, String procedurename, String fieldname, ArrayNode data, ProcedureMetadata metadata) throws HanaSQLException {
+	private String create_temporary_table(Connection conn, String schema, String procedurename, String fieldname, ArrayNode data, ProcedureMetadata metadata) throws AppContainerSQLException {
 		String tablename = "#" + fieldname;
 		try (PreparedStatement stmt = conn.prepareStatement("drop table \"" + tablename + "\""); ) {
 			stmt.execute();
@@ -347,14 +365,14 @@ public class HanaStoredProcedure {
 						}
 						String columnname = rs.getString(1);
 						sql.append('"').append(columnname).append("\" ");
-						sql.append(Util.getDataTypeString(rs.getString(2), rs.getInt(3), rs.getInt(4)));
+						sql.append(HanaDataTypes.getDataTypeString(rs.getString(2), rs.getInt(3), rs.getInt(4)));
 						columnlist.append('"').append(columnname).append("\" ");
 						parameterlist.append('?');
 						columnindex.add(columnname);
 					}
 				}
 			} catch (SQLException e) {
-				throw new HanaSQLException(e, selectsql, "Executed SQL statement threw an error");
+				throw new AppContainerSQLException(e, selectsql, "Executed SQL statement threw an error");
 			}
 			sql.append(')');
 			tablemetadata.setCreateTableSQL(sql.toString());
@@ -367,7 +385,7 @@ public class HanaStoredProcedure {
 		try (PreparedStatement stmt = conn.prepareStatement(tablemetadata.getCreateTableSQL()); ) {
 			stmt.execute();
 		} catch (SQLException e) {
-			throw new HanaSQLException(e, tablemetadata.getCreateTableSQL(), "Executed SQL statement threw an error");
+			throw new AppContainerSQLException(e, tablemetadata.getCreateTableSQL(), "Executed SQL statement threw an error");
 		}
 
 		// Insert data
@@ -385,7 +403,7 @@ public class HanaStoredProcedure {
 			}
 			stmt.executeBatch();
 		} catch (SQLException e) {
-			throw new HanaSQLException(e, tablemetadata.getInsertSQL(), "Executed SQL statement threw an error");
+			throw new AppContainerSQLException(e, tablemetadata.getInsertSQL(), "Executed SQL statement threw an error");
 		}
 		
 		return tablename;
@@ -438,6 +456,7 @@ public class HanaStoredProcedure {
 		private String outputparameterstring;
 		private Map<String, TableParameterMetadata> tableparameters = new HashMap<>();
 		private Map<String, String> outparameters = new HashMap<>();
+		private List<String> outtableparameterindex = new ArrayList<>(); // The first n result sets are the out table parameters
 
 		public void putOutputParameter(String parametername, String datatypename) {
 			if (outparameters.size() == 0) {
@@ -446,6 +465,9 @@ public class HanaStoredProcedure {
 				outputparameterstring = outputparameterstring + ", \"" + parametername + "\" => ?";
 			}
 			outparameters.put(parametername, datatypename);
+			if (datatypename != null && datatypename.equals("TABLE_TYPE")) {
+				outtableparameterindex.add(parametername);
+			}
 		}
 
 		public void putTableInputParameter(String fieldname, TableParameterMetadata tablemetadata) {
@@ -458,6 +480,18 @@ public class HanaStoredProcedure {
 
 		public Map<String, String> getOutputParameters() {
 			return outparameters;
+		}
+		
+		public String getOutTableParameterName(int index) {
+			if (index < outtableparameterindex.size()) {
+				return outtableparameterindex.get(index);
+			} else {
+				return null;
+			}
+		}
+		
+		public int getOutTableParameterCount() {
+			return outtableparameterindex.size();
 		}
 
 		public String getOutputParameterString() {

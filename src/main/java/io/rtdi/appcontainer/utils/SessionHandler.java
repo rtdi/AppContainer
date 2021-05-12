@@ -87,7 +87,7 @@ public class SessionHandler {
 				session.getServletContext().setAttribute("io.rtdi.sessionpools", pools);
 			}
 			pools.put(session, datasource);
-			log.debug("Hana connection pool {} created", datasource.getName());
+			log.debug("JDBC connection pool {} created", datasource.getName());
 		}
         return datasource;
 	}

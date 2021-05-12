@@ -55,7 +55,7 @@ public class WebAppStartListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce)  { 
     	String webapprootpath = sce.getServletContext().getRealPath("/");
     	Path rootpath = Path.of(webapprootpath, "..", "..", "repo").toAbsolutePath();
-    	WebAppConstants.setHanaRepo(sce.getServletContext(), rootpath);
+    	WebAppConstants.setJDBCRepo(sce.getServletContext(), rootpath);
     	File rootdir = rootpath.toFile();
     	if (!rootdir.exists()) {
     		rootdir.mkdirs();

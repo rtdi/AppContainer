@@ -2,7 +2,7 @@
 
 The  _repo_  folder is the root folder of all development artifacts.
 It is meant to be used by git, hence every developer has its own personal version of the repository.
-Therefore, the first directory level is about the Hana username of the logged in user.
+Therefore, the first directory level is about the database username of the logged in user.
 Within the development objects are separated by the schema each object should be deployed into.
 
 Example: The file is located under USER1/SCHEMA2/TABLE_A.hdbtable
