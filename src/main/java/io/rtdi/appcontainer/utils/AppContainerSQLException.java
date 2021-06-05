@@ -1,8 +1,9 @@
 package io.rtdi.appcontainer.utils;
 
+import java.sql.SQLException;
 import java.util.List;
 
-public class AppContainerSQLException extends Exception {
+public class AppContainerSQLException extends SQLException {
 
 	private static final long serialVersionUID = 2754081147435338891L;
 	private String sqltext;

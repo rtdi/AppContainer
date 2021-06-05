@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"url": "ui5rest/query?$select=SELECT OBJECT_TYPE, count(*) as COUNT FROM objects GROUP BY OBJECT_TYPE order by 2 desc"
+		"url": "ui5app/sampledata.json"
 	},
 	"xAxes": [
 		{

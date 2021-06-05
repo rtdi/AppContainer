@@ -82,13 +82,8 @@ sap.ui.define([
 		    var oModelControl = oView.byId("odatamodels");
 		    oModelControl.setModel(oModel);
 		    
-		    var oModelSchema = new sap.ui.model.odata.v4.ODataModel({
-	    		serviceUrl : "/AppContainer/protected/odata/SYS/SCHEMAS/", 
-	    		"autoExpandSelect": true,
-				"operationMode": "Server",
-				"groupId": "$direct",
-				"synchronizationMode": "None"
-		    });
+		    var oModelSchema = new sap.ui.model.json.JSONModel();
+		    oModelSchema.loadData('/AppContainer/protected/rest/catalog/schemas');
 		    var oModelSchemaControl = oView.byId("odatamodelschema");
 		    oModelSchemaControl.setModel(oModelSchema);
 		    

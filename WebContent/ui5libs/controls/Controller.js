@@ -4,12 +4,14 @@ sap.ui.define([
 ], function(Controller, ui5init) {
 	"use strict";
 
-	return Controller.extend("ui5app.Controller", {
+	return Controller.extend("ui5lib.Controller", {
 		onInit : function() {
 			var oView = this.getView();
-			var oChart = oView.byId("chart1");
 			ui5init.init(oView);
+			this.init();
 		},
+		init : function() {
+		}
 
 	});
 

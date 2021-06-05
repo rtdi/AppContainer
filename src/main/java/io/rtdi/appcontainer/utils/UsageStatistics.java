@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.rtdi.appcontainer.rest.HanaStoredProcedure;
+import io.rtdi.appcontainer.rest.StoredProcedureService;
 import io.rtdi.appcontainer.rest.odata.table.ODataCollectionProcessor;
 import io.rtdi.appcontainer.servlets.RepoServlet;
 
@@ -116,8 +116,8 @@ public class UsageStatistics {
 					i.pollcalls = ODataCollectionProcessor.getInvocations() - i.pollcalls;
 					break;
 				case "RestfulStoredProcedure":
-					i.lastdatatimestamp = HanaStoredProcedure.getLastProcessedtime();
-					i.pollcalls = HanaStoredProcedure.getInvocations() - i.pollcalls;
+					i.lastdatatimestamp = StoredProcedureService.getLastProcessedtime();
+					i.pollcalls = StoredProcedureService.getInvocations() - i.pollcalls;
 					break;
 				}
 			}

@@ -241,7 +241,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameFile : function(oDataExchange) {
-			ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
 				.then(
 					data => {
 						var oFilesControl = thisControl.getView().byId("idFiles");
@@ -286,7 +286,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			
 			if (oSourceRow.folders === undefined) {
 				// dropped a file
-				ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name})
+				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name})
 					.then(
 						data => {
 				    		/*
@@ -309,7 +309,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 					);
 			} else {
 				// dropped a directory				
-				ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name })
+				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name })
 					.then(
 						data => {
 				    		/*
@@ -428,7 +428,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 						text: "OK",
 						press: function () {
 							var oModel = that.oGitSettingDialog.getModel();
-							ui5ajax.postModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitconfig", oModel)
+							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitconfig", oModel)
 								.then(
 									data => {
 										that.oGitSettingDialog.close();
@@ -477,14 +477,14 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 						press: function () {
 							var oModel = that.oCommitDialog.getModel();
 							that.getView().setBusy(true);
-							ui5ajax.postModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitpush", oModel)
+							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitpush", oModel)
 								.then(
 									data => {
 										that.getView().setBusy(false);
 										that.oCommitDialog.close();
 										errorfunctions.uiSuccess(thisControl.getView(), { message: data } );
 										that.onDirectoryRefresh();
-										oModel.setJSON({ message: '' });
+										oModel.setData({ message: '' });
 									},
 									error => {
 										errorfunctions.addError(thisControl.getView(), error);

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +50,6 @@ public class ODataEntityProcessor implements EntityProcessor {
 	private Connection conn;
 	private String schemaname;
 	private String viewname;
-	private Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
 	public ODataEntityProcessor(Connection conn, String schemaname, String viewname, ServiceMetadata edm) {
 		this.conn = conn;
@@ -83,78 +83,102 @@ public class ODataEntityProcessor implements EntityProcessor {
 				.append(schemaname)
 				.append("\".\"")
 				.append(viewname)
-				.append("\" where ");
+				.append("\"");
 			boolean first = true;
 			for ( UriParameter k : keyPredicates) {
-				if (first) {
-					first = false;
-				} else {
-					sql.append("AND ");
+				/*
+				 * A filter on the surrogate ODataEdm.ROWNUM column is not part of the SQL where clause
+				 */
+				if (!k.getName().equals(ODataEdm.ROWNUM)) {
+					if (first) {
+						first = false;
+						sql.append(" where ");
+					} else {
+						sql.append("AND ");
+					}
+					sql.append("\"" + k.getName() + "\" = ? ");
 				}
-				sql.append("\"" + k.getName() + "\" = ? "); 
 			}
 		    EdmEntityType entityType = edmEntitySet.getEntityType();
 			try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
+				Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 				String id = "";
+				Integer rownumfilter = null; // return only the n-th row in the result set
 				for ( int i=0; i<keyPredicates.size(); i++) {
 					UriParameter k = keyPredicates.get(i);
 					EdmElement property = entityType.getProperty(k.getName());
 					JDBCType jdbcdatatype = ODataUtils.getJDBCDataType(property.getType());
 					String value = k.getText();
-					switch (jdbcdatatype) {
-					case BINARY:
-					case BLOB:
-					case CHAR:
-					case CLOB:
-					case NCHAR:
-					case NCLOB:
-					case NVARCHAR:
-					case VARBINARY:
-					case VARCHAR:
-						stmt.setString(i+1, value.substring(1, value.length()-1)); // trim leading ' chars
-						break;
-					case BIGINT:
-					case DECIMAL:
-					case DOUBLE:
-					case INTEGER:
-					case REAL:
-					case SMALLINT:
-					case TINYINT:
-						stmt.setString(i+1, value);
-						break;
-					case BOOLEAN:
-						stmt.setBoolean(i+1, value.equalsIgnoreCase("true"));
-						break;
-					case DATE: // 2010-01-01
-						Date date = Date.valueOf(value);
-						stmt.setDate(i+1, date );
-						break;
-					case TIME: // 10:00:00
-						Time time = Time.valueOf(value);
-						stmt.setTime(i+1, time);
-						break;
-					case TIMESTAMP:
-						Instant utc = Instant.parse(value);
-						Timestamp ts = Timestamp.from(utc);
-						stmt.setTimestamp(i+1, ts, cal);
-						break;
-					default:
-						stmt.setString(i+1, value.substring(1, value.length()-1)); // trim leading ' chars
-						break;
+					try {
+						if (!k.getName().equals(ODataEdm.ROWNUM)) {
+							switch (jdbcdatatype) {
+							case BINARY:
+							case BLOB:
+							case CHAR:
+							case CLOB:
+							case NCHAR:
+							case NCLOB:
+							case NVARCHAR:
+							case VARBINARY:
+							case VARCHAR:
+								stmt.setString(i+1, value.substring(1, value.length()-1)); // trim leading ' chars
+								break;
+							case BIGINT:
+							case DECIMAL:
+							case DOUBLE:
+							case INTEGER:
+							case REAL:
+							case SMALLINT:
+							case TINYINT:
+								stmt.setString(i+1, value);
+								break;
+							case BOOLEAN:
+								stmt.setBoolean(i+1, value.equalsIgnoreCase("true"));
+								break;
+							case DATE: // 2010-01-01
+								Date date = Date.valueOf(value);
+								stmt.setDate(i+1, date );
+								break;
+							case TIME: // 10:00:00
+								Time time = Time.valueOf(value);
+								stmt.setTime(i+1, time);
+								break;
+							case TIMESTAMP:
+								Instant utc = Instant.parse(value);
+								Timestamp ts = Timestamp.from(utc);
+								stmt.setTimestamp(i+1, ts, cal);
+								break;
+							default:
+								stmt.setString(i+1, value.substring(1, value.length()-1)); // trim leading ' chars
+								break;
+							}
+							if (id.length() != 0) {
+								id += ".";
+							}
+							id += k.getText();
+						} else {
+							rownumfilter = Integer.valueOf(value);
+						}
+					} catch (NumberFormatException | DateTimeParseException e) {
+						throw new AppContainerSQLException(e, sql.toString(), "Cannot convert the key \"" + value + "\" to the native data type");
 					}
-					if (id.length() != 0) {
-						id += ".";
-					}
-					id += k.getText();
 				}
 				try (ResultSet rs = stmt.executeQuery(); ) {
+					int count = 0;
+					if (rownumfilter != null) {
+						while (count < rownumfilter-1 && rs.next()) { // move forward to the row right before the requested one 
+							count++;
+						}
+						id = String.valueOf(rownumfilter);
+					}
 					if (rs.next()) {
 						row = new Entity();
+						row.addProperty(new Property(null, ODataEdm.ROWNUM, ValueType.PRIMITIVE, count));
+						row.setId(ODataUtils.createId(edmEntitySet.getName(), id));
 						for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
 							String columnname = rs.getMetaData().getColumnName(i+1);
 							Object value = rs.getObject(i+1);
 							row.addProperty(new Property(null, columnname, ValueType.PRIMITIVE, value));
-							// row.setId(ODataUtils.createId(edmEntitySet.getName(), id));
 						}
 					} else {
 						throw new AppContainerSQLException("No data found for this query with the provided parameters", sql.toString());

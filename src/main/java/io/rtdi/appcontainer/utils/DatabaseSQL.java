@@ -19,4 +19,26 @@ public class DatabaseSQL {
 		return null;
 	}
 
+	public static String getSingleObject(Connection conn) throws SQLException {
+		DatabaseType vendor = DatabaseType.getDatabaseType(conn);
+		switch (vendor) {
+		case HANA:
+			return HanaSqlStatements.HANA_SQL_SINGLE_OBJECT;
+		case SNOWFLAKE:
+			return SnowflakeSqlStatements.SNOWFLAKE_SQL_SINGLE_OBJECT;
+		}
+		return null;
+	}
+
+	public static String getSelectObjects(Connection conn) throws SQLException {
+		DatabaseType vendor = DatabaseType.getDatabaseType(conn);
+		switch (vendor) {
+		case HANA:
+			return HanaSqlStatements.HANA_SQL_SELECT_OBJECTS;
+		case SNOWFLAKE:
+			return SnowflakeSqlStatements.SNOWFLAKE_SQL_SELECT_OBJECTS;
+		}
+		return null;
+	}
+
 }

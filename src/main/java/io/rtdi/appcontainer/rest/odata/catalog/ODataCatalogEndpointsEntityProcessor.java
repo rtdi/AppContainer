@@ -64,7 +64,7 @@ public class ODataCatalogEndpointsEntityProcessor implements EntityProcessor {
 		    // 2. retrieve the data from backend
 		    List<UriParameter> keyPredicates = uriResourceEntitySet.getKeyPredicates();
 			Entity row = null;
-			String sql = DatabaseSQL.getAllObjects(conn);
+			String sql = DatabaseSQL.getSingleObject(conn);
 			try (PreparedStatement stmt = conn.prepareStatement(sql);) {
 				stmt.setString(1, keyPredicates.get(0).getText());
 				stmt.setString(2, keyPredicates.get(1).getText());
@@ -97,7 +97,7 @@ public class ODataCatalogEndpointsEntityProcessor implements EntityProcessor {
 		    response.setContent(entityStream);
 		    response.setStatusCode(HttpStatusCode.OK.getStatusCode());
 		    response.setHeader(HttpHeader.CONTENT_TYPE, responseFormat.toContentTypeString());
-		} catch (AppContainerSQLException | SQLException e) {
+		} catch (SQLException e) {
 			throw new ODataApplicationException(e.getMessage(), 500, Locale.ENGLISH);
 		}
 	}

@@ -6,8 +6,7 @@
 	xmlns:codeeditor="sap.ui.codeeditor"
 	xmlns:ui5libs.controls="ui5libs.controls"
     >
-	<FlexBox height="100%" direction="Column" >
-		<ui5libs.controls:ShellBar secondTitle="Editor"/>
+	<ui5libs.controls:AppContainerPage pageTitle="Editor">
 		<Page>
 			<layoutData>
 				<FlexItemData growFactor="1"/>
@@ -25,5 +24,5 @@
 				</codeeditor:CodeEditor>
 			</content>
 		</Page>
-	</FlexBox>
+	</ui5libs.controls:AppContainerPage>
 </mvc:View>

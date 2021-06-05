@@ -8,8 +8,7 @@
 	xmlns:dnd="sap.ui.core.dnd" 
 	xmlns:ui5libs.controls="ui5libs.controls"
 	xmlns:core="sap.ui.core">
-	<FlexBox height="100%" direction="Column" >
-		<ui5libs.controls:ShellBar secondTitle="Activation App"/>
+	<ui5libs.controls:AppContainerPage pageTitle="Activation App">
 		<Panel height="100%">
 			<layoutData>
 				<FlexItemData growFactor="1"/>
@@ -50,5 +49,5 @@
 				</t:TreeTable>
 			</content>
 		</Panel>
-	</FlexBox>
+	</ui5libs.controls:AppContainerPage>
 </mvc:View>

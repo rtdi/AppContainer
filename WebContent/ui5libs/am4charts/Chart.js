@@ -34,8 +34,15 @@ sap.ui.define([
                 height: { type: "sap.ui.core.CSSSize", defaultValue: "100%" },
                 charttype: { type: "string", defaultValue: undefined },
                 config: { type: "any", defaultValue: undefined },
-            }, 
+            },
+            defaultAggregation : "items",
             aggregations: {
+				items: {
+					type: "sap.ui.core.Item",
+					multiple: true,
+					singularName: "item",
+					bindable: "bindable"
+				},
             },
 		},
 		constructor : function() {
@@ -49,14 +56,31 @@ sap.ui.define([
 			if (typeof oCharttype === 'string') {
 				oCharttype = this._getChartTypeObject(oCharttype);
 			}
+			var oItemsBinding = this.getBinding("items");
+			if (oItemsBinding) {
+				oItemsBinding.attachDataReceived(function(oEvent) {
+					if (that._chart) {
+						var aContexts = oEvent.getSource().getCurrentContexts();
+						var aData = [];
+						aContexts.forEach(function (oContext) {
+							aData.push(oContext.getObject());
+						});
+						that._chart.data = aData;
+					}
+				});
+			}
 			if (oConfig && oCharttype) {
 				am4core.useTheme(am4themes_animated);
 				if (typeof oConfig === 'string') {
 					ui5ajax.ajaxGet(sap.ui.require.toUrl(oConfig))
 						.then(
 							data => {
-								oConfig = JSON.parse(data);
+								oConfig = JSON.parse(data.text);
 								if (oConfig) {
+									/*
+									 * Go through all elements in the config that might have a url and replace the recource root with the absolute 
+									 * path in case it is used. amCharts does not know about resource roots. 
+									 */
 									if (oConfig.dataSource && oConfig.dataSource.url) {
 										if (!oConfig.dataSource.url.startsWith("/")) {
 											oConfig.dataSource.url = sap.ui.require.toUrl(oConfig.dataSource.url);

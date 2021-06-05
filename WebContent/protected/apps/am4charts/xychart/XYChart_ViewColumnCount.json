@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"url": "ui5rest/query?$select=SELECT view_name, count(*) count FROM view_columns WHERE schema_name = 'SYS' GROUP BY view_name ORDER BY 2 desc limit 10"
+		"url": "ui5app/sampledata.json"
 	},
 	"xAxes": [
 		{
@@ -10,6 +10,14 @@
 				"title": {
 					"text": "View name"
 				}
+			},
+	        "renderer": {
+	            "labels": {
+	                "template": {
+	                    "type": "AxisLabel",
+	                    "rotation": -90
+	                }
+	            }
 			}
 		}
 	],

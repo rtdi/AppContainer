@@ -7,7 +7,7 @@ public interface ISQLScriptActivation {
 
 	void fireBlockComment(String comment);
 
-	void fireLineComment(String comment);
+	void fireLineComment(String comment) throws AppContainerSQLException;
 
 	void fireSQL(String sqltext) throws AppContainerSQLException;
 

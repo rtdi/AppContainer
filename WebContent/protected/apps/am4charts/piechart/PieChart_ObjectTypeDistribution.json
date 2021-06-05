@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"url": "ui5rest/query?$select=SELECT OBJECT_TYPE, count(*) as COUNT FROM objects GROUP BY OBJECT_TYPE"
+		"url": "ui5app/sampledata.json"
 	},
 	"series": [
 		{

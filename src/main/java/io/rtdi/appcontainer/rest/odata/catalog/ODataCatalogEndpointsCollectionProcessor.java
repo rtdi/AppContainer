@@ -46,6 +46,7 @@ import org.apache.olingo.server.api.uri.queryoption.expression.Member;
 import io.rtdi.appcontainer.rest.odata.ODataFilterExpressionVisitor;
 import io.rtdi.appcontainer.rest.odata.ODataSQLProjectionBuilder;
 import io.rtdi.appcontainer.utils.AppContainerSQLException;
+import io.rtdi.appcontainer.utils.DatabaseSQL;
 
 public class ODataCatalogEndpointsCollectionProcessor implements EntityCollectionProcessor {
 
@@ -87,7 +88,13 @@ public class ODataCatalogEndpointsCollectionProcessor implements EntityCollectio
 			} else {
 				sql.append(sqlprojection);
 			}
-			sql.append(" from objects where object_type in ('VIEW', 'TABLE') ");
+			sql.append(" from ( ");
+			try {
+				sql.append(DatabaseSQL.getSelectObjects(conn));
+			} catch (SQLException e) {
+				throw new AppContainerSQLException(e, "Failed to get dictionary query for vendor", null);
+			}
+			sql.append(" ) ");
 			
 			FilterOption filterOption = uriInfo.getFilterOption();
 			if(filterOption != null) {

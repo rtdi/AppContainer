@@ -43,7 +43,7 @@ sap.ui.define([
 			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename)
 				.then(
 					data => {
-						oEditorControl.setValue(JSON.parse(data).content); 
+						oEditorControl.setValue(JSON.parse(data.text).content); 
 					},
 					error => {
 						errorfunctions.addError(this.getView(), error);

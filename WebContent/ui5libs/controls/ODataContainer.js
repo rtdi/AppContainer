@@ -1,16 +1,29 @@
 sap.ui.define([
 	'sap/ui/core/CustomData'
-], function(CustomData, ODataModel) {
+], function(CustomData) {
   return CustomData.extend("ui5libs.controls.ODataContainer", {
 		metadata : {
 			properties: {
-				name : {type : "string", defaultValue : null},
+				modelName : {type : "string", defaultValue : null},
 				url : {type : "string"},
+				sizeLimit: {type : "int", defaultValue : 1000},
 			}
 		},
-		setName : function(oValue) {
-			this.setProperty("name", oValue);
-			this.setValue(oValue); // just to make sure a customdata element has some value
+		setModelName : function(oValue) {
+			this.setProperty("modelName", oValue);
 		},
+		getModelName : function() {
+			var name = this.getProperty("modelName");
+			if (name === "") {
+				name = undefined;
+			}
+			return name;
+		},
+		setUrl : function(oValue) {
+			if (oValue && oValue.endsWith('/') === false) {
+				oValue = oValue + '/';
+			}
+			this.setProperty("url", oValue);
+		}
 	});
 });

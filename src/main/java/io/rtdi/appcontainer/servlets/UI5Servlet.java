@@ -51,8 +51,12 @@ public abstract class UI5Servlet extends HttpServlet {
         /*
          * When the file does not exist, then create some default ones automatically for UI5 applications
          */
-        if (file.getName().endsWith(".html") && new File(file.getParentFile(), "manifest.json").exists()) {
+        if (file.getName().endsWith(".html")) {
         	writeUI5HTML(response, requestedpath);
+        	return;
+        }
+        if (file.getName().equals("manifest.json")) {
+        	writeUI5Manifest(response, requestedpath, request.getHeader("referer"));
         	return;
         }
         if (file.getName().equals("Component.js")) {
@@ -88,22 +92,12 @@ public abstract class UI5Servlet extends HttpServlet {
 		if (p > 0) {
 			name = name.substring(0, p);
 		}
-
     	ServletOutputStream out = response.getOutputStream();
 		out.println("<!DOCTYPE html>");
 		out.println("<html>");
 		out.println("  <head>");
 		out.println("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
 		out.println("    <meta charset=\"UTF-8\">");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/core.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/charts.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/maps.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/plugins/timeline.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/plugins/sunburst.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/plugins/venn.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/plugins/wordCloud.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/plugins/forceDirected.js\"></script>");
-//		out.println("    <script src=\"/AppContainer/ui5libs/am4charts/dist/themes/animated.js\"></script>");
 		out.println("    <script");
 		out.println("       id=\"sap-ui-bootstrap\"");
 		out.println("       src=\"/openui5/resources/sap-ui-core.js\"");
@@ -134,6 +128,32 @@ public abstract class UI5Servlet extends HttpServlet {
 		out.println("  </body>");
 		out.println("</html>");
         response.setHeader("Content-Type", "text/html");
+    }
+
+    private static void writeUI5Manifest(HttpServletResponse response, Path dir, String referer) throws IOException {
+    	String pagename = "index";
+    	if (referer != null) {
+    		int p1 = referer.lastIndexOf('/');
+    		int p2 = referer.lastIndexOf('.');
+    		if (p1 > 0 && p2 > p1) {
+    			pagename = referer.substring(p1+1, p2);
+    		}
+    	}
+    	ServletOutputStream out = response.getOutputStream();
+		out.println("{");
+		out.println("	\"sap.app\": {");
+		out.println("		\"id\": \""+ pagename + "\",");
+		out.println("		\"type\": \"application\",");
+		out.println("		\"title\": \"" + pagename + ".html\"");
+		out.println("	},");
+		out.println("	\"sap.ui5\": {");
+		out.println("		\"rootView\": {");
+		out.println("			\"viewName\": \"ui5app." + pagename + "\",");
+		out.println("			\"type\": \"XML\"");
+		out.println("		}");
+		out.println("	}");
+		out.println("}");
+        response.setHeader("Content-Type", "application/json");
     }
 
     private static void writeUI5ComponentJS(HttpServletResponse response, Path dir) throws IOException {
@@ -173,42 +193,10 @@ public abstract class UI5Servlet extends HttpServlet {
 
     	ServletOutputStream out = response.getOutputStream();
 		out.println("sap.ui.define([\r\n" + 
-				"           	\"sap/ui/core/mvc/Controller\"\r\n" + 
+				"           	\"ui5libs/controls/Controller\"\r\n" + 
 				"           ], function(Controller) {\r\n" + 
 				"           	\"use strict\";\r\n" + 
 				"           	return Controller.extend(\"ui5app." + name + "\", {\r\n" + 
-				"           		onInit: function() {\r\n" + 
-				"           			var oView = sap.ui.getCore().byId(\"mainview\");\r\n" + 
-				"           			this.setModelRecursive(oView);\r\n" +
-				"           		},\r\n" + 
-				"           		setModelRecursive: function(oControl) {\r\n" + 
-				"           			if (oControl.data('odataurl')) {\r\n" +
-				"           				var oModel = new sap.ui.model.odata.v4.ODataModel({\r\n" + 
-				"		    					serviceUrl : oControl.data('odataurl'), \r\n" + 
-				"		    					\"autoExpandSelect\": true,\r\n" + 
-				"								\"operationMode\": \"Server\",\r\n" + 
-				"								\"groupId\": \"$direct\",\r\n" + 
-				"								\"synchronizationMode\": \"None\"\r\n" + 
-				"		    				});\r\n" + 
-				"							oControl.setModel(oModel);\r\n" +
-				"           			}\r\n" +
-				"           			if ('getContent' in oControl) {\r\n" +
-				"           				var aContent = oControl.getContent();\r\n" +
-				"           				if (aContent) {\r\n" +
-				"           					for (var i = 0; i<aContent.length; i++) {\r\n" +
-				"           						this.setModelRecursive(aContent[i]);\r\n" +
-				"           					}\r\n" +
-				"           				}\r\n" +
-				"           			}\r\n" +
-				"           			if ('getItems' in oControl) {\r\n" +
-				"           				var aContent = oControl.getItems();\r\n" +
-				"           				if (aContent) {\r\n" +
-				"           					for (var i = 0; i<aContent.length; i++) {\r\n" +
-				"           						this.setModelRecursive(aContent[i]);\r\n" +
-				"           					}\r\n" +
-				"           				}\r\n" +
-				"           			}\r\n" +
-				"           		}\r\n" + 
 				"           	});\r\n" + 
 				"           });");
         response.setHeader("Content-Type", "text/javascript");

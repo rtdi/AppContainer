@@ -27,7 +27,6 @@ import io.rtdi.appcontainer.rest.odata.table.ODataCollectionProcessor;
 import io.rtdi.appcontainer.rest.odata.table.ODataEdm;
 import io.rtdi.appcontainer.rest.odata.table.ODataEntityProcessor;
 import io.rtdi.appcontainer.rest.odata.table.ODataPrimitiveProcessor;
-import io.rtdi.appcontainer.utils.AppContainerSQLException;
 import io.rtdi.appcontainer.utils.SessionHandler;
 import io.rtdi.appcontainer.utils.Util;
 
@@ -66,7 +65,7 @@ public class ODataServlet extends HttpServlet {
 			handler.register(new ODataEntityProcessor(conn, schemaname, viewname, edm));
 			handler.register(new ODataPrimitiveProcessor(conn, schemaname, viewname));
 			handler.process(req, resp);
-		} catch (RuntimeException | SQLException | AppContainerSQLException | URISyntaxException e) {
+		} catch (RuntimeException | SQLException | URISyntaxException e) {
 			log.error("Server Error occurred in ODataServlet", e);
 			throw new ServletException(e);
 		}

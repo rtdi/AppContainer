@@ -118,6 +118,15 @@ public class SQLScript {
 					state = SQLScriptParserStates.AMPERSEND_IN_SQL_TEXT;
 					alias = new StringBuilder();
 					break;
+				case '\r':
+				case '\n':
+					/*
+					 * A statement should never start with a \r or \n char 
+					 */
+					if (text.length() > 0) {
+						text.append(c);
+					}
+					break;
 				default: text.append(c);
 				}
 				break;

@@ -28,6 +28,7 @@ import org.apache.olingo.server.api.uri.queryoption.SelectOption;
 import org.apache.olingo.server.core.serializer.utils.ExpandSelectHelper;
 
 import io.rtdi.appcontainer.rest.odata.catalog.ODataCatalogEndpointsEdm;
+import io.rtdi.appcontainer.rest.odata.table.ODataEdm;
 
 public class ODataSQLProjectionBuilder {
 	private EdmTerm sqlmappingterm;
@@ -100,57 +101,59 @@ public class ODataSQLProjectionBuilder {
 	private void constructSelectItemList(final EdmStructuredType type, final StringBuilder result,
 			final List<SelectItem> selectItems, final Set<String> selectedPropertyNames, final String propertyName) {
 		if (selectedPropertyNames.contains(propertyName)) {
-			if (result.length() > 0) {
-				result.append(',');
-			}
-			final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
-			final Set<List<String>> selectedPaths = ExpandSelectHelper.getSelectedPathsWithTypeCasts(selectItems,
-					propertyName);
-			if (selectedPaths == null) {
-				String sqlexpression;
-				if (edmProperty.getType().getName().equals("Geometry")) {
-					sqlexpression = "\"" + propertyName + "\".ST_AsGeoJSON()";
+			if (!propertyName.equals(ODataEdm.ROWNUM)) {
+				if (result.length() > 0) {
+					result.append(',');
+				}
+				final EdmProperty edmProperty = type.getStructuralProperty(propertyName);
+				final Set<List<String>> selectedPaths = ExpandSelectHelper.getSelectedPathsWithTypeCasts(selectItems,
+						propertyName);
+				if (selectedPaths == null) {
+					String sqlexpression;
+					if (edmProperty.getType().getName().equals("Geometry")) {
+						sqlexpression = "\"" + propertyName + "\".ST_AsGeoJSON()";
+					} else {
+						sqlexpression = "\"" + propertyName + "\"";
+					}
+					EdmAnnotation annotation = edmProperty.getAnnotation(sqlmappingterm, null);
+					if (annotation != null) {
+						EdmExpression expr = annotation.getExpression();
+						sqlexpression = expr.asConstant().getValueAsString(); 
+					}
+					result.append(sqlexpression + " as \"" + propertyName + "\"");
 				} else {
-					sqlexpression = "\"" + propertyName + "\"";
-				}
-				EdmAnnotation annotation = edmProperty.getAnnotation(sqlmappingterm, null);
-				if (annotation != null) {
-					EdmExpression expr = annotation.getExpression();
-					sqlexpression = expr.asConstant().getValueAsString(); 
-				}
-				result.append(sqlexpression + " as \"" + propertyName + "\"");
-			} else {
-				List<List<String>> complexSelectedPaths = edmProperty != null
-						&& edmProperty.getType() instanceof EdmComplexType
-								? getComplexSelectedPaths(edmProperty, selectedPaths)
-								: new ArrayList<>();
-				if (complexSelectedPaths.isEmpty()) {
-					for (List<String> path : selectedPaths) {
-						complexSelectedPaths.add(path);
-					}
-					int position = getPositionToAddProperty(selectItems, propertyName, selectedPaths);
-					if (position == -1) {
-						complexSelectedPaths.get(0).add(propertyName);
-					} else {
-						complexSelectedPaths.get(0).add(position, propertyName);
-					}
-				}
-
-				boolean first = true;
-				for (final List<String> path : complexSelectedPaths) {
-					if (first) {
-						first = false;
-					} else {
-						result.append(',');
-					}
-					boolean innerFirst = true;
-					for (final String name : path) {
-						if (innerFirst) {
-							innerFirst = false;
-						} else {
-							result.append('/');
+					List<List<String>> complexSelectedPaths = edmProperty != null
+							&& edmProperty.getType() instanceof EdmComplexType
+									? getComplexSelectedPaths(edmProperty, selectedPaths)
+									: new ArrayList<>();
+					if (complexSelectedPaths.isEmpty()) {
+						for (List<String> path : selectedPaths) {
+							complexSelectedPaths.add(path);
 						}
-						result.append(Encoder.encode(name));
+						int position = getPositionToAddProperty(selectItems, propertyName, selectedPaths);
+						if (position == -1) {
+							complexSelectedPaths.get(0).add(propertyName);
+						} else {
+							complexSelectedPaths.get(0).add(position, propertyName);
+						}
+					}
+	
+					boolean first = true;
+					for (final List<String> path : complexSelectedPaths) {
+						if (first) {
+							first = false;
+						} else {
+							result.append(',');
+						}
+						boolean innerFirst = true;
+						for (final String name : path) {
+							if (innerFirst) {
+								innerFirst = false;
+							} else {
+								result.append('/');
+							}
+							result.append(Encoder.encode(name));
+						}
 					}
 				}
 			}

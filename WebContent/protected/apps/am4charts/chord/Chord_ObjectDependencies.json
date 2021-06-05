@@ -1,7 +1,6 @@
 {
-  "type": "SankeyDiagram",
 	"dataSource": {
-		"url": "ui5rest/query?$select=SELECT base_object_name, dependent_object_name, 1 AS VALUE FROM object_dependencies WHERE base_schema_name = 'SYS' AND dependent_schema_name = 'SYS' and base_object_name <> 'DUMMY'"
+		"url": "ui5app/sampledata.json"
 	},
   "dataFields": {
     "fromName": "BASE_OBJECT_NAME",

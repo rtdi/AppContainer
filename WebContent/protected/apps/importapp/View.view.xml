@@ -11,8 +11,7 @@
 	xmlns:dnd="sap.ui.core.dnd"
 	xmlns:ui5libs.controls="ui5libs.controls"
 	xmlns:core="sap.ui.core">
-	<FlexBox height="100%" direction="Column" >
-		<ui5libs.controls:ShellBar secondTitle="Import App"/>
+	<ui5libs.controls:AppContainerPage pageTitle="Import App">
 		<Panel height="100%">
 			<layoutData>
 				<FlexItemData growFactor="1"/>
@@ -38,6 +37,6 @@
 			</content>
 	
 		</Panel>
-	</FlexBox>
+	</ui5libs.controls:AppContainerPage>
 </mvc:View>
 

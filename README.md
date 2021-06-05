@@ -28,7 +28,13 @@ On any computer install the Docker Daemon - if it is not already and download th
 
 Then start the image via docker run. Only one parameter needs to be set, the environment variable JDBCURL. For Hana this consist of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE). For Snowflake see the [Snowflake JDBC documentation](https://docs.snowflake.com/en/user-guide/jdbc-configure.html#jdbc-driver-connection-string).
 
-    docker run -d -p 80:8080 -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE rtdi/appcontainer
+    docker run -d -p 80:8080 -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE \
+      rtdi/appcontainer:latest-hana
+
+or for Snowflake
+
+    docker run -d -p 80:8080 -e JDBCURL=jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE \
+      rtdi/appcontainer:latest-snowflake
 
 From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
 
@@ -39,7 +45,19 @@ An even better docker run command is to add a few server directories, here all i
        -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
        -v /dockermountpoints/repo:/usr/local/tomcat/repo \
        -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
-       -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE rtdi/appcontainer
+       -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE \
+       rtdi/appcontainer:latest-hana
+
+or for Snowflake
+
+    docker run -d --name appcontainer  -p 80:8080 -p 443:8443 \
+       -v /dockermountpoints/rtdiconfig:/usr/local/tomcat/conf/rtdiconfig \
+       -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
+       -v /dockermountpoints/repo:/usr/local/tomcat/repo \
+       -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
+       -e JDBCURL=jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE \
+       rtdi/appcontainer:latest-hana:latest-snowflake
+
 
 - /usr/local/tomcat/conf/rtdiconfig: The directory where tomcat related settings can go. Usually not needed.
 - /usr/local/tomcat/conf/security: The directory with ssl settings. The tomcat-users.xml user database is not used.
@@ -183,8 +201,7 @@ To extend this application and use it beyond the editing capabilities, own code 
 
 ## Licensing
 
-This application is provided as dual license. For all users with less than 10'000 API calls per month the application can be used free of charge and the code falls under a Gnu Public License. Users with more than 10'000 API calls are asked to get a commercial license to support further development of this solution. The commercial license is on a pay-per-use basis.
-One API call is one invocation of any of the backend services, oData or Restful, in any running container hosted within the company. In other words, when 10 containers are active and used equally, once all got more than 1'000 calls they exceed overall the 10'000 api call limit.
+This application is provided via a [commercial license](LICENSE_COMMERCIAL) and allows a three month free trial period.
 
 ## Data protection and privacy
 

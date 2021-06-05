@@ -28,6 +28,7 @@ import io.rtdi.appcontainer.utils.AppContainerSQLException;
 import io.rtdi.appcontainer.utils.Describe.ColumnDefinition;
 
 public class ODataEdm extends CsdlAbstractEdmProvider {
+	public static final String ROWNUM = "__ROWNUM";
 	public static final String namespace = "DBOBJECT";
 	public static final String ENTITY_SET_NAME = "TABLE";
 	public static final String DB_COLUMNNAME_ANNOTATION = namespace + "." + ENTITY_SET_NAME + "." + "columnname";
@@ -68,11 +69,24 @@ public class ODataEdm extends CsdlAbstractEdmProvider {
 				keys.add(key);
 			}			
 		}
+		/*
+		 * Every table has a __ROWNUM column
+		 */
+		CsdlProperty rownum = new CsdlProperty()
+				.setName(ROWNUM)
+				.setType(EdmPrimitiveTypeKind.Int32.getFullQualifiedName());
+		columns.add(rownum);
+
 		entitytype = new CsdlEntityType();
 		entitytype.setName(objectfqn.getName());
 		entitytype.setProperties(columns);
 		if (keys.size() != 0) {
 			entitytype.setKey(keys);
+		} else {
+			/*
+			 * If a table has no keys, the ROWNUM is the only option
+			 */
+			entitytype.setKey(Collections.singletonList(new CsdlPropertyRef().setName(ROWNUM)));
 		}
 
 		entityset = new CsdlEntitySet();

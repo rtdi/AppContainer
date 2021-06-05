@@ -3,17 +3,17 @@ sap.ui.define([
 ], function () {
 	"use strict";    
    	return {
-   		postJson : function (sUri, sJson) {
+   		postJsonString : function (sUri, sJson) {
    			return this.ajaxSend(sUri, sJson, "application/json", "POST");
    		},
    		postText : function (sUri, sText) {
    			return this.ajaxSend(sUri, sText, "text/plain", "POST");
    		},
-   		postModel : function (sUri, oJsonModel) {
-   			return this.postJson(sUri, oJsonModel.getJSON());
+   		postJsonModel : function (sUri, oJsonModel) {
+   			return this.postJsonString(sUri, oJsonModel.getJSON());
    		},
-   		postObject : function (sUri, oObject) {
-   			return this.postJson(sUri, JSON.stringify(oObject));
+   		postJsonObject : function (sUri, oObject) {
+   			return this.postJsonString(sUri, JSON.stringify(oObject));
    		},
    		ajaxGet : function (sUri) {
    			return this.ajaxSend(sUri, undefined, undefined, "GET");
