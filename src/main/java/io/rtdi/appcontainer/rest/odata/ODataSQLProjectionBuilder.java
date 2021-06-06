@@ -100,8 +100,8 @@ public class ODataSQLProjectionBuilder {
 	 */
 	private void constructSelectItemList(final EdmStructuredType type, final StringBuilder result,
 			final List<SelectItem> selectItems, final Set<String> selectedPropertyNames, final String propertyName) {
-		if (selectedPropertyNames.contains(propertyName)) {
-			if (!propertyName.equals(ODataEdm.ROWNUM)) {
+		if (!propertyName.equals(ODataEdm.ROWNUM)) {
+			if (selectedPropertyNames.contains(propertyName)) {
 				if (result.length() > 0) {
 					result.append(',');
 				}
@@ -156,15 +156,15 @@ public class ODataSQLProjectionBuilder {
 						}
 					}
 				}
-			}
-		} else {
-			if (type instanceof EdmEntityType) {
-				final List<String> keyNames = ((EdmEntityType) type).getKeyPredicateNames();
-				if (keyNames.contains(propertyName)) {
-					if (result.length() > 0) {
-						result.append(',');
+			} else {
+				if (type instanceof EdmEntityType) {
+					final List<String> keyNames = ((EdmEntityType) type).getKeyPredicateNames();
+					if (keyNames.contains(propertyName)) {
+						if (result.length() > 0) {
+							result.append(',');
+						}
+						result.append(Encoder.encode(propertyName));
 					}
-					result.append(Encoder.encode(propertyName));
 				}
 			}
 		}

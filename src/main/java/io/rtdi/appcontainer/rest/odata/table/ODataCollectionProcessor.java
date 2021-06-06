@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -61,7 +60,6 @@ import org.apache.olingo.server.api.uri.queryoption.TopOption;
 import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
 import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.apache.olingo.server.api.uri.queryoption.expression.Member;
-import org.apache.olingo.server.core.serializer.utils.ExpandSelectHelper;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -121,7 +119,6 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 		ResultSet rs = null;
 		Map<String, String> columnnameindex = null;
 		String selectList = null;
-		boolean hasrownum = false;
 		try {
 			// 1st we have retrieve the requested EntitySet from the uriInfo object (representation of the parsed service URI)
 			List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
@@ -146,8 +143,8 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 			} else {
 				ODataSQLProjectionBuilder selectparser = new ODataSQLProjectionBuilder(edm);
 				String sqlprojection = selectparser.buildSelectList(edmEntityType, null, selectOption);
-				final Set<String> selectedPropertyNames = ExpandSelectHelper.getSelectedPropertyNames(selectOption.getSelectItems());
-				hasrownum = selectedPropertyNames.contains(ODataEdm.ROWNUM);
+				// final Set<String> selectedPropertyNames = ExpandSelectHelper.getSelectedPropertyNames(selectOption.getSelectItems());
+				// hasrownum = selectedPropertyNames.contains(ODataEdm.ROWNUM);
 				selectList = odata.createUriHelper().buildContextURLSelectList(edmEntityType, null, selectOption);
 	
 				StringBuffer sql = new StringBuffer();
@@ -257,9 +254,7 @@ public class ODataCollectionProcessor implements EntityCollectionProcessor {
 			int rownum = 0;
 			while (rowsremaining > 0 && rs.next()) {
 				Entity row = new Entity();
-				if (hasrownum) {
-					row.addProperty(new Property(null, ODataEdm.ROWNUM, ValueType.PRIMITIVE, rownum));
-				}
+				row.addProperty(new Property(null, ODataEdm.ROWNUM, ValueType.PRIMITIVE, rownum)); // always add that, has no harm
 				for (int i=0; i < rs.getMetaData().getColumnCount(); i++) {
 					String columnname = rs.getMetaData().getColumnName(i+1);
 					String propertyname = columnnameindex.get(columnname);

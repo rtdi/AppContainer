@@ -12,7 +12,7 @@ sap.ui.define([
 	   			}
    				sap.m.MessageToast.show('Call failed with message "' + oJSON.message + '"');
    			} else {
-   				sap.m.MessageToast.show('Call failed with http status code ' + oError.code + ' and error message "' + oError + '"');
+   				sap.m.MessageToast.show('Call failed with http status code ' + oError.code + ' and error message "' + oError.text + '"');
    			}
    			oView.setBusy(false);
    		},
@@ -22,8 +22,28 @@ sap.ui.define([
    		jsonModelError : function ( oView, oRespEvent) {
    			sap.m.MessageToast.show('Operation failed on the server ' + oRespEvent.getParameters().responseText);
    		},
-   		uiSuccess : function ( oView, oJSON) {
-   			sap.m.MessageToast.show(oJSON.message);
+   		/*
+   		 * uiSuccess allows as data parameter either the return value from the ui5ajax call ( { code: ..., text: ... } )
+   		 * or an object with message property ( { message: <string> } )
+   		 * or as a fall back a string as such.
+   		 */
+   		uiSuccess : function ( oView, data) {
+   			var txt;
+   			if (typeof data === 'object') {
+   				if (data.message) {
+   					txt = data.message;
+   				} else {
+	   				try {
+	   					var oJSON = JSON.parse(data.text);
+	   					txt = oJSON.message;
+	   				} catch (e) {
+	   					txt = data.text;
+	   				}
+   				}
+   			} else {
+   				txt = data;
+  			}
+   			sap.m.MessageToast.show(txt);
    		}
    	};   	
 });

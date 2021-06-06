@@ -482,7 +482,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 									data => {
 										that.getView().setBusy(false);
 										that.oCommitDialog.close();
-										errorfunctions.uiSuccess(thisControl.getView(), { message: data } );
+										errorfunctions.uiSuccess(thisControl.getView(), data );
 										that.onDirectoryRefresh();
 										oModel.setData({ message: '' });
 									},
