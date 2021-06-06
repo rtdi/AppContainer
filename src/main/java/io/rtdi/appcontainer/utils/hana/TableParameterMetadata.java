@@ -11,9 +11,6 @@ public class TableParameterMetadata extends ProcedureParameter {
 	private String createtablestring;
 	private String insertsqlstring;
 	private List<String> columnindex;
-	private String parametername;
-	private String datatypename;
-	private ProcedureParameterInOutType inouttype;
 
 	public TableParameterMetadata(int index, String parametername, String datatypename, ProcedureParameterInOutType inouttype) {
 		super(index, parametername, JDBCType.STRUCT, datatypename, inouttype);
@@ -43,15 +40,4 @@ public class TableParameterMetadata extends ProcedureParameter {
 		return createtablestring;
 	}
 
-	public String getParametername() {
-		return parametername;
-	}
-
-	public String getDatatypename() {
-		return datatypename;
-	}
-
-	public ProcedureParameterInOutType getInouttype() {
-		return inouttype;
-	}
 }

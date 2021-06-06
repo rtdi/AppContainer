@@ -136,7 +136,7 @@ public class HanaStoredProcedure {
 			} else {
 				sql.append(", ");
 			}
-			sql.append("\"").append(p.getParametername()).append("\" >= ?");
+			sql.append("\"").append(p.getParametername()).append("\" => ?");
 		}
 
 
