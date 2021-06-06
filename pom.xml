@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.rtdi.appcontainer</groupId>
 	<artifactId>AppContainer</artifactId>
-	<version>0.9.30</version>
+	<version>0.9.31</version>
 	<packaging>war</packaging>
 	<scm>
 		<connection>scm:git:git://github.com/rtdi/AppContainer.git</connection>

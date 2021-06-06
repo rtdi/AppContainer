@@ -69,7 +69,7 @@ sap.ui.define([
 			if (value === 0) {
 				this.setNotificationsNumber(undefined);
 			} else {
-				this.setNotificationsNumber(value);
+				this.setNotificationsNumber(value.toString());
 			}
 		},
 		_onPopoverPress : function(oEvent) {
