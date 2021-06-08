@@ -43,7 +43,8 @@ Variables can be defined to standardize values, e.g. instead of specifying a def
 
 Note: Escape character is `\`, e.g. `\$` would ensure the dollar char is not considered as alias start character.
 
-Line comments in the form of `if {object | column} [not] exists {object_identifier | column_identifier}` cause the immediate subsequent SQL statement to be either executed or skipped.
+Line comments in the form of `if {object | column} [not] exists {object_identifier | column_identifier}` cause all subsequent SQL statement to be either executed or skipped until the if is closed using a `// endif` or another if comment.
+Nesting of if's is not supported.
 
 Examples for such line comments are:
 
@@ -54,6 +55,7 @@ Examples for such line comments are:
 - `// if column not exists MYTABLE.COLUMN1`
 - `// if column not exists CURRENTSCHEMA.MYTABLE.COLUMN1`
 - `// if column not exists ${schema1}.MYTABLE.COLUMN1`
+- `// endif`
 
 
 

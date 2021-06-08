@@ -7,12 +7,14 @@ public class SQLScriptPrinter implements ISQLScriptActivation {
 	}
 
 	@Override
-	public void fireLineComment(String string) {
+	public Boolean fireLineComment(String string) {
+		return null;
 	}
 
 	@Override
-	public void fireSQL(String text) {
+	public boolean fireSQL(String text) {
 		System.out.println(text);
+		return true;
 	}
 
 	@Override

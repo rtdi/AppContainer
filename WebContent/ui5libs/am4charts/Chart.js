@@ -50,87 +50,93 @@ sap.ui.define([
 		},
 		onAfterRendering : function() {
 			sap.ui.core.Control.prototype.onAfterRendering.apply(this, arguments);
-			var oConfig = this.getProperty("config");
-			var oCharttype = this.getProperty("charttype");
-			var that = this;
-			if (typeof oCharttype === 'string') {
-				oCharttype = this._getChartTypeObject(oCharttype);
-			}
-			var oItemsBinding = this.getBinding("items");
-			if (oItemsBinding) {
-				oItemsBinding.attachDataReceived(function(oEvent) {
-					if (that._chart) {
-						var aContexts = oEvent.getSource().getCurrentContexts();
-						var aData = [];
-						aContexts.forEach(function (oContext) {
-							aData.push(oContext.getObject());
-						});
-						that._chart.data = aData;
-					}
-				});
-			}
-			if (oConfig && oCharttype) {
-				am4core.useTheme(am4themes_animated);
-				if (typeof oConfig === 'string') {
-					ui5ajax.ajaxGet(sap.ui.require.toUrl(oConfig))
-						.then(
-							data => {
-								oConfig = JSON.parse(data.text);
-								if (oConfig) {
-									/*
-									 * Go through all elements in the config that might have a url and replace the recource root with the absolute 
-									 * path in case it is used. amCharts does not know about resource roots. 
-									 */
-									if (oConfig.dataSource && oConfig.dataSource.url) {
-										if (!oConfig.dataSource.url.startsWith("/")) {
-											oConfig.dataSource.url = sap.ui.require.toUrl(oConfig.dataSource.url);
-										}
-									}
-									if (oConfig.series) {
-										for (let oSeries of oConfig.series) {
-											if (oSeries.dataSource && oSeries.dataSource.url) {
-												if (!oSeries.dataSource.url.startsWith("/")) {
-													oSeries.dataSource.url = sap.ui.require.toUrl(oSeries.dataSource.url);
-												}
-											}
-										}
-									}
-									if (oConfig.xAxis) {
-										for (let oAxis of oConfig.xAxis) {
-											if (oAxis.dataSource && oAxis.dataSource.url) {
-												if (!oAxis.dataSource.url.startsWith("/")) {
-													oAxis.dataSource.url = sap.ui.require.toUrl(oAxis.dataSource.url);
-												}
-											}
-										}
-									}
-									if (oConfig.yAxis) {
-										for (let oAxis of oConfig.yAxis) {
-											if (oAxis.dataSource && oAxis.dataSource.url) {
-												if (!oAxis.dataSource.url.startsWith("/")) {
-													oAxis.dataSource.url = sap.ui.require.toUrl(oAxis.dataSource.url);
-												}
-											}
-										}
-									}
+			if (!this._chart) {
+				var oConfig = this.getProperty("config");
+				var oCharttype = this.getProperty("charttype");
+				var that = this;
+				if (typeof oCharttype === 'string') {
+					oCharttype = this._getChartTypeObject(oCharttype);
+				}
+				var oItemsBinding = this.getBinding("items");
+				if (oItemsBinding) {
+					oItemsBinding.attachDataReceived(function(oEvent) {
+						if (that._chart) {
+							var aContexts = oEvent.getSource().getCurrentContexts();
+							var aData = [];
+							aContexts.forEach(function (oContext) {
+								if (oContext) {
+									aData.push(oContext.getObject());
 								}
-								if (that._chart) {
-									that._chart.moveHtmlContainer(that.getId());
-								} else {
-									that._chart = am4core.createFromConfig(oConfig, that.getId(), oCharttype);
-								} 
-							},
-							error => {
-								errorfunctions.addError(this.getView(), error);
-							}
-						);
-				} else {
-					if (this._chart) {
-						this._chart.moveHtmlContainer(this.getId());
+							});
+							that._chart.data = aData;
+						}
+					});
+				}
+				if (oConfig && oCharttype) {
+					am4core.useTheme(am4themes_animated);
+					if (typeof oConfig === 'string') {
+						ui5ajax.ajaxGet(sap.ui.require.toUrl(oConfig))
+							.then(
+								data => {
+									oConfig = JSON.parse(data.text);
+									if (oConfig) {
+										/*
+										 * Go through all elements in the config that might have a url and replace the recource root with the absolute 
+										 * path in case it is used. amCharts does not know about resource roots. 
+										 */
+										if (oConfig.dataSource && oConfig.dataSource.url) {
+											if (!oConfig.dataSource.url.startsWith("/")) {
+												oConfig.dataSource.url = sap.ui.require.toUrl(oConfig.dataSource.url);
+											}
+										}
+										if (oConfig.series) {
+											for (let oSeries of oConfig.series) {
+												if (oSeries.dataSource && oSeries.dataSource.url) {
+													if (!oSeries.dataSource.url.startsWith("/")) {
+														oSeries.dataSource.url = sap.ui.require.toUrl(oSeries.dataSource.url);
+													}
+												}
+											}
+										}
+										if (oConfig.xAxis) {
+											for (let oAxis of oConfig.xAxis) {
+												if (oAxis.dataSource && oAxis.dataSource.url) {
+													if (!oAxis.dataSource.url.startsWith("/")) {
+														oAxis.dataSource.url = sap.ui.require.toUrl(oAxis.dataSource.url);
+													}
+												}
+											}
+										}
+										if (oConfig.yAxis) {
+											for (let oAxis of oConfig.yAxis) {
+												if (oAxis.dataSource && oAxis.dataSource.url) {
+													if (!oAxis.dataSource.url.startsWith("/")) {
+														oAxis.dataSource.url = sap.ui.require.toUrl(oAxis.dataSource.url);
+													}
+												}
+											}
+										}
+									}
+									if (that._chart) {
+										that._chart.moveHtmlContainer(that.getId());
+									} else {
+										that._chart = am4core.createFromConfig(oConfig, that.getId(), oCharttype);
+									} 
+								},
+								error => {
+									errorfunctions.addError(this.getView(), error);
+								}
+							);
 					} else {
-						this._chart = am4core.createFromConfig(oConfig, this.getId(), oCharttype);
+						if (this._chart) {
+							this._chart.moveHtmlContainer(this.getId());
+						} else {
+							this._chart = am4core.createFromConfig(oConfig, this.getId(), oCharttype);
+						}
 					}
 				}
+			} else {
+				this._chart.moveHtmlContainer(this.getId());
 			}
 		},
 		_getChartTypeObject : function(sCharttype) {

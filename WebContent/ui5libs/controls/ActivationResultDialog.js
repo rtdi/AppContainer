@@ -16,7 +16,7 @@ sap.ui.define([
 		init : function() {
 			Dialog.prototype.init.call(this);
 			var oTreeTable = new sap.ui.table.TreeTable("activationtree", {
-				"rows": "{path:'/', parameters: {arrayNames:['children']}}",
+				"rows": "{path:'/', parameters: {arrayNames:['children'], numberOfExpandedLevels: 3} }",
 				"visibleRowCountMode": "Auto",
 				"selectionMode": sap.ui.table.SelectionMode.None,
 				"enableSelectAll": false,
@@ -24,6 +24,7 @@ sap.ui.define([
 					new sap.ui.table.Column({label: "Name", template: new sap.m.Text({ "text": "{info}", "wrapping": false }) }),
 					new sap.ui.table.Column({label: "Result", width: "6em", template: new sap.ui.core.Icon({
 						"src": "{= ${success} === 'SUCCESS' ? 'sap-icon://message-success' : (${success} === 'WARNING' ? 'sap-icon://message-warning' : 'sap-icon://message-error') }",
+						"color": "{= ${success} === 'SUCCESS' ? 'Positive' : (${success} === 'WARNING' ? 'Default' : 'Critical') }",
 						 "tooltip": "{sqltext}"
 						 })
 					})
@@ -31,7 +32,6 @@ sap.ui.define([
 			});
 			this.addAggregation("content", oTreeTable );
 			this.setModel(new sap.ui.model.json.JSONModel());
-			var that = this;
 			this.setEndButton( new sap.m.Button({
 						text: "Close",
 						press: function () {

@@ -1,23 +1,21 @@
 sap.ui.define([
-	'sap/ui/core/CustomData'
-], function(CustomData) {
-  return CustomData.extend("ui5libs.controls.JsonContainer", {
+	'ui5libs/controls/ModelContainer'
+], function(ModelContainer) {
+  return ModelContainer.extend("ui5libs.controls.JsonContainer", {
 		metadata : {
 			properties: {
-				modelName : {type : "string", defaultValue : null},
-				url : {type : "string"},
-				sizeLimit: {type : "int", defaultValue : 1000},
 			}
 		},
-		setModelName : function(oValue) {
-			this.setProperty("modelName", oValue);
-		},
-		getModelName : function() {
-			var name = this.getProperty("modelName");
-			if (name === "") {
-				name = undefined;
+		createNewModel : function() {
+			var url = this.getUrl();
+			var oModel = new sap.ui.model.json.JSONModel(); 
+			if (this.getSizeLimit()) {
+				oModel.setSizeLimit(this.getSizeLimit());
 			}
-			return name;
+			if (url) {
+				oModel.loadData(sap.ui.require.toUrl(url));
+    		}
+			return oModel;
 		}
 	});
 });

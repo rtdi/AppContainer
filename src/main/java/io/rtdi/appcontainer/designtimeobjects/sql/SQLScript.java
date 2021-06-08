@@ -73,7 +73,14 @@ public class SQLScript {
 				if (c == '\n') {
 					state = SQLScriptParserStates.SQL_TEXT;
 					if (!incodeblock) {
-						callback.fireLineComment(text.toString());
+						Boolean test = callback.fireLineComment(text.toString());
+						if (test != null) {
+							if (test) {
+								result.addResult("Conditional asks to skip the next statements", text.toString(), ActivationSuccess.SUCCESS);
+							} else {
+								result.addResult("Conditional asks to execute the next statements", text.toString(), ActivationSuccess.SUCCESS);
+							}
+						}
 						text = new StringBuilder();
 					} else {
 						text.append(c);
@@ -93,12 +100,22 @@ public class SQLScript {
 					text.append(c);
 					break;
 				case ';':
+					if (text.length() >= 3) {
+						// a begin-end block or a case-end block
+						String s = text.substring(text.length()-3);
+						if (s.equalsIgnoreCase("end")) {
+							level--;
+						}
+					}
+					text.append(c);
 					if (level == 0 && !incodeblock) { // a semicolon ends a sql command
-						callback.fireSQL(text.toString());
-						result.addResult("ExecuteSQL", text.toString(), ActivationSuccess.SUCCESS);
+						if (callback.fireSQL(text.toString())) { // the statement was skipped
+							result.addResult("ExecuteSQL", text.toString(), ActivationSuccess.SUCCESS);
+						} else {
+							result.addResult("Skipped statement", text.toString(), ActivationSuccess.SUCCESS);
+						}
 						text = new StringBuilder();
-					} else {
-						text.append(c);
+					} else { // semicolon inside a procedure
 					}
 					break;
 				case '(': 
@@ -120,10 +137,24 @@ public class SQLScript {
 					break;
 				case '\r':
 				case '\n':
+				case ' ':
 					/*
 					 * A statement should never start with a \r or \n char 
 					 */
 					if (text.length() > 0) {
+						if (text.length() >= 5) {
+							// a begin-end block or a case-end block
+							String s = text.substring(text.length()-5);
+							if (s.equalsIgnoreCase("begin")) {
+								level++;
+							} else if (s.substring(1).equalsIgnoreCase("case")) {
+								level++;
+							} else if (s.substring(3).equalsIgnoreCase("if")) {
+								level++;
+							} else if (s.substring(2).equalsIgnoreCase("end")) {
+								level--;
+							}
+						}
 						text.append(c);
 					}
 					break;

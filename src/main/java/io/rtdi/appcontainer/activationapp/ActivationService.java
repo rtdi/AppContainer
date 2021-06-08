@@ -277,7 +277,7 @@ public class ActivationService {
 				}
 				if (e instanceof AppContainerSQLException) {
 					AppContainerSQLException e1 = (AppContainerSQLException) e;
-					fileresult.addResult("SQL operation failed", e1.getSQLStatement(), ActivationSuccess.FAILED);
+					fileresult.addResult("SQL operation failed with error: " + e.getMessage(), e1.getSQLStatement(), ActivationSuccess.FAILED);
 				}
 				throw e;
 			}

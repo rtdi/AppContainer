@@ -47,7 +47,7 @@ public class SQLScriptActivation implements ISQLScriptActivation {
 	}
 
 	@Override
-	public void fireLineComment(String string) throws AppContainerSQLException {
+	public Boolean fireLineComment(String string) throws AppContainerSQLException {
 		String[] parts = string.split("\\s");
 		if (parts[1].equalsIgnoreCase("if")) {
 			switch (parts[2].toLowerCase()) {
@@ -66,19 +66,25 @@ public class SQLScriptActivation implements ISQLScriptActivation {
 				}
 				break;
 			}
+			return skipnext;
+		} else if (parts[1].equalsIgnoreCase("endif")) {
+			skipnext = false; // after an endif code is always executed
+			return skipnext;
 		}
+		return null;
 	}
 
 	@Override
-	public void fireSQL(String sql) throws AppContainerSQLException {
+	public boolean fireSQL(String sql) throws AppContainerSQLException {
 		if (!skipnext) {
 			try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
 				stmt.execute();
 			} catch (SQLException e) {
 				throw new AppContainerSQLException(e, sql, null);
 			}
+			return true;
 		} else {
-			skipnext = false;
+			return false;
 		}
 	}
 

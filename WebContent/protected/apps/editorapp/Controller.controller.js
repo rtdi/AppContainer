@@ -3,11 +3,13 @@ sap.ui.define([
 	"sap/ui/model/odata/v4/ODataModel",
 	"ui5libs/ui5ajax",
 	"ui5libs/errorfunctions",
+	"ui5libs/controls/ActivationResultDialog"
 ], function(Controller, ODataModel, ui5ajax, errorfunctions) {
 	"use strict";
 
 	return Controller.extend("io.rtdi.appcontainer.editorapp.Controller", {
 		onInit : function() {
+			this.oDialog = new ui5libs.controls.ActivationResultDialog();
 		    const queryString = window.location.search;
 		    const urlParams = new URLSearchParams(queryString);
 		    const sFilename = urlParams.get('filename');
@@ -79,10 +81,18 @@ sap.ui.define([
 			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/activationapp/activate/" + sFilename)
 				.then(
 					data => {
-						errorfunctions.uiSuccess(this.getView(), { message: 'Activated' });
-					},
+						this.oDialog.getModel().setJSON(data.text);
+						this.oDialog.getModel().refresh();
+						this.oDialog.open();
+					}, 
 					error => {
-						errorfunctions.addError(this.getView(), error);
+						if (error.code === 202) {
+							errorfunctions.addError(this.getView(), error);
+						} else {
+							this.oDialog.getModel().setJSON(error.text);
+							this.oDialog.getModel().refresh();
+							this.oDialog.open();
+						}
 					}
 				);
 		}

@@ -15,28 +15,13 @@ sap.ui.define([
 	   			if (aCustomData) {
 	   				for( var oCustomdata of aCustomData) {
 	   					if (oCustomdata instanceof ui5libs.controls.ODataContainer) {
-	   						var url = oCustomdata.getUrl();
 	   						var name = oCustomdata.getModelName();
-			   				var oModel = new sap.ui.model.odata.v4.ODataModel({ 
-			    					"serviceUrl" : sap.ui.require.toUrl(url),  
-			    					"autoExpandSelect": true, 
-									"operationMode": "Server", 
-									"groupId": "$direct", 
-									"synchronizationMode": "None" 
-			    				}); 
-			    			if (oCustomdata.getSizeLimit()) {
-			    				oModel.setSizeLimit(oCustomdata.getSizeLimit());
-			    			}
-							oControl.setModel(oModel, name);
+			   				var oModel = oCustomdata.createNewModel();
+							oControl.setModel(oModel, name, oCustomdata);
 						} else if (oCustomdata instanceof ui5libs.controls.JsonContainer) {
-	   						var url = oCustomdata.getUrl();
 	   						var name = oCustomdata.getModelName();
-			   				var oModel = new sap.ui.model.json.JSONModel();
-			    			if (oCustomdata.getSizeLimit()) {
-			    				oModel.setSizeLimit(oCustomdata.getSizeLimit());
-			    			}
-		   					oModel.loadData(sap.ui.require.toUrl(url));
-							oControl.setModel(oModel, name);
+			   				var oModel = oCustomdata.createNewModel();
+							oControl.setModel(oModel, name, oCustomdata);
 						}
 					}
 	   			}

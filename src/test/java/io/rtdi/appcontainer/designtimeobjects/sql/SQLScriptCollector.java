@@ -11,12 +11,14 @@ public class SQLScriptCollector implements ISQLScriptActivation {
 	}
 
 	@Override
-	public void fireLineComment(String string) {
+	public Boolean fireLineComment(String string) {
+		return null;
 	}
 
 	@Override
-	public void fireSQL(String text) {
+	public boolean fireSQL(String text) {
 		statements.add(text);
+		return true;
 	}
 
 	@Override

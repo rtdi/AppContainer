@@ -1,29 +1,42 @@
 sap.ui.define([
-	'sap/ui/core/CustomData'
-], function(CustomData) {
-  return CustomData.extend("ui5libs.controls.ODataContainer", {
+	'ui5libs/controls/ModelContainer'
+], function(ModelContainer) {
+  return ModelContainer.extend("ui5libs.controls.ODataContainer", {
 		metadata : {
 			properties: {
-				modelName : {type : "string", defaultValue : null},
-				url : {type : "string"},
-				sizeLimit: {type : "int", defaultValue : 1000},
+			},
+			defaultAggregation: "filters",
+			aggregations : {
+				filters : {
+					type : "ui5libs.controls.Filter",
+					multiple : true,
+					singularName: "filter"
+				},
 			}
-		},
-		setModelName : function(oValue) {
-			this.setProperty("modelName", oValue);
-		},
-		getModelName : function() {
-			var name = this.getProperty("modelName");
-			if (name === "") {
-				name = undefined;
-			}
-			return name;
 		},
 		setUrl : function(oValue) {
 			if (oValue && oValue.endsWith('/') === false) {
 				oValue = oValue + '/';
 			}
 			this.setProperty("url", oValue);
+		},
+		createNewModel : function() {
+			var url = this.getUrl();
+			if (url) {
+				var oModel = new sap.ui.model.odata.v4.ODataModel({ 
+						"serviceUrl" : sap.ui.require.toUrl(url),  
+						"autoExpandSelect": true, 
+						"operationMode": "Server", 
+						"groupId": "$direct", 
+						"synchronizationMode": "None" 
+					});
+    			if (this.getSizeLimit()) {
+    				oModel.setSizeLimit(this.getSizeLimit());
+    			}
+    			return oModel;
+    		} else {
+    			return undefined;
+    		}
 		}
 	});
 });

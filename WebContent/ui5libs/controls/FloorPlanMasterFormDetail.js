@@ -10,12 +10,18 @@ sap.ui.define([
 			},
 			defaultAggregation : "content",
 			aggregations : {
-				content : {
+				master : {
+					type : "sap.ui.core.Control",
+					multiple : false,
+					visible: false
+				},
+				masterForm : {
 					type : "sap.ui.core.Control",
 					multiple : true,
 					forwarding: {
 						getter: "getSimpleForm",
-						aggregation: "content"
+						aggregation: "content",
+						forwardBinding: true
 					}
 				},
 			},
@@ -24,17 +30,25 @@ sap.ui.define([
 		renderer : {},
 		init : function() {
 			FloorPlanMasterDetail.prototype.init.call(this);
-			var oForm = new SimpleForm( { editable: true, layout: SimpleFormLayout.ResponsiveGridLayout } );
-			this.setMaster(oForm);
+			if (this.getMaster()) {
+				this.setMaster(getSimpleForm());
+			}
 		},
 		setMasterFormTitle : function(sText) {
-			this.getMaster().setTitle(sText);
+			if (this.getSimpleForm()) {
+				this.getSimpleForm().setTitle(sText);
+			}
 		},
 		getMasterFormTitle : function() {
-			return this.getMaster().getTitle();
+			return this.getSimpleForm().getTitle();
 		},
 		getSimpleForm : function() {
-			return this.getMaster();
+			var oForm = this.getMaster();
+			if (!oForm) {
+				oForm = new SimpleForm( { editable: true, layout: SimpleFormLayout.ResponsiveGridLayout } );
+				this.setMaster(oForm);
+			}
+			return oForm;
 		}
 	});
 });

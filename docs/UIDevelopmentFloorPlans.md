@@ -24,74 +24,54 @@ Example:
 
 ### FloorPlanMasterDetail
 
-This is a layout that has a master area on top and a maximized detail area. Using the `detailFilter` property (see `setDetailFilter()`) the values to view in the details area can be filtered. Master and Detail must be a single (layout) control.
-For that the detail area gets and oDataModel assigned via the `detailModel` aggregation.
+This is a layout that has a master area on top and a maximized detail area. Both areas are single controls, usually container controls. In the example below a `Label` and a `Select` control should be rendered next to each other, so they are wrapped inside `SimpleForm`. A simpler version would use the `Select` control only.
+
+For the master/detail area to be synced, the master are gets an empty JSONModel assigned (with `modelName="master"`). The `Select` updates the model whenever the control has a different value (see `selectedKey="{master>/schemaname}"`) and the default model of type oDataModel has a filter using that value (see `Filter path="TABLE_SCHEMA" operator="EQ" value1="{master>/schemaname}"`).
+
+The rest is just describing what controls to use where and their properties.
 
 Example:
 
 ```
 <mvc:View height="100vh"
-    controllerName="ui5app.Controller"
-    xmlns:mvc="sap.ui.core.mvc" 
-    xmlns:core="sap.ui.core" 
-    xmlns="sap.m"
-    xmlns:ui5libs.controls="ui5libs.controls">
+	controllerName="ui5app.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:core="sap.ui.core" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns="sap.m"
+	xmlns:ui5libs.am4charts="ui5libs.am4charts"
+	xmlns:ui5libs.controls="ui5libs.controls">
     <ui5libs.controls:FloorPlanMasterDetail 
-        pageTitle="Storage Usage"
-        masterFormTitle="Select Schema">
+        pageTitle="Storage Usage">
         <ui5libs.controls:master>
-            <Select change=".onSchemaChange" ... />
+            <form:SimpleForm editable="true" layout="ResponsiveGridLayout" title="Select Schema">
+                <Label text="Schema name" />
+                <Select
+                        width="50%"
+                        selectedKey="{master>/schemaname}"
+                        items="{/schemas}">
+                    <core:Item key="{schemaname}" text="{schemaname}" />
+        	    	<customData>
+        	    		<ui5libs.controls:JsonContainer url="ui5rest/catalog/schemas" />
+        	    	</customData>
+                </Select>
+            </form:SimpleForm>
         </ui5libs.controls:master>
-        <ui5libs.controls:detail>
-            ....
+    	<ui5libs.controls:detail>
+    		<ui5libs.am4charts:Chart
+    		    charttype="TreeMap"
+    		    config="ui5app/StorageDistribution.json"
+                items="{/TABLE}">
+                <core:Item key="{TABLE_NAME}" text="{BYTES}" />
+            </ui5libs.am4charts:Chart>
         </ui5libs.controls:detail>
-        <ui5libs.controls:detailModel>
-            <ui5libs.controls:ODataContainer url="ui5odata/...." />
-        </ui5libs.controls:detailModel>
+        <ui5libs.controls:customData>
+            <ui5libs.controls:JsonContainer modelName="master" />
+            <ui5libs.controls:ODataContainer url="ui5odata/INFORMATION_SCHEMA/TABLES" >
+                <ui5libs.controls:Filter path="TABLE_SCHEMA" operator="EQ" value1="{master>/schemaname}" />
+            </ui5libs.controls:ODataContainer>
+        </ui5libs.controls:customData>
     </ui5libs.controls:FloorPlanMasterDetail>
 </mvc:View>
 ```
 
-In the view controller, when the user did change the value in above Select control, the filter values are assigned.
-
-```
-onSchemaChange : function(oEvent) {
-  var oFloorPlan = this.getView().byId("FloorPlan");
-  oFloorPlan.setDetailFilter( {
-  	"TABLE_SCHEMA": 
-  	oEvent.getParameter('selectedItem').getKey() 
-  } );
-}
-```
-
-This causes the model to get a new filter with each property name and value. Here `TABLE_SCHEMA == 'DATA'` assuming that 'DATA' was the selected key.
-
-
-### FloorPlanMasterFormDetail
-
-Often the master area of the FloorPlanMasterDetail will be a SimpleForm control to align the labels and selectors properly.
-The FloorPlanMaster**Form**Detail does not have a `master` aggregation but a `content` aggregation where all elements of the SimpleForm can be put into, usually as Label and a selector pair.
-
-```
-<mvc:View height="100vh"
-    controllerName="ui5app.Controller"
-    xmlns:mvc="sap.ui.core.mvc" 
-    xmlns:core="sap.ui.core" 
-    xmlns="sap.m"
-    xmlns:ui5libs.controls="ui5libs.controls">
-    <ui5libs.controls:FloorPlanMasterFormDetail 
-        pageTitle="Storage Usage"
-        masterFormTitle="Select Schema">
-        <ui5libs.controls:content>
-            <Label text="Schema name" />
-            <Select change=".onSchemaChange" ... />
-        </ui5libs.controls:content>
-        <ui5libs.controls:detail>
-            ....
-        </ui5libs.controls:detail>
-        <ui5libs.controls:detailModel>
-            <ui5libs.controls:ODataContainer url="ui5odata/...." />
-        </ui5libs.controls:detailModel>
-    </ui5libs.controls:FloorPlanMasterFormDetail>
-</mvc:View>
-```

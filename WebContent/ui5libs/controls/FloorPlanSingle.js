@@ -23,7 +23,7 @@ sap.ui.define([
 		},
 		init : function() {
 			Control.prototype.init.call(this);
-			var oShellBar = new AppContainerShellBar( {id: "ShellBar" } );
+			var oShellBar = new AppContainerShellBar();
 			this.setAggregation("_shellbar", oShellBar);
 		},
 		setPageTitle: function(sText) {
@@ -32,6 +32,9 @@ sap.ui.define([
 		getPageTitle: function() {
 			return this.getAggregation("_shellbar").getSecondTitle();
 		},
+		getShellBar : function() {
+			return this.getAggregation("_shellbar");
+		}
 
 	});
 });

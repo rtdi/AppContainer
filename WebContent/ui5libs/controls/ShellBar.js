@@ -30,7 +30,7 @@ sap.ui.define([
 		init : function() {
 			ShellBar.prototype.init.call(this);
 			this.setHomeIcon(sap.ui.require.toUrl("ui5libs/controls/homeIcon.png"));
-			this.setProfile(new sap.f.Avatar({initials: "User"}));
+			this.setProfile(new sap.f.Avatar({initials: "U"}));
 			this.attachAvatarPressed(this._showLogoutMenu);
 			this.setShowNotifications(true);
 			this.attachNotificationsPressed(this._onPopoverPress);
