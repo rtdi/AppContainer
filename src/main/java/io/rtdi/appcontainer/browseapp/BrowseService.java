@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -189,14 +190,25 @@ public class BrowseService {
 						} else {
 							Iterable<PushResult> iter = git.push()
 								.setRemote("origin")
-								.add("master")
+								// .add("main")
 								.setCredentialsProvider(getGitCredentials(git, username))
 								.call();
 							PushResult pushResult = iter.iterator().next();
-							RemoteRefUpdate remoteref = pushResult.getRemoteUpdate( "refs/heads/master" );
-							if (remoteref != null) {
-								org.eclipse.jgit.transport.RemoteRefUpdate.Status remotestatus = remoteref.getStatus();
-								result = remotestatus.name();
+							
+							RemoteRefUpdate remoteref = pushResult.getRemoteUpdate( "refs/heads/*" );
+							Collection<Ref> v1 = pushResult.getAdvertisedRefs();
+							String v2 = pushResult.getMessages();
+							Collection<RemoteRefUpdate> updates = pushResult.getRemoteUpdates();
+							if (updates != null) {
+								int count = 0;
+								Iterator<RemoteRefUpdate> iterupdates = updates.iterator();
+								while (iterupdates.hasNext()) {
+									RemoteRefUpdate update = iterupdates.next();
+									// update.getStatus().name();
+									// update.getRemoteName();
+									count++;
+								}
+								result = String.valueOf(count);
 							} else {
 								result = "?";
 							}

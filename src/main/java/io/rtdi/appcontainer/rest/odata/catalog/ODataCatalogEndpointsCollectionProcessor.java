@@ -102,7 +102,7 @@ public class ODataCatalogEndpointsCollectionProcessor implements EntityCollectio
 				try {
 					ODataFilterExpressionVisitor expressionVisitor = new ODataFilterExpressionVisitor();
 					String visitorResult = filter.accept(expressionVisitor);
-					sql.append("and ")
+					sql.append("where ")
 						.append(visitorResult)
 						.append(' ');
 				} catch (ExpressionVisitException e) {

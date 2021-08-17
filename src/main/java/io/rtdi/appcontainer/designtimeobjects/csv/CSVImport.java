@@ -105,9 +105,16 @@ public class CSVImport {
 		}
 	    
 	    private void executeBatch() throws SQLException {
-	    	delete.executeBatch();
+	    	/*
+	    	 * delete and upserts are optional
+	    	 */
+	    	if (delete != null) {
+	    		delete.executeBatch();
+	    	}
 	    	insert.executeBatch();
-	    	upsert.executeBatch();
+	    	if (upsert != null) {
+	    		upsert.executeBatch();
+	    	}
 	    	batchrowcount = 0;
 	    }
 
@@ -266,54 +273,54 @@ public class CSVImport {
 				throw new AppContainerSQLException(e, "Failed creating the insert statement for this table", sqlinsert.toString());
 			}
 
-				/*
-				 * When there is a change type column also add the upsert/delete statements. Truncates are generated on demand.
-				 */
-				if (indexChangeType != -1) {
-					sqlupsert.append("upsert ")
-						.append("\"")
-						.append(owner)
-						.append("\".\"")
-						.append(tablename)
-						.append("\" (")
-						.append(columnlist)
-						.append(") values (")
-						.append(paramlist)
-						.append(") with primary key");
-					
-					sqldelete.append("delete from ")
-						.append("\"")
-						.append(owner)
-						.append("\".\"")
-						.append(tablename)
-						.append("\" where ");
-					keyindexes = new ArrayList<>();
-					for (int i=0; i<collist.size(); i++) {
-						ColumnDefinition columndef = collist.get(i);
-						if (columndef.isKey()) {
-							if (keyindexes.size() != 0) {
-								sqldelete.append("AND ");
-							}
-							keyindexes.add(i);
-							sqldelete.append("\"")
-								.append(columndef.getColumnname())
-								.append("\" = ? ");
+			/*
+			 * When there is a change type column also add the upsert/delete statements. Truncates are generated on demand.
+			 */
+			if (indexChangeType != -1) {
+				sqlupsert.append("upsert ")
+					.append("\"")
+					.append(owner)
+					.append("\".\"")
+					.append(tablename)
+					.append("\" (")
+					.append(columnlist)
+					.append(") values (")
+					.append(paramlist)
+					.append(") with primary key");
+				
+				sqldelete.append("delete from ")
+					.append("\"")
+					.append(owner)
+					.append("\".\"")
+					.append(tablename)
+					.append("\" where ");
+				keyindexes = new ArrayList<>();
+				for (int i=0; i<collist.size(); i++) {
+					ColumnDefinition columndef = collist.get(i);
+					if (columndef.isKey()) {
+						if (keyindexes.size() != 0) {
+							sqldelete.append("AND ");
 						}
-					}
-					if (keyindexes.size() == 0) {
-						throw new AppContainerSQLException("The CSV files has a _CHANGE_TYPE column but the database table does not have a primary key", null);
-					}
-					try {
-						upsert = conn.prepareStatement(sqlupsert.toString());
-					} catch (SQLException e) {
-						throw new AppContainerSQLException(e, "Failed creating the upsert statement for this table", sqlupsert.toString());
-					}
-					try {
-						delete = conn.prepareStatement(sqldelete.toString());
-					} catch (SQLException e) {
-						throw new AppContainerSQLException(e, "Failed creating the delete statement for this table", sqldelete.toString());
+						keyindexes.add(i);
+						sqldelete.append("\"")
+							.append(columndef.getColumnname())
+							.append("\" = ? ");
 					}
 				}
+				if (keyindexes.size() == 0) {
+					throw new AppContainerSQLException("The CSV files has a _CHANGE_TYPE column but the database table does not have a primary key", null);
+				}
+				try {
+					upsert = conn.prepareStatement(sqlupsert.toString());
+				} catch (SQLException e) {
+					throw new AppContainerSQLException(e, "Failed creating the upsert statement for this table", sqlupsert.toString());
+				}
+				try {
+					delete = conn.prepareStatement(sqldelete.toString());
+				} catch (SQLException e) {
+					throw new AppContainerSQLException(e, "Failed creating the delete statement for this table", sqldelete.toString());
+				}
+			}
 				
 			
 			/*
@@ -394,7 +401,13 @@ public class CSVImport {
 					convertIndexes(Conversions.toDate(TimeZone.getTimeZone("UTC"), Locale.ENGLISH, null, null, "HH:mm:ss", "HH:mm:ss.SSS")).set(i);
 					break;
 				case TIMESTAMP:
-					convertIndexes(Conversions.toDate(TimeZone.getTimeZone("UTC"), Locale.ENGLISH, null, null, "MM/dd/yyyy HH:mm:ss.SSS", "yyyy.MM.dd HH:mm:ss.SSS")).set(i);
+					convertIndexes(Conversions.toDate(TimeZone.getTimeZone("UTC"), Locale.ENGLISH, null, null,
+							"MM/dd/yyyy HH:mm:ss",
+							"yyyy.MM.dd HH:mm:ss",
+							"yyyy-MM-dd HH:mm:ss",
+							"MM/dd/yyyy HH:mm:ss.SSS",
+							"yyyy.MM.dd HH:mm:ss.SSS",
+							"yyyy-MM-dd HH:mm:ss.SSS")).set(i);
 					break;
 				case TIMESTAMP_WITH_TIMEZONE:
 					break;

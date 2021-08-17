@@ -17,7 +17,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			if (!spath) {
 				return "";
 			} else if (spath.endsWith(".view.xml")) {
-				return "../editorapp/UIEditor.html?filename=" + encodeURI(spath);
+				return "../editorapp/uieditorapp/index.html?filename=" + encodeURI(spath);
 			} else {
 				return "../editorapp/index.html?filename=" + encodeURI(spath);
 			}

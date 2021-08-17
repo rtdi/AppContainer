@@ -1,0 +1,183 @@
+<mvc:View height="100%" class="sapUiSizeCompact"
+	controllerName="ui5app.Controller"
+	id="mainview"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:dnd="sap.ui.core.dnd" 
+	xmlns:rtdi="ui5app.controls" 
+	xmlns:ui5libs.controls="ui5libs.controls"
+	xmlns:core="sap.ui.core">
+	<ui5libs.controls:AppContainerPage pageTitle="UIEditor">
+		<Panel height="100%" id="editor">
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="Drag and Drop Controls below" />
+					<rtdi:ToolPaletteButton id="save" text="Save" icon="sap-icon://save" tooltip="Save" press=".saveAsXmlView" />
+					<Link text="Test" target="_blank" id="openfile" />
+					<rtdi:ToolPaletteButton id="delete" text="Drop to delete" icon="sap-icon://delete" tooltip="Drop Elements to remove">
+						<rtdi:dragDropConfig>
+							<dnd:DropInfo drop=".onDelete" groupName="move" />
+						</rtdi:dragDropConfig>
+					</rtdi:ToolPaletteButton>
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+				<l:DynamicSideContent id="DynamicSideContent">
+					<rtdi:ControlWrapper maximize="true" id="editorcontent" showLabel="false" supportModel="false" >
+						<rtdi:wrappedControl>
+							<ScrollContainer horizontal="false" vertical="true">
+							</ScrollContainer>
+						</rtdi:wrappedControl>
+					</rtdi:ControlWrapper>
+					<l:sideContent>
+							<Panel expandable="true" headerText="Simple Controls" expanded="true" class="sapUiResponsiveMargin" id="toolbarSimpleControls" >
+								<rtdi:ToolPaletteButton icon="sap-icon://touch" tooltip="Button" controlType="sap.m.Button" />
+								<rtdi:ToolPaletteButton icon="sap-icon://accept" tooltip="Check Box" controlType="sap.m.CheckBox" />
+								<rtdi:ToolPaletteButton icon="sap-icon://attachment-html" tooltip="Html Text" controlType="sap.m.FormattedText" />
+								<rtdi:ToolPaletteButton icon="sap-icon://crop" tooltip="Icon" controlType="sap.ui.core.Icon" />
+								<rtdi:ToolPaletteButton icon="sap-icon://picture" tooltip="Image" controlType="sap.m.Image" />
+								<rtdi:ToolPaletteButton icon="sap-icon://edit" tooltip="Input" controlType="sap.m.Input" />
+								<rtdi:ToolPaletteButton icon="sap-icon://filter-fields" tooltip="Label" controlType="sap.m.Label" />
+								<rtdi:ToolPaletteButton icon="sap-icon://chain-link" tooltip="Link" controlType="sap.m.Link" />
+								<rtdi:ToolPaletteButton icon="sap-icon://bar-code" tooltip="Mask Input" controlType="sap.m.MaskInput" />
+								<rtdi:ToolPaletteButton icon="sap-icon://tags" tooltip="Multi Input" controlType="sap.m.MultiInput" />
+								<rtdi:ToolPaletteButton icon="sap-icon://search" tooltip="Search Field" controlType="sap.m.SearchField" />
+								<rtdi:ToolPaletteButton icon="sap-icon://shelf" tooltip="Segmented Button" controlType="sap.m.SegmentedButton" />
+								<rtdi:ToolPaletteButton icon="sap-icon://text" tooltip="Text" controlType="sap.m.Text" />
+								<rtdi:ToolPaletteButton icon="sap-icon://text-align-justified" tooltip="Text Area" controlType="sap.m.TextArea" />
+								<rtdi:ToolPaletteButton icon="sap-icon://heading1" tooltip="Title" controlType="sap.m.Title" />
+							</Panel>
+							<Panel expandable="true" headerText="Lists" expanded="false" class="sapUiResponsiveMargin" id="toolbarList" >
+								<rtdi:ToolPaletteButton icon="sap-icon://list" tooltip="List" controlType="sap.m.List" />
+								<rtdi:ToolPaletteButton text="SI" tooltip="StandardListItem" controlType="sap.m.StandardListItem" dndGroupName="ListItem" />
+								<rtdi:ToolPaletteButton text="DI" tooltip="DisplayListItem" controlType="sap.m.DisplayListItem" dndGroupName="ListItem" />
+								<rtdi:ToolPaletteButton text="AI" tooltip="ActionListItem" controlType="sap.m.ActionListItem" dndGroupName="ListItem" />
+								<rtdi:ToolPaletteButton text="FI" tooltip="FeedListItem" controlType="sap.m.FeedListItem" dndGroupName="ListItem" />
+								<rtdi:ToolPaletteButton text="GI" tooltip="GroupHeaderListItem" controlType="sap.m.GroupHeaderListItem" dndGroupName="ListItem" />
+								<rtdi:ToolPaletteButton text="II" tooltip="InputListItem" controlType="sap.m.InputListItem" dndGroupName="ListItem" />
+								<rtdi:ToolPaletteButton text="OI" tooltip="ObjectListItem" controlType="sap.m.ObjectListItem" dndGroupName="ListItem" />
+							</Panel>
+							<Panel expandable="true" headerText="Selectors" expanded="false" class="sapUiResponsiveMargin" id="toolbarItemSelector" >
+								<rtdi:ToolPaletteButton icon="sap-icon://resize-vertical" tooltip="Select" controlType="sap.m.Select" />
+								<rtdi:ToolPaletteButton icon="sap-icon://paging" tooltip="Select List" controlType="sap.m.SelectList" />
+								<rtdi:ToolPaletteButton icon="sap-icon://slim-arrow-down" tooltip="Combo Box" controlType="sap.m.ComboBox" />
+								<rtdi:ToolPaletteButton icon="sap-icon://multiselect-none" tooltip="Multi Combo Box" controlType="sap.m.MultiComboBox" />
+								<rtdi:ToolPaletteButton text="LI" tooltip="Item" controlType="sap.ui.core.ListItem" dndGroupName="CoreItem" />
+							</Panel>
+							<Panel expandable="true" headerText="Table" expanded="false" class="sapUiResponsiveMargin" id="toolbarTable" >
+								<rtdi:ToolPaletteButton icon="sap-icon://table-chart" tooltip="Table" controlType="sap.m.Table" />
+								<rtdi:ToolPaletteButton icon="sap-icon://table-column" tooltip="Column" controlType="sap.m.Column" dndGroupName="TableColumn" />
+								<rtdi:ToolPaletteButton icon="sap-icon://table-row" tooltip="Row" controlType="sap.m.ColumnListItem" dndGroupName="TableRow" />
+							</Panel>
+
+							<Panel expandable="true" headerText="Value Input" expanded="false" class="sapUiResponsiveMargin">
+								<rtdi:ToolPaletteButton icon="sap-icon://legend" tooltip="Color Palette" controlType="sap.m.ColorPalette"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://palette" tooltip="Color Picker" controlType="sap.ui.unified.ColorPicker"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://lead" tooltip="Currency" controlType="sap.ui.unified.Currency"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://calendar" tooltip="Date Picker" controlType="sap.m.DatePicker"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://appointment-2" tooltip="Date Range Selection" controlType="sap.m.DateRangeSelection"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://date-time" tooltip="Date Time Picker" controlType="sap.m.DateTimePicker"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://edit" tooltip="Input" controlType="sap.m.Input" />
+								<rtdi:ToolPaletteButton icon="sap-icon://filter-fields" tooltip="Label" controlType="sap.m.Label" />
+								<rtdi:ToolPaletteButton icon="sap-icon://multi-select" tooltip="Radio Button" controlType="sap.m.RadioButton"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://measure" tooltip="Range Slider" controlType="sap.m.RangeSlider"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://add-favorite" tooltip="Rating Indicator" controlType="sap.m.RatingIndicator"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://customize" tooltip="Slider" controlType="sap.m.Slider"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://step" tooltip="Step Input" controlType="sap.m.StepInput"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://approvals" tooltip="Switch" controlType="sap.m.Switch"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://text" tooltip="Text" controlType="sap.m.Text"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://heading1" tooltip="Title" controlType="sap.m.Title" />
+								<rtdi:ToolPaletteButton icon="sap-icon://history" tooltip="Time Picker" controlType="sap.m.TimePicker"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://pending" tooltip="Time Picker Sliders" controlType="sap.m.TimePickerSliders"/>
+							</Panel>
+				
+							<Panel expandable="true" headerText="Container" id="toolbarContainer" expanded="false" class="sapUiResponsiveMargin">
+								<rtdi:ToolPaletteButton icon="sap-icon://grid" tooltip="BlockLayout" controlType="sap.ui.layout.BlockLayout"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://image-viewer" tooltip="Carousel" controlType="sap.m.Carousel"/>
+								<rtdi:ToolPaletteButton icon="sap-icon://resize-horizontal" tooltip="HBox" controlType="sap.m.HBox" />
+								<rtdi:ToolPaletteButton icon="sap-icon://resize-vertical" tooltip="VBox" controlType="sap.m.VBox" />
+								<rtdi:ToolPaletteButton icon="sap-icon://resize" tooltip="FlexBox" controlType="sap.m.FlexBox" />
+								<rtdi:ToolPaletteButton icon="sap-icon://indent" tooltip="Panel" controlType="sap.m.Panel" />
+								<rtdi:ToolPaletteButton icon="sap-icon://screen-split-one" tooltip="Responsive Splitter" controlType="sap.ui.layout.ResponsiveSplitter" />
+								<!--  <rtdi:ToolPaletteButton icon="sap-icon://header" tooltip="Tab Container" controlType="sap.m.TabContainer" />
+								      <rtdi:ToolPaletteButton icon="sap-icon://create-session" tooltip="Tab Container Item" controlType="sap.m.TabContainerItem" dndGroupName="TabContainerItem" />
+								-->
+							</Panel>
+							<Panel expandable="true" headerText="Models" id="toolbarModel" expanded="false" class="sapUiResponsiveMargin">
+								<ComboBox 
+									id="odatamodelschema"
+									items="{/schemas}"
+									width="70%"
+									selectionChange=".onmodelsearch">
+									<items>
+										<core:Item text="{schemaname}" key="{schemaname}" />
+									</items>
+								</ComboBox>
+							    <SearchField liveChange=".onmodelsearch" id="odatamodelsearch" width="70%" />
+							    <Table 
+									id="odatamodels"
+									items="{/TABLE}"
+									>
+									<dragDropConfig>
+										<dnd:DragInfo
+											groupName="model"
+											sourceAggregation="items" />
+									</dragDropConfig>
+									<columns>
+										<Column>
+											<Text text="Schema" />
+										</Column>
+										<Column>
+											<Text text="Object" />
+										</Column>
+									</columns>
+									<items>
+										<ColumnListItem>
+											<customData>
+												<core:CustomData key="ENDPOINT" value="{ENDPOINT}" />
+											</customData>
+											<cells>
+												<Text text="{SCHEMA_NAME}" wrapping="false" />
+												<Text text="{OBJECT_NAME}" wrapping="false" />
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+							</Panel>
+							<Panel expandable="true" headerText="Properties" id="properties" expanded="false" class="sapUiResponsiveMargin">
+								<Button text="Update" press=".updateProperties" />
+								<Table 
+									headerText="Class: {/classname}"
+									items="{/list}"
+									width="90%"
+									>
+									<columns>
+										<Column>
+											<Text text="Property" />
+										</Column>
+										<Column>
+											<Text text="Value" />
+										</Column>
+									</columns>
+									<items>
+										<ColumnListItem>
+											<cells>
+												<Text text="{propertyname}" />
+												<rtdi:PropertyInputControl 
+													objectValue="{propertyvalue}" 
+													datatype="{propertydatatype}"
+													items="{ path: 'options', templateShareable: false}">
+													<core:Item text="{value}" key="{value}" />
+												</rtdi:PropertyInputControl>
+											</cells>
+										</ColumnListItem>
+									</items>
+								</Table>
+							</Panel>
+					</l:sideContent>
+				</l:DynamicSideContent>
+			</content>
+		</Panel>
+	</ui5libs.controls:AppContainerPage>
+</mvc:View>

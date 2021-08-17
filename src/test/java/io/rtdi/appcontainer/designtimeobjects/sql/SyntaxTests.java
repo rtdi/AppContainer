@@ -25,7 +25,7 @@ public class SyntaxTests {
 		ActivationResult result = new ActivationResult();
 		SQLScriptCollector callback = new SQLScriptCollector();
 		String text1 = "CREATE TABLE stproc_test_table1 (num_col1 numeric(14,7));";
-		SQLScript.execute(text1, result, callback);
+		callback.parse(text1, result);
 		
 		String text2 = "create or replace procedure stproc1(FLOAT_PARAM1 FLOAT)\r\n"
 				+ "    returns string\r\n"
@@ -47,9 +47,9 @@ public class SyntaxTests {
 				+ "        }\r\n"
 				+ "    $$\r\n"
 				+ "    ;";
-		SQLScript.execute(text2, result, callback);
+		callback.parse(text2, result);
 		String text3 = "select &__rowcount;";
-		SQLScript.execute(text3, result, callback);
+		callback.parse(text3, result);
 		String text4 = "create or replace procedure \"${owner1}\".recursive_stproc(counter FLOAT)\r\n"
 				+ "    returns varchar not null\r\n"
 				+ "    language javascript\r\n"
@@ -82,7 +82,7 @@ public class SyntaxTests {
 				+ "    return accumulator;\r\n"
 				+ "    $$\r\n"
 				+ "    ;";
-		SQLScript.execute(text4, result, callback);
+		callback.parse(text4, result);
 	}
 
 }

@@ -33,15 +33,6 @@ sap.ui.define([
           	} else if (sFilename.endsWith(".sql")) {
          		oEditorControl.setType("sql");
          	}
-			/* var xhttp = new XMLHttpRequest();
-		    xhttp.onreadystatechange = function() {
-		        if (this.readyState == 4 && this.status == 200) {
-		            oEditorControl.setValue(JSON.parse(this.responseText).content); 
-		        }
-		    };
-		    xhttp.open("GET", sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename, true);
-		    xhttp.setRequestHeader("Content-type", "application/json");
-		    xhttp.send(); */
 			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename)
 				.then(
 					data => {

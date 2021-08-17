@@ -1,0 +1,12 @@
+.wrappercontrol {
+	width: fit-content;
+	border-color: red;
+	border-style: solid;
+	border-left-width: thick;
+	border-right-width: 1px;
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+	padding-left: 20pt;
+	min-height: 10pt;
+	min-width: 10pt;
+}

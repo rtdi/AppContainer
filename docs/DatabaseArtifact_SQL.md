@@ -71,7 +71,7 @@ As a database developer the CI/CD scripts are used in various scenarios.
 One option to support that is to never specify a schema in any sql scripts. Instead of `create table PROD.ORDERS (...);` no schema is specified `create table ORDERS (...);`.
 This works well in scenarios where every user, and test & prod are just different users again, is 100% separated.
 
-For large development projects the result of that would be that each of the 100s of the developers has the full database populated with all the 1000s of tables and GB data. Just in case if somebody does a braking change.
+For large development projects the result of that would be that each of the 100s of the developers has the full database populated with all the 1000s of tables and GB data. Just in case if somebody does a breaking change.
 
 More often it will be a mixture. Very few development objects are locally but there are shared schemas containing the DEV/TEST/PROD objects. When the developer creates a view, he must specify the schema hence but which? He would specify the schema `${maindb}` and define his mapping from aliases to the actual schema to use. When the code is deployed in TEST or PROD, each of those have individual alias mappings.
 

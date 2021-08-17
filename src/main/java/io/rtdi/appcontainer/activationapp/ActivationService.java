@@ -28,7 +28,6 @@ import io.rtdi.appcontainer.designtimeobjects.ActivationException;
 import io.rtdi.appcontainer.designtimeobjects.DirectoryDependency;
 import io.rtdi.appcontainer.designtimeobjects.GlobalSchemaMapping;
 import io.rtdi.appcontainer.designtimeobjects.csv.CSVImport;
-import io.rtdi.appcontainer.designtimeobjects.sql.SQLScript;
 import io.rtdi.appcontainer.designtimeobjects.sql.SQLScriptActivation;
 import io.rtdi.appcontainer.designtimeobjects.sql.SQLVariables;
 import io.rtdi.appcontainer.realm.IAppContainerPrincipal;
@@ -109,7 +108,7 @@ public class ActivationService {
 				try {
 					activateFile(file, schemaname, conn, activationresult, upath, gm, variables);
 					return Response.ok(activationresult).build();
-				} catch (AppContainerSQLException e) {
+				} catch (AppContainerSQLException | ActivationException e) {
 					return Response.ok(activationresult).build();
 				}
 			} catch (SQLException e) {
@@ -214,6 +213,7 @@ public class ActivationService {
 			File c = file.getCanonicalFile();
 			if (!visited.contains(c)) {
 				visited.add(c);
+				ActivationResult dirresult = result.addResult("Activation of directory \"" + file.getName() + "\"", file.getName(), ActivationSuccess.SUCCESS);
 				File[] files = file.listFiles();
 				Arrays.sort(files);
 				// First activate all files...
@@ -222,20 +222,19 @@ public class ActivationService {
 					List<File> depfiles = dep.getDependentsInside(activationroot);
 					for (File f : depfiles) {
 						if (!visited.contains(f)) {
-							activateRecursive(f, schemaname, conn, result, upath, activationroot, gm, variables, visited);
+							activateRecursive(f, schemaname, conn, dirresult, upath, activationroot, gm, variables, visited);
 						}
 					}
 				}
 				for (File f : files) {
 					if (f.isDirectory()) {
 					} else {
-						activateFile(f, schemaname, conn, result, upath, gm, variables);
+						activateFile(f, schemaname, conn, dirresult, upath, gm, variables);
 					}
 				}
 				// then activate all directories
 				for (File f : files) {
 					if (f.isDirectory()) {
-						ActivationResult dirresult = result.addResult("Activation of directory \"" + file.getName() + "\"", file.getName(), ActivationSuccess.SUCCESS);
 						activateRecursive(f, schemaname, conn, dirresult, upath, activationroot, gm, SQLVariables.read(f.toPath(), variables), visited);
 					}
 				}
@@ -268,7 +267,7 @@ public class ActivationService {
 				case SQL:
 					fileresult = result.addResult("Activation of sql script \"" + file.getName() + "\"", file.getName(), ActivationSuccess.SUCCESS);
 					SQLScriptActivation callback = new SQLScriptActivation(conn, schemaname, gm, variables);
-					SQLScript.execute(file, fileresult, callback);
+					callback.parse(file, fileresult);
 					break;
 				}
 			} catch (Exception e) {
