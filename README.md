@@ -28,12 +28,12 @@ On any computer install the Docker Daemon - if it is not already and download th
 
 Then start the image via docker run. Only one parameter needs to be set, the environment variable JDBCURL. For Hana this consist of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE). For Snowflake see the [Snowflake JDBC documentation](https://docs.snowflake.com/en/user-guide/jdbc-configure.html#jdbc-driver-connection-string).
 
-    docker run -d -p 80:8080 -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE \
+    docker run -d -p 80:8080 -e JDBCURL="jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE" \
       rtdi/appcontainer:latest-hana
 
 or for Snowflake
 
-    docker run -d -p 80:8080 -e JDBCURL=jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE \
+    docker run -d -p 80:8080 -e JDBCURL="jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE" \
       rtdi/appcontainer:latest-snowflake
 
 From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
@@ -45,7 +45,7 @@ An even better docker run command is to add a few server directories, here all i
        -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
        -v /dockermountpoints/repo:/usr/local/tomcat/repo \
        -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
-       -e JDBCURL=jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE \
+       -e JDBCURL="jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE" \
        rtdi/appcontainer:latest-hana
 
 or for Snowflake
@@ -55,7 +55,7 @@ or for Snowflake
        -v /dockermountpoints/security:/usr/local/tomcat/conf/security \
        -v /dockermountpoints/repo:/usr/local/tomcat/repo \
        -v /dockermountpoints/ui5externallibs:/usr/local/tomcat/webapps/ui5externallibs \
-       -e JDBCURL=jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE \
+       -e JDBCURL="jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE" \
        rtdi/appcontainer:latest-hana:latest-snowflake
 
 
