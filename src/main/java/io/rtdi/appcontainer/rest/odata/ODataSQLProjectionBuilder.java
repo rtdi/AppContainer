@@ -79,7 +79,7 @@ public class ODataSQLProjectionBuilder {
 	 * 
 	 * @param selectItems
 	 * @param type
-	 * @return
+	 * @return entity type
 	 */
 	private EdmStructuredType getTypeFromSelectItems(List<SelectItem> selectItems, EdmStructuredType type) {
 		EdmStructuredType edmType = type;
@@ -178,7 +178,7 @@ public class ODataSQLProjectionBuilder {
 	 * @param selectItems
 	 * @param propertyName
 	 * @param selectedPaths
-	 * @return
+	 * @return pos
 	 */
 	private int getPositionToAddProperty(List<SelectItem> selectItems, String propertyName,
 			Set<List<String>> selectedPaths) {
