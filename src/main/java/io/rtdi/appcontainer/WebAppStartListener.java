@@ -61,7 +61,8 @@ public class WebAppStartListener implements ServletContextListener {
     		rootdir.mkdirs();
     	}
     	if (rootdir.listFiles().length == 0) {
-    		Path temppath = rootpath.resolve("WEB-INF/repo");
+        	Path templatepath = Path.of(webapprootpath).toAbsolutePath();
+    		Path temppath = templatepath.resolve("WEB-INF/repo");
     		try {
 				copyFolder(temppath, rootpath);
 			} catch (IOException e) {

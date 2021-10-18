@@ -23,8 +23,11 @@ sap.ui.define([
 		createNewModel : function() {
 			var url = this.getUrl();
 			if (url) {
+				if (!url.startsWith("/")) {
+					url = sap.ui.require.toUrl(url);
+				}
 				var oModel = new sap.ui.model.odata.v4.ODataModel({ 
-						"serviceUrl" : sap.ui.require.toUrl(url),  
+						"serviceUrl" : url,  
 						"autoExpandSelect": true, 
 						"operationMode": "Server", 
 						"groupId": "$direct", 

@@ -13,7 +13,10 @@ sap.ui.define([
 				oModel.setSizeLimit(this.getSizeLimit());
 			}
 			if (url) {
-				oModel.loadData(sap.ui.require.toUrl(url));
+				if (!url.startsWith("/")) {
+					url = sap.ui.require.toUrl(url);
+				}
+				oModel.loadData(url);
     		}
 			return oModel;
 		}

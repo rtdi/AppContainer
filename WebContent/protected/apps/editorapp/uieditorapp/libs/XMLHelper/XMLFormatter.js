@@ -93,7 +93,7 @@ sap.ui.define([
 		 */
 		if (oControl.getParent() instanceof ui5app.controls.ControlWrapper && oControl.getParent().getODataURL()) {
 			buffer.push("\r\n" + indent("<" + ns + "customData>", level+1));
-			buffer.push("\r\n" + indent("<sap.ui.core:CustomData key=\"odataurl\" value=\"" + oControl.getParent().getODataURL() + "\" />", level+2));
+			buffer.push("\r\n" + indent("<ui5libs.controls:ODataContainer url=\"" + oControl.getParent().getODataURL() + "\" />", level+2));
 			buffer.push("\r\n" + indent("</" + ns + "customData>", level+1));
 		}
 

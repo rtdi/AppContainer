@@ -110,13 +110,13 @@ sap.ui.define([
 				if (node.localName === "View" && level == 0) {
 					this._buildContentTree(node.children, 1);
 				} else if (node instanceof HTMLCollection) {
-					if (node.length == 1 && node.children[0].localName === "AppContainerPage") {
-						this._buildContentTree(node.children[0], 2);
-					} else if (node.length == 1 && node.children[0].localName === "Panel") {
-						this._buildContentTree(node.children[0], 3);
+					if (node.length == 1 && node[0].localName === "AppContainerPage") {
+						this._buildContentTree(node[0].children, 2);
+					} else if (node.length == 1 && node[0].localName === "Panel") {
+						this._buildContentTree(node[0].children, 3);
 					} else {
 						var oEditor = sap.ui.getCore().byId("__xmlview0--editorcontent").getWrappedControl();
-						var aControls = this._buildContentTreeAggregation(node, this.showProperties);
+						var aControls = this._buildContentTreeAggregation(node, node.nodeName, this.showProperties);
 						for (var i=0; i<aControls.length; i++) {
 							oEditor.addContent(aControls[i]);
 						}
@@ -434,9 +434,9 @@ sap.ui.define([
 						'    xmlns:sap.ui.core="sap.ui.core" \r\n' + 
 						'    xmlns:ui5libs.controls="ui5libs.controls">\r\n' + 
 						'    <ui5libs.controls:AppContainerPage>\r\n' +
-						'        <sap.m.Panel height="100%">\r\n' +
+						'        <sap.m:Panel height="100%">\r\n' +
 						buffer.join("") +
-						'        </sap.m.Panel>\r\n' +
+						'        </sap.m:Panel>\r\n' +
 						'    </ui5libs.controls:AppContainerPage>\r\n' +
 						'</mvc:View>';
 				var that = this;
@@ -548,7 +548,7 @@ sap.ui.define([
 			 */
 			if (oControl.getParent() instanceof ui5app.controls.ControlWrapper && oControl.getParent().getODataURL()) {
 				buffer.push("\r\n" + indent("<" + ns + "customData>", level+1));
-				buffer.push("\r\n" + indent("<sap.ui.core:CustomData key=\"odataurl\" value=\"" + oControl.getParent().getODataURL() + "\" />", level+2));
+				buffer.push("\r\n" + indent("<ui5libs.controls:ODataContainer url=\"" + oControl.getParent().getODataURL() + "\" />", level+2));
 				buffer.push("\r\n" + indent("</" + ns + "customData>", level+1));
 			}
 	
