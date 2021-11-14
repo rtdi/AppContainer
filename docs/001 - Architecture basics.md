@@ -1,10 +1,14 @@
 # Architecture basics
 
-The vision of this solution is to provide a backend and frontend for database development. This should be deployable on premise and cloud and work with different databases. The easiest way to achieve all of that is by providing a software container based on the Tomcat webserver image with custom web applications.
+The vision of this solution is to provide a backend and frontend for database development. This should be deployable on premise and cloud and work with different databases. The easiest way to achieve all of that is by providing a software container based on the [Tomcat webserver image](https://hub.docker.com/_/tomcat) with custom web applications.
 
 ![Architecture Diagram](_media/CICD_Architecture.drawio.png)
 
-The integration between database and tomcat can be done via two basic options:
+The browser has multiple endpoints to connect to, be it the OpenAPI documentation of all endpoints, oData or RestFul endpoints to read database data or other (static) pages.
+
+If the page is protected, a new session is established with the tomcat server and it is authenticated using a database-login-realm. This realm takes the username/password from a form based login page and uses that to login to the database. If that succeeds, all user groups the login is part of are read from the database as well to be used by the webserver. This obviously requires a connection pool management per session instead of the classic database connection pool in Tomcat.
+
+The integration between database and Tomcat can be done via two basic options:
 
 - [x] Option 1: One Tomcat for one database: In this variant the database is the tomcat securtiy realm, hence no separate IDP handling is required. Instead the user logs in with the database credentials entered in the browser. Database user groups are used to control the permissions of the application also. Connection information for the database is entered in the tomcat configuration files. By usnig the database auth, the database connections can run under the database user and his database permissions.
 - [ ] Option 2: One Tomcat can handle multiple databases: Only one container is needed but the application requires the option to switch between databases, probably via different root URLs.
