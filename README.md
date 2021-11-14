@@ -12,7 +12,7 @@ The user is able to deploy database applications equally to CI/CD pipelines in c
 gantt
     title Database CI/CD
     dateFormat  YYYY-MM-DD
-    axisFormat  %Y-Q%q
+    axisFormat  %Y-%m
     section PM
         Project planning            :active,    PP,          2021-11-14,          140d
         Scrum process               :           SCRUM,       2021-11-14,          120d
