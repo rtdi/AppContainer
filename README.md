@@ -19,7 +19,7 @@ gantt
     section Concept
         Architecture                :active,    ARCH,        2021-11-14,           14d
         UI Design Thinking          :           UI,          after SPRINT04,        7d
-        Documentation               :           DOC,         2022-02-15,           12d
+        Documentation               :           DOC,         2022-03-01,           30d
     section Implement
         Sprint 1                    :           SPRINT01,    after ARCH,           14d
         Sprint 2                    :           SPRINT02,    after SPRINT01,       14d
