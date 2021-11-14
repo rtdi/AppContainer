@@ -2,6 +2,8 @@
 
 The vision of this solution is to provide a backend and frontend for database development. This should be deployable on premise and cloud and work with different databases. The easiest way to achieve all of that is by providing a software container based on the Tomcat webserver image with custom web applications.
 
+![Architecture Diagram](_media/CICD_Architecture.drawio.png)
+
 The integration between database and tomcat can be done via two basic options:
 
 - [x] Option 1: One Tomcat for one database: In this variant the database is the tomcat securtiy realm, hence no separate IDP handling is required. Instead the user logs in with the database credentials entered in the browser. Database user groups are used to control the permissions of the application also. Connection information for the database is entered in the tomcat configuration files. By usnig the database auth, the database connections can run under the database user and his database permissions.
