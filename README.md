@@ -8,7 +8,7 @@ The user is able to deploy database applications equally to CI/CD pipelines in c
 
 ## Architecture
 
-The detailed architecture is discussed [here](docs/Architecture basics.md) but essentially a Tomcat webserver with some apps is wrapped into a container and all operations are done via web technologies. The components implemented are:
+The detailed architecture is discussed [here](docs/001 - Architecture basics.md) but essentially a Tomcat webserver with some apps is wrapped into a container and all operations are done via web technologies. The components implemented are:
 
 - Tomcat Realms to delegate the authorization and authentication to the connected database - one realm per database type
 - Swagger UI to document all Restful end points
