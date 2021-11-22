@@ -25,3 +25,8 @@ Another issue is that the database login procedure can have different results:
 3. Login was successful but user must change the password before continuing.
 4. Database cannot be reached either due to misconfiguration (JDBC URL) or the database is temporary not available.
 5. Database is in maintenance mode.
+
+The normal Tomcat realm implementation does only respond with true/false. It does not provide any means of differentiated user feedback, not even the option to present the user with a specific error message.
+This has been discussed in the support forum of Tomcat and we agreed a bug should be created [(here)](https://bz.apache.org/bugzilla/show_bug.cgi?id=65635).
+
+For the time being a completely new realm was created based on the realm interface.
