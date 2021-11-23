@@ -7,24 +7,33 @@ As such there are little dependencies between the items and some are marked as s
 
 ```mermaid
 gantt
-    title Database CI/CD
+    title Database CI/CD (274h)
     dateFormat  YYYY-MM-DD
     axisFormat  %Y-%m
-    section PM
-        Project planning            :active,    PP,          2021-11-14,          140d
-        Scrum process               :           SCRUM,       2021-11-14,          120d
-    section Concept
-        Architecture                :active,    ARCH,        2021-11-14,           14d
-        UI Design Thinking          :           UI,          after SPRINT04,        7d
-        Documentation               :           DOC,         2022-03-01,           30d
-    section Implement
-        Sprint 1                    :           SPRINT01,    after ARCH,           14d
-        Sprint 2                    :           SPRINT02,    after SPRINT01,       14d
-        Sprint 3                    :           SPRINT03,    after SPRINT02,       14d
-        Sprint 4                    :           SPRINT04,    after SPRINT03,       14d
-        Sprint 5                    :           SPRINT05,    after SPRINT04,       14d
-        Sprint 6                    :           SPRINT06,    after SPRINT05,       14d
-        Sprint 7                    :           SPRINT07,    after SPRINT06,       14d
-        Sprint 8                    :           SPRINT08,    after SPRINT07,       14d
-        Sprint 9                    :           SPRINT09,    after SPRINT08,       14d
+    section PM (24h)
+        Project planning (8h)             :active,    PP,          2021-11-14,          140d
+        Scrum process (16h)               :           SCRUM,       2021-11-14,          120d
+    section Concept (70h)
+        Architecture (20h)                :active,    ARCH,        2021-11-14,           14d
+        UI Design Thinking (10h)          :           UI,          after SPRINT04,        7d
+        Documentation (40h)               :           DOC,         2022-03-01,           30d
+    section Implement (180h)
+        Sprint 1 (20h)                    :           SPRINT01,    after ARCH,           14d
+        Sprint 2 (20h)                    :           SPRINT02,    after SPRINT01,       14d
+        Sprint 3 (20h)                    :           SPRINT03,    after SPRINT02,       14d
+        Sprint 4 (20h)                    :           SPRINT04,    after SPRINT03,       14d
+        Sprint 5 (20h)                    :           SPRINT05,    after SPRINT04,       14d
+        Sprint 6 (20h)                    :           SPRINT06,    after SPRINT05,       14d
+        Sprint 7 (20h)                    :           SPRINT07,    after SPRINT06,       14d
+        Sprint 8 (20h)                    :           SPRINT08,    after SPRINT07,       14d
+        Sprint 9 (20h)                    :           SPRINT09,    after SPRINT08,       14d
 ```
+
+
+## Time budget
+
+In average 2h per workday are spent on this project, incl holidays. For a two week sprint this translates to 20h work per sprint.
+Hence the entire time budget available is 274h.
+
+Time tracking is done using the Swipetimes app plus entered in the Gitlab issues are 
+
