@@ -15,4 +15,17 @@ The integration between database and Tomcat can be done via two basic options:
   - [ ] Option 2a: If the databases are centrally managed and all users share the same database credentials, the database specific settings cannot be used and an entire permission system must be added to the application, duplicating the database work.
   - [ ] Option 2b: If every user connects their own databases, the database permissions can be reused but the users must maintain the login information for the databases as well, e.g. storing the username/passwords in the application. Other database login methods like Kerberos, OAuth, ... must individually be implemented in the application to work.
 
-Decision was to go with **Option 1**. The difference between a root URL or a port number is little and the overhead of having multiple images deployed is minute. This way a lot of Tomcat functionaltiy can be reused including other security realms on top. 
+Decision was to go with **Option 1**. The difference between a root URL or a port number is little and the overhead of having multiple images deployed is minute. This way a lot of Tomcat functionaltiy can be reused including other security realms on top.
+
+## Repository
+
+Any application consists of lots of files. Be it web pages but also files with database scripts. One question is where to store those files. As a database is involved the typical answer in the past was using the database itself as a file store. The alternative would be to store the files in a regular file system.
+
+The requirements for a repository are today:
+
+- Fine grained security control who can read/write/execute a file
+- Git integration with push/pull/commit
+- Compatible with containers
+
+- [ ] Option 1: Store all files in the database. This makes security much easier because the complete database security can be utilized. Such virtual filesystem is also fully compatibility with containers, because database access has no relationship with containers. The big problem is the git integration however. Every single git operation must be enabled and work perfectly.
+- [x] Option 2: Store the files in the container filesystem. This allows to use all git libraries including [Jgit](https://wiki.eclipse.org/JGit/User_Guide).
