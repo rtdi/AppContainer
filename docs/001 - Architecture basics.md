@@ -33,3 +33,12 @@ Implementation options:
 - [x] Option 2: Store the files in the container filesystem. This allows to use all git libraries including [Jgit](https://wiki.eclipse.org/JGit/User_Guide). Another advantage is that not every git special function must be implemented as other git clients can be used as well. The container compatibility is a two edged swoard. If the file system is container internal, the files get deleted when the container is removed. Therefore it is strongly encouraged to overlay the host filesystem into the container and then the user has all advantages. The data is persistent via the host file system which can actually be a network file system. New versions of the container can be spun up at any time without losing any data. And git commands/tools can be used on the host computer. Security is more problematic as a container runs with a single OS user only. But if every developer has his own area to clone the git repository, this is no problem eiter.
 
 Overall **Option 2** seems to be the better solution. It is secure enough, less difficult to implement and more compatible.
+
+## Java setup
+
+The question is about the reusability of certain sub components. For example the Tomcat Database Login Realm might be interesting for other projects as well. But that would mean to split the work into one repo with the base classes of this realm and one repo for each database specific implementation. 
+
+- [x] Option 1: One repository with multiple Maven modules.
+- [ ] Option 2: Multiple repositories, one per each sub component where it makes sense at least.
+
+Decision was to go for **Option 1** to make life easier for this project. Building multiple individual components can be done in the CI/CD pipeline and in worst case, splitting the modules later into individual repos is still possible. In contrast, deprecating repos is not so nice.
