@@ -32,8 +32,10 @@ gantt
 
 ## Time budget
 
-In average 2h per workday are spent on this project, incl holidays. For a two week sprint this translates to 20h work per sprint.
-Hence the entire time budget available is 274h.
+For a two week task 20h of work are allocated.
+Hence the entire time budget is 274h.
 
-Time tracking is done using the Swipetimes app plus entered in the Gitlab issues are 
+Time tracking is done using the Swipetimes app plus entered in the Gitlab issues as /spend comment.
+
+
 
