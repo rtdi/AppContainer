@@ -39,6 +39,8 @@ All these problems require more functionality is needed for this type of applica
 
 ## Architecture
 
+(details [here](docs/001 - Architecture basics.md))
+
 The detailed architecture is discussed [here](docs/001 - Architecture basics.md) but essentially a Tomcat webserver with some apps is wrapped into a container and all operations are done via web technologies. The components implemented are:
 
 - Tomcat Realms to delegate the authorization and authentication to the connected database - one realm per database type
@@ -47,3 +49,14 @@ The detailed architecture is discussed [here](docs/001 - Architecture basics.md)
 - Repository operation endpoints
 - UIs for repository operations
 - Activation logic for different types of resources (database specific)
+
+## Security
+
+(details [here](docs/003 - Security.md))
+
+The detailed discussion and motivation of the application authentication and authorization is written up [here](docs/003 - Security.md).
+
+## Project plan
+
+(details [here](docs/002 - Projectplan.md))
+
