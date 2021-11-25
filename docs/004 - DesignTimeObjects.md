@@ -12,3 +12,7 @@ Each of those approaches have their pros and cons, primarily around ease of use,
 Example: A table should have 10 columns, a primary key, multiple foreign keys, partitioning information and extra indexes with their individual settings. This is certainly no problem for purpose built SQL scripts, however if the script fails the database is in no determined state. Running the script again will likely fail. the other options have some capability to add database specific information but usually tend to stick to the basic SQL syntax to help portability of the code.
 
 The enable CI/CD no manual work is possible during the activation and it must be complete. Complete in the sense of "exactly as it will be used in production". Therefor adding database specific syntax is a must.
+
+The first supported creation method is Option 1, SQL Scripts. But not as one script that does it all but a directory tree which is executed in order. Parent nodes first, child nodes second, within a directory all objects are executed sorted by name. As there might be dependencies with other schema objects, an additional link to directories which must be executed before must be possible as well.
+
+For table contents insert statements would be okay but a first step towards Option 4 is possible as well. Activating CSV files means loading the data into the table with the same name.
