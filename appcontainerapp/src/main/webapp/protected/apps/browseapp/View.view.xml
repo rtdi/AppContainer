@@ -1,0 +1,131 @@
+<mvc:View height="100vh"
+	class="sapUiSizeCompact" 
+	displayBlock="true"
+	id="mainview"
+	controllerName="ui5app.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:t="sap.ui.table"
+	xmlns:dnd="sap.ui.core.dnd"
+	xmlns:ui5libs.controls="ui5libs.controls"
+	xmlns:core="sap.ui.core">
+	<ui5libs.controls:AppContainerPage pageTitle="Design time browser">
+		<l:ResponsiveSplitter defaultPane="default" height="100%">
+			<l:layoutData>
+				<FlexItemData growFactor="1"/>
+			</l:layoutData>
+			<l:PaneContainer>
+				<l:SplitPane requiredParentWidth="400" id="default">
+					<t:TreeTable id="idBrowseTree"
+						rows="{path:'/', parameters: {arrayNames:['folders']}}"
+						selectionMode="None" enableSelectAll="false"
+						ariaLabelledBy="title"
+						cellClick="onSelectDir"
+						visibleRowCountMode="Auto">
+		                <t:extension>
+		                    <OverflowToolbar>
+		                        <Title id="title" text="Directory for user"/>
+		                        <ToolbarSpacer/>
+								<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush" />
+								<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull" />
+								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote" />
+		                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
+		                    </OverflowToolbar>
+		                </t:extension>
+						<t:dragDropConfig>
+							<dnd:DragInfo
+								groupName="browsefiles"
+								sourceAggregation="rows" />
+							<dnd:DropInfo
+								groupName="browsefiles"
+								targetAggregation="rows"
+								dropPosition="On"
+								drop="onDropFile" />
+						</t:dragDropConfig>
+						<t:columns>
+							<t:Column width="60%">
+								<Label text="Folder"/>
+								<t:template>
+									<Text text="{name}" wrapping="false" /> 
+								</t:template>
+							</t:Column>
+							<t:Column>
+								<Label text="File count"/>
+								<t:template>
+									<Text text="{filecount}" wrapping="false" /> 
+								</t:template>
+							</t:Column>
+							<t:Column hAlign="Right">
+								<Label text="Actions"/>
+								<t:template>
+									<HBox fitContainer="true" justifyContent="End" >
+										<core:Icon src="sap-icon://edit" tooltip="Rename folder" press="onRenameDirectory" class="sapUiTinyMargin" 
+											visible="{= ${path} !== '.' }" 
+										/>
+										<core:Icon src="sap-icon://delete" tooltip="Delete folder" press="onDeleteDirectory" class="sapUiTinyMargin"
+											visible="{= ${path} !== '.' }" 
+										/>
+										<core:Icon src="sap-icon://add-folder" tooltip="Add sub folder" press="onAddSubdirectory" class="sapUiTinyMargin" />
+										<core:Icon src="sap-icon://activate" tooltip="Activate all" press="onActivateDirectory" class="sapUiTinyMargin" />
+									</HBox>
+								</t:template>
+							</t:Column>
+						</t:columns>
+					</t:TreeTable>
+				</l:SplitPane>
+				<l:SplitPane>
+					<t:TreeTable id="idFiles"
+						rows="{path:'/files'}"
+						selectionMode="None" enableSelectAll="false"
+						ariaLabelledBy="title"
+						cellClick="onSelectDir"
+						visibleRowCountMode="Auto">
+		                <t:extension>
+		                    <OverflowToolbar>
+								<Title text="Files in folder: {/path}/" level="H2" />
+								<ToolbarSpacer />
+								<Button icon="sap-icon://add" tooltip="Add new file" press="onAddFile" />
+		                        <Button icon="sap-icon://refresh" tooltip="Refresh file list" press="onFilesRefresh"/>
+		                    </OverflowToolbar>
+		                </t:extension>
+						<t:dragDropConfig>
+							<dnd:DragInfo
+								groupName="browsefiles"
+								sourceAggregation="rows" />
+						</t:dragDropConfig>
+						<t:columns>
+							<t:Column width="70%">
+								<Label text="Filename" />
+								<t:template>
+									<HBox>
+										<Link text="{name}" target="_blank" href="{ path: 'path', formatter: '.formatterTextEditorLink' }" />
+										<Link 
+											text="(Editor)" 
+											target="_blank" 
+											visible="{ path: 'path', formatter: '.formatterEnableEditor' }" 
+											href="{ path: 'path', formatter: '.formatterEditorLink' }" />
+										<Link 
+											text="(run)" 
+											target="_blank" 
+											visible="{ path: 'path', formatter: '.formatterEnableRun' }" 
+											href="{ path: 'path', formatter: '.formatterLinkRun' }" />
+									</HBox>
+								</t:template>
+							</t:Column>
+							<t:Column hAlign="Right">
+								<Label text="Actions"/>
+								<t:template>
+									<HBox fitContainer="true" justifyContent="End">
+										<core:Icon src="sap-icon://edit" tooltip="Rename file" press="onRenameFile" class="sapUiTinyMargin" />
+										<core:Icon src="sap-icon://delete" tooltip="Delete file" press="onDeleteFile" class="sapUiTinyMargin" />
+									</HBox>
+								</t:template>
+							</t:Column>
+						</t:columns>
+					</t:TreeTable>
+				</l:SplitPane>
+			</l:PaneContainer>
+		</l:ResponsiveSplitter>
+	</ui5libs.controls:AppContainerPage>
+</mvc:View>

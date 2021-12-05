@@ -1,0 +1,147 @@
+{
+	"apps": [
+		{
+			"name": "Pie Chart",
+			"href": "./piechart/index.html",
+			"image": "./media/piechart.png",
+			"metadata": {
+				"AxisTypes": [{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false}],
+				"Suited": ["Proportion", "Parts-of-whole", "Comparison"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "Donut Chart",
+			"href": "./donutchart/index.html",
+			"image": "./media/donutchart.png",
+			"metadata": {
+				"AxisTypes": [
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false},
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false},
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false},
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false}
+				],
+				"Suited": ["Proportion", "Parts-of-whole", "Comparison"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "Word Cloud",
+			"href": "./wordcloud/index.html",
+			"image": "./media/wordcloud.png",
+			"metadata": {
+				"AxisTypes": [
+					{"type": 0, "label": true, "optimalCount": 100, "distribution": "uneven", "sparse": false}
+				],
+				"Suited": ["Proportion", "Comparison"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "Sankey Diagram",
+			"href": "./sankey/index.html",
+			"image": "./media/sankey.png",
+			"metadata": {
+				"AxisTypes": [{"type": 0, "label": true, "optimalCount": 30, "distribution": "all", "sparse": false}],
+				"Suited": ["Proportion", "Flow", "Process"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "Chord Diagram",
+			"href": "./chord/index.html",
+			"image": "./media/chord.png",
+			"metadata": {
+				"AxisTypes": [{"type": 0, "label": true, "optimalCount": 30, "distribution": "all", "sparse": false}],
+				"Suited": ["Proportion", "Flow", "Comparison", "Relationship"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "Gauge",
+			"href": "./gauge/index.html",
+			"image": "./media/gauge.png",
+			"metadata": {
+				"AxisTypes": [{"type": 0, "label": true, "optimalCount": 1, "distribution": "all", "sparse": true}],
+				"Suited": ["Proportion", "Comparison"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "Radar chart",
+			"href": "./radarchart/index.html",
+			"image": "./media/radarchart.png",
+			"metadata": {
+				"AxisTypes": [
+					{"type": 0, "label": true, "optimalCount": 5, "distribution": "all", "sparse": true},
+					{"type": 0, "label": true, "optimalCount": 5, "distribution": "all", "sparse": true},
+					{"type": 0, "label": true, "optimalCount": 5, "distribution": "all", "sparse": true},
+					{"type": 0, "label": true, "optimalCount": 5, "distribution": "all", "sparse": true}
+				],
+				"Suited": ["Proportion", "Comparison"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "Treemap",
+			"href": "./treemap/index.html",
+			"image": "./media/treemap.png",
+			"metadata": {
+				"AxisTypes": [{"type": 0, "label": true, "optimalCount": 30, "distribution": "all", "sparse": false}],
+				"Suited": ["Proportion", "Hierarchy", "Comparison", "Parts-of-whole"],
+				"TimeAxis": []
+			}
+		},
+		{
+			"name": "XY Chart",
+			"href": "./xychart/index.html",
+			"image": "./media/xychart.png"
+		},
+		{
+			"name": "Sunburst",
+			"href": "./sunburst/index.html",
+			"image": "./media/sunburst.png",
+			"metadata": {
+				"AxisTypes": [
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false},
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false},
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false},
+					{"type": 0, "label": true, "optimalCount": 10, "distribution": "even", "sparse": false}
+				],
+				"Suited": ["Hierarchy", "Parts-of-whole"],
+				"TimeAxis": []
+			}
+		}
+	],
+	"properties": {
+		"AxisType": [
+			{"key": 0, "Name": "nominal"},
+			{"key": 1, "Name": "ordinal"},
+			{"key": 2, "Name": "interval"},
+			{"key": 3, "Name": "rational"}
+		],
+		"Suited": [
+			{"key": "Proportion"},
+			{"key": "Parts-of-whole"},
+			{"key": "Flow"},
+			{"key": "Process"},
+			{"key": "Comparison"},
+			{"key": "Relationship"},
+			{"key": "Hierarchy"}
+		],
+		"TimeAxis": [
+			{"key": 0, "Name": "timestamp"},
+			{"key": 1, "Name": "date"},
+			{"key": 2, "Name": "month"},
+			{"key": 3, "Name": "year"},
+			{"key": 4, "Name": "time-only"},
+			{"key": 5, "Name": "interval"},
+			{"key": 6, "Name": "week"},
+			{"key": 7, "Name": "quarter"}
+		],
+		"Sparse": [
+			{"key": true,  "desc": "Category is shown even if value is Null/Zero"},
+			{"key": false, "desc": "Category without a value is invisible"}
+		]
+	}
+}

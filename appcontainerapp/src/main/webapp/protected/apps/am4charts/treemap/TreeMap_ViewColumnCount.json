@@ -1,0 +1,10 @@
+{
+	"dataSource": {
+		"url": "ui5app/sampledata.json"
+	},
+	"type": "TreeMap",
+	"dataFields": {
+		"value": "COUNT",
+		"name": "VIEW_NAME"
+	}
+}

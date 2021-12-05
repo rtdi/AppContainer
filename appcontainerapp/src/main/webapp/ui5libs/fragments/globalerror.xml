@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <MessagePopover
+        items="{state>/messages}"
+        initiallyExpanded="true">
+        <MessageItem
+            type="Error"
+            title="{state>errortext}"
+            description="{state>markup}"
+            subtitle="subtitle"
+            longtextUrl="http://rtdi.io"
+            link="http://github.com"
+            markupDescription="true" >
+        </MessageItem>
+    </MessagePopover>
+</core:FragmentDefinition>

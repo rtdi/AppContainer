@@ -1,0 +1,47 @@
+{
+	"dataSource": {
+		"url": "ui5app/sampledata.json"
+	},
+	"xAxes": [
+		{
+			"type": "CategoryAxis",
+			"dataFields": {
+				"category": "VIEW_NAME",
+				"title": {
+					"text": "View name"
+				}
+			},
+	        "renderer": {
+	            "labels": {
+	                "template": {
+	                    "type": "AxisLabel",
+	                    "rotation": -90
+	                }
+	            }
+			}
+		}
+	],
+	"yAxes": [
+		{
+			"type": "ValueAxis",
+			"title": {
+				"text": "Number of columns"
+			}
+		}
+	],
+	"series": [
+		{
+			"type": "ColumnSeries",
+			"dataFields": {
+				"valueY": "COUNT",
+				"categoryX": "VIEW_NAME"
+			},
+			"name": "Column Count",
+			"columns": {
+				"tooltipText": "Series: {name}\nView: {categoryX}\nColumnCount: {valueY}",
+				"stroke": "#ff0000",
+				"fill": "#00ff00"
+			}
+		}
+	]
+}

@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    >
+	<VBox justifyContent="SpaceBetween" width="200px" height="150px" backgroundDesign="Solid" class="sapUiSmallMargin" tooltip="{tooltip}" >
+		<VBox class="sapUiSmallMargin">
+			<core:Icon src="{icon}" visible="{path: 'icon', formatter: '.visibleFormatter' }" size="2.625rem" color="Default" class="sapUiTinyMarginBottom"/>
+			<Image src="{image}" visible="{path: 'image', formatter: '.visibleFormatter' }" class="sapUiTinyMarginBottom fragmentimage"/>
+			<Link text="{name}" href="{href}" wrapping="true" target="_blank" class="sapUiTinyMarginTop" />
+			<Text text="{description}" wrapping="true"/>
+		</VBox>
+	</VBox>
+
+</core:FragmentDefinition>

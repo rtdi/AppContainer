@@ -1,0 +1,34 @@
+[
+	{
+		"VIEW_NAME" : "ABSTRACT_SQL_PLANS",
+		"COUNT" : 20
+	},
+	{
+		"VIEW_NAME" : "ACCESSIBLE_VIEWS",
+		"COUNT" : 4
+	},
+	{
+		"VIEW_NAME" : "ADAPTERS",
+		"COUNT" : 5
+	},
+	{
+		"VIEW_NAME" : "ADAPTER_CAPABILITIES",
+		"COUNT" : 7
+	},
+	{
+		"VIEW_NAME" : "ADAPTER_LOCATIONS",
+		"COUNT" : 5
+	},
+	{
+		"VIEW_NAME" : "AFL_AREAS",
+		"COUNT" : 4
+	},
+	{
+		"VIEW_NAME" : "AFL_FUNCTIONS",
+		"COUNT" : 10
+	},
+	{
+		"VIEW_NAME" : "AFL_FUNCTION_PARAMETERS",
+		"COUNT" : 16
+	}
+]
