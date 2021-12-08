@@ -1,4 +1,4 @@
-package io.rtdi.appcontainerapp.servlets;
+package io.rtdi.appcontainer.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;

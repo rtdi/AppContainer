@@ -1,4 +1,4 @@
-package io.rtdi.appcontainerapp.servlets;
+package io.rtdi.appcontainer.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,6 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * This is the login form Tomcat redirects the user to, in case a protected page is requested and the user is not logged in yet.
+ * It also handles the autologin, which provides the username/password as session parameter.
+ *
+ */
 @WebServlet("/login")
 public class Login extends HttpServlet {
 
@@ -32,6 +37,9 @@ public class Login extends HttpServlet {
 			session.removeAttribute("username");
 			session.removeAttribute("password");
 			if (username != null && password != null) {
+				/*
+				 * The login information was provided via the autologin servlet
+				 */
 				String target = "j_security_check?j_username=" + URLEncoder.encode(username, "UTF-8") + "&j_password=" + URLEncoder.encode(password, "UTF-8");
 				resp.sendRedirect(target);
 				out.println("<!DOCTYPE html>");

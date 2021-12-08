@@ -1,4 +1,4 @@
-package io.rtdi.appcontainerapp.servlets;
+package io.rtdi.appcontainer.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,6 +9,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Tomcat shows this page in case the login did not succeed.
+ *
+ */
 @WebServlet("/error")
 public class LoginError extends HttpServlet {
 

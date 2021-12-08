@@ -3,13 +3,14 @@ package io.rtdi.appcontainer.databaseloginrealm;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Every implementer of this interface must create a connection pool and query the required data
  * from the database. 
  *
  */
-public interface IAppContainerPrincipal {
+public interface IDatabaseLoginPrincipal {
 
 	/**
 	 * Call the Tomcat's DataSource getConnection() method to retrieve a currently idle connection from the pool.
@@ -49,8 +50,9 @@ public interface IAppContainerPrincipal {
 	 */
 	String[] getRoles();
 	
-	String getLoginWarnings();
+	/**
+	 * @return a text to be rendered as information for the end user like password is about to expire, must change password
+	 */
+	Optional<String> getLoginWarnings();
 	
-	void setLoginWarnings(String message);
-
 }

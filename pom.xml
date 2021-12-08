@@ -26,6 +26,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<revision>0.10.13</revision>
+		<tomcatversion>10.0.13</tomcatversion>
 	</properties>
 	<modules>
 	<module>databaseloginrealm</module>

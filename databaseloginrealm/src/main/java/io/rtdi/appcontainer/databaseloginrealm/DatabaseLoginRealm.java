@@ -49,7 +49,7 @@ public abstract class DatabaseLoginRealm extends RealmBase {
 	}
 	
 	protected abstract Principal createNewPrincipal(String username, String credentials, String jdbcurl) throws SQLException;
-
+	
 	/**
 	 * Actually returns null for security reasons
 	 */

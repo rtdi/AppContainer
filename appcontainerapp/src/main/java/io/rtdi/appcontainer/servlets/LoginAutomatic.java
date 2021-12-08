@@ -1,4 +1,4 @@
-package io.rtdi.appcontainerapp.servlets;
+package io.rtdi.appcontainer.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,6 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * The autologin is a method to bypass the form based login and rather provide the login data as url parameter.
+ *
+ */
 @WebServlet("/autologin")
 public class LoginAutomatic extends HttpServlet {
 

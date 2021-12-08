@@ -1,4 +1,4 @@
-# Athentication and authorization
+# Authentication and authorization
 
 ## Realm to use
 
@@ -29,4 +29,43 @@ Another issue is that the database login procedure can have different results:
 The normal Tomcat realm implementation does only respond with true/false. It does not provide any means of differentiated user feedback, not even the option to present the user with a specific error message.
 This has been discussed in the support forum of Tomcat and we agreed to file a bug [(see here)](https://bz.apache.org/bugzilla/show_bug.cgi?id=65635).
 
-For the time being a completely new realm was created based on the realm interface.
+For the time being the DatabaseLoginPrincipal got an additional property to show warnings at least.
+
+
+## Tomcat permissions configuration
+
+With the realm being configured, it is now a matter of deciding which URLs are login protected as such. This is done in the [web.xml](../appcontainerapp/src/main/webapp/WEB-INF/web.xml) of the web application.
+
+It defines a role PUBLIC and a security constraint on all URLs `/protected/*`. All pages outside this URL can be accessed without being logged in, e.g. the home page /index.html, and everything with the URL /protected/* can only be access by a logged in user which has the role PUBLIC.
+
+If such a protected resource is opened for the first time, Tomcat automatically triggers the login workflow. Here the procedure is to use a form based login and the login page it shows is called `/login`. This is actually a servlet, the [io.rtdi.appcontainer.servlets.Login](../appcontainerapp/src/main/java/io/rtdi/appcontainer/servlets/Login.java). 
+
+```
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Protected</web-resource-name>
+			<url-pattern>/protected/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>PUBLIC</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/login</form-login-page>
+			<form-error-page>/error</form-error-page>
+		</form-login-config>
+	</login-config>
+	<security-role>
+		<role-name>PUBLIC</role-name>
+	</security-role>
+```
+
+The form based login method is considered a very safe method, especially compared to BASIC AUTH, but it has the downside that it cannot be used programmatically, e.g. if a client consumes a web service. 
+To enable that a [autologin](../appcontainerapp/src/main/java/io/rtdi/appcontainer/servlets/LoginAutomatic.java) servlet exists in parallel to the login servlet. This servlet creates a session, does attach the login data to the session and redirects to the target URL. As this target URL is protected, Tomcat will call the login servlet and that checks if the login data is available in the session. If yes, it is using that.
+
+The logout servlet invalidates the Tomcat session and redirects to the home page.
+
+
+
