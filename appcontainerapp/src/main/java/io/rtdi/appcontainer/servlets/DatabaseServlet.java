@@ -6,12 +6,11 @@ import java.security.Principal;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 /**
@@ -27,7 +26,7 @@ public abstract class DatabaseServlet extends HttpServlet {
 
 	@Override
 	protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req, resp);
+		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req);
 		try (Connection conn = dbprincipal.getConnection();) {
 			doGet(req, resp, conn);
 		} catch (SQLException e) {
@@ -42,7 +41,7 @@ public abstract class DatabaseServlet extends HttpServlet {
 
 	@Override
 	protected final void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req, resp);
+		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req);
 		try (Connection conn = dbprincipal.getConnection();) {
 			doPut(req, resp, conn);
 		} catch (SQLException e) {
@@ -57,7 +56,7 @@ public abstract class DatabaseServlet extends HttpServlet {
 
 	@Override
 	protected final void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req, resp);
+		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req);
 		try (Connection conn = dbprincipal.getConnection();) {
 			doDelete(req, resp, conn);
 		} catch (SQLException e) {
@@ -72,7 +71,7 @@ public abstract class DatabaseServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req, resp);
+		IDatabaseLoginPrincipal dbprincipal = getPrincipal(req);
 		try (Connection conn = dbprincipal.getConnection();) {
 			doPost(req, resp, conn);
 		} catch (SQLException e) {
@@ -85,7 +84,7 @@ public abstract class DatabaseServlet extends HttpServlet {
 		super.doPost(req, resp); // default implementation which should  be overwritten - returns an http error that this method is not implemented.
 	}
 
-	private static IDatabaseLoginPrincipal getPrincipal(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public static IDatabaseLoginPrincipal getPrincipal(HttpServletRequest req) throws ServletException, IOException {
 		Principal principal = req.getUserPrincipal();
 		if (principal == null) {
 			throw new ServletException("There seems to be a web server configuration error. "
