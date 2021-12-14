@@ -40,3 +40,15 @@ This enables each developer to have full control about the degree of individuali
 
 The general guideline however shall be to use schema names as they will be at deployment time and the developers alias it to their schemas if needed.
 
+## Production deployment
+
+Once the application is ready, it gets deployed. This follows the same procedure: A user, this time a technical user, does a git pull. If the user name is `public` the latest code will be copied into `/repo/public/app1` and the database scripts get executed. 
+Endusers can then access the URL `/repo/public/app1/index.html` to open the application, assuming they have permissions to do so.
+
+# Directory permissions
+
+By default only the directory owner has access to a directory. The user `dev1` can access the URL `/repo/dev1`, the user `public` can access `/repo/public`. By placing files `allow.json` and `deny.json` in any directory at any level, this can be overwritten. In the `public` schema very likely an `allow.json` is placed granting all users that have the database role `PUBLIC` assigned - all users hence - access. This enables them to open the pages. Within the pages finer control can be implemented and all database interactions are protected via the database anyhow.
+
+In other words, the database role membership is used to control access to database objects but also to files in the repository.
+
+Note: Regardless of the settings in allow and deny, the owner of the repo can access all files always. The access to other users is read-access, no user other than the owner can have write access. 
