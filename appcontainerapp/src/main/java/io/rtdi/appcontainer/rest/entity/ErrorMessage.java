@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.Response;
 @Schema(description="Detailed error information from the server")
 public class ErrorMessage {
 	private Exception exception;
+	private String message;
 
 	public ErrorMessage() {
 		super();
@@ -17,10 +18,16 @@ public class ErrorMessage {
 	public ErrorMessage(Exception e) {
 		super();
 		exception = e;
+		message = e.toString();
+	}
+
+	public ErrorMessage(String text) {
+		super();
+		this.message = text;
 	}
 
 	public String getMessage() {
-		return exception.toString();
+		return message;
 	}
 	
 	public String getHint() {
@@ -76,5 +83,9 @@ public class ErrorMessage {
 	 */
 	public static Response createResponse(Exception e) {
 		return Response.status(HttpURLConnection.HTTP_ACCEPTED).entity(new ErrorMessage(e)).build();
+	}
+
+	public static Response createResponse(String text) {
+		return Response.status(HttpURLConnection.HTTP_ACCEPTED).entity(new ErrorMessage(text)).build();
 	}
 }
