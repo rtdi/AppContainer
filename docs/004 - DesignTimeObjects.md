@@ -72,7 +72,7 @@ Deriving all only from the directory structure does not work either as a module 
 ## Conclusions
 
 The developer is completely free in defining a directory structure in the repository. There will be the natural tendency to structure the objects in a natural way, e.g. `001 - table scripts`, `002 - view scripts`, ... and the dependency will be built based on the sorted directory/file names.
-If a dependency must be added to a directory in a parallel path, the developer creates a file `.requires.json` and lists all directories (their root directory only) that should be activated before.
+If a dependency must be added to a directory in a parallel path, the developer creates a file `.requires` and lists all directories (their root directory only) that should be activated before.
 
 Example:
 
@@ -80,12 +80,12 @@ Example:
 - `ERP/db/erpschema/001 - create tables/...` contains all scripts that create the ERP tables
 - `ERP/db/erpschema/002 - create views/...` contains all scripts that create the ERP views and is executed after `001 - create tables`
 - `app1/db/sales/001 - create views/...` adds views that are app dependent
-- `app1/db/sales/.requires.json` contains the information that `ERP/db/erpschema` is used by app1
+- `app1/db/sales/.requires` contains the information that `ERP/db/erpschema` is used by app1
 
 When the activation is started for all, then the ERP tables are created first, followed by the views and app1 views later. 
 If the activation is started on the app1 directory, only the app1 scripts are executed and it is assumed the ERP scripts had been executed already and are current.
 
 Using these two options the developer can define dependencies easily and in a natural manner without being limited. Either the dependency comes naturally from the directory tree or is specified explicitly.
 
-Note: If directories are moved the `.requires.json` will likely not be altered or checked.
+Note: If directories are moved the `.requires` will likely not be altered or checked.
 
