@@ -21,25 +21,6 @@ The developers checkin and checkout code on the various apps `/repo/dev1/app1`, 
 URLs should be relative, either within the app `<a href="./page2.html">` or crossing apps `<a href="../app3/index.html">`.
 This enables that the developer can see the version from within his repository `/repo/dev1`. The final production code will be in another schema, e.g. `/repo/public/app1`.
 
-## Database scripts and schemas
-
-For database objects this is not sufficient because one app might consists of multiple database schemas. An obvious example is a large ERP application which consists of 100s of apps. The ERP data should be central, not individual to the app. 
-Similar to above this is handled via directories, e.g. `/repo/dev1/app1/db/erpschema`
-
-A create table script located in `/repo/dev1/app1/db/erpschema` will be created in the database schema `erpschema`. The create script should not decide on the schema the table is created, this is derived from the directory name.
-Which creates another problem when deploying the same application multiple times in the same database. For example when two developers want to work totally independent including the database tables or in the database is a test and QA schema.
-
-The repository must support more - schema aliasing. 
-In the root folder an optional `/repo/dev1/app1/dbalias.json` file controls the actual schema name to be used. This shall not be part of the git repository as it is developer specific (`.gitignore`!). 
-It contains key-value pairs where key is the schema directory `erpschema` and the value is the actual schema to use `dev1`.
-When a script in the erpschema directory is executed, the database connection changes the default schema to dev1 and runs the script.
-Hence the table is created in this schema, assuming the developer has the required permissions on that schema - in this example his very own dev1 schema.
-
-But aliases work within the scripts as well. A script with `create view sales select * from erpschema.orders;` would get changed at execution time, replacing the `erpschema` to `dev1`. 
-This enables each developer to have full control about the degree of individuality (use the common schema, use a personal schema) for each schema. Also at the deployment of the application the schema assoziations can be changed if needed.
-
-The general guideline however shall be to use schema names as they will be at deployment time and the developers alias it to their schemas if needed.
-
 ## Production deployment
 
 Once the application is ready, it gets deployed. This follows the same procedure: A user, this time a technical user, does a git pull. If the user name is `public` the latest code will be copied into `/repo/public/app1` and the database scripts get executed. 
