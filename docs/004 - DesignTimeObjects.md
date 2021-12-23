@@ -94,12 +94,13 @@ The directory structure of database artifacts should have the target schema as f
 
 Example:
 
-[ ] developer1: The root directory of the currently logged in user. This is where the git repo is cloned into.
-    [ ] STAGING: All objects meant for the production schema STAGING go in this directory. So STAGING is the value of the CURRENTOWNER.
-        [ ] ORDER_STATUS.csv: The table STAGING.ORDER_STATUS should contain the data of this file.
-        [ ] views.sql: A script that creates multiple views. It can use ${CURRENTOWNER} but does not have to.
-    [ ] DWH: All objects meant for the production schema DWH go in this directory. So DWH is the value of the CURRENTOWNER.
-        [ ] objects.sql: A script that creates all/some database objects. It can use ${CURRENTOWNER} but does not have to and the value would be DWH.
+- [ ] db: The script root directory of the currently logged in user.
+  - [ ] STAGING: All objects meant for the production schema STAGING go in this directory. So STAGING is the value of the `${CURRENTOWNER}`.
+    - [ ] ORDER_STATUS.csv: The table STAGING.ORDER_STATUS should contain the data of this file.
+    - [ ] views.sql: A script that creates multiple views. It can use ${CURRENTOWNER} but does not have to.
+  - [ ] DWH: All objects meant for the production schema DWH go in this directory. So DWH is the value of the CURRENTOWNER.
+    - [ ] objects.sql: A script that creates all/some database objects. It can use ${CURRENTOWNER} but does not have to and the value would be DWH.
+
 
 As with all other schema names, the actual schema is derived using the `.globalmapping` file. So if there is an alias for `DWH` to use the actual schema `DEV_DWH` this will be the actual value of CURRENTOWNER.
 
