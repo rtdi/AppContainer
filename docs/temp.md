@@ -1,10 +1,3 @@
-### Deployment of database objects
-
-The entire problem starts with the question of how to actually deploy the database objects. The only option database vendors provide are command line interfaces to run scripts. Because there is no dependency handling, it must be one script in fact. The user must take care of everything in the script: execution order, error handling, recovery, ...
-Another unsolved problem are the schema names of database objects. For enterpise grade software the application will be deployed multiple times, in a test, QA and prod database. Possibly every deveoper has his own instance of the data. The only options in database scripts is to either have fixed schema names and one database per instance, or to use no schema names anywhere and deploy all in the connected user's schema.
-Both options are of limited use.
-This solution should combine the flexibility of scripts with dependency handling, schema aliasing, error handling and recovery.
-
 ### Testing of database objects
 
 A database testing suite for CI/CD does not exist either. It would need to execute SQL statements and compare the results with expected data. In many cases these results are either datasets or database specific exceptions.
