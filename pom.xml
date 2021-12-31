@@ -32,6 +32,8 @@
 	<module>databaseloginrealm</module>
 	<module>appcontainerapp</module>
 	<module>databaseloginrealmsnowflake</module>
+	<module>dbactivationbase</module>
+	<module>dbactivationsnowflake</module>
 	</modules>
 	<build>
 		<plugins>

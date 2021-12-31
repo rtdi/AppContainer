@@ -1,7 +1,5 @@
 package io.rtdi.appcontainer;
 
-import java.util.Arrays;
-
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -42,13 +40,7 @@ public class WebApplication extends ResourceConfig {
 	public WebApplication() {
 		super();
 		String[] p = getPackages();
-		if (p == null) {
-			packages("io.rtdi.appcontainer.rest");
-		} else {
-			p = Arrays.copyOf(p, p.length+1);
-			p[p.length-1] = "io.rtdi.appcontainer.rest";
-			packages(p);
-		}
+		packages(p);
 		register(JacksonFeature.class);
 		register(RolesAllowedDynamicFeature2.class);
 		

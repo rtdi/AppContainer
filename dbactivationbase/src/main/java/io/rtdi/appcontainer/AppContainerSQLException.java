@@ -1,4 +1,4 @@
-package io.rtdi.appcontainer.utils;
+package io.rtdi.appcontainer;
 
 import java.sql.SQLException;
 
@@ -8,7 +8,7 @@ public class AppContainerSQLException extends SQLException {
 	private String sqltext;
 	private String hint = null;
 
-	private AppContainerSQLException(String message, SQLException e, String sqltext, String hint) {
+	public AppContainerSQLException(String message, SQLException e, String sqltext, String hint) {
 		super(String.format("%s, SQLMessage: %s", message, e.getMessage()), e.getSQLState(), e.getErrorCode(), e.getCause());
 		this.sqltext = sqltext;
 		this.hint = hint;

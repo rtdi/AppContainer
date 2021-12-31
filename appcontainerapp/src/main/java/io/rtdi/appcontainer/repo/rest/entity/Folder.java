@@ -30,10 +30,13 @@ public class Folder {
 		} else if (!dir.isDirectory()) {
 			throw new IOException("The requested path \"" + dir.getAbsolutePath() + "\" exists but is not a directory");
 		}
-		if (relativepath != null) {
+		if (relativepath == null) {
+			name = null;
+			path = null;
+		} else {
 			name = dir.getName();
+			path = relativepath;
 		}
-		path = relativepath;
 		
 		File[] plainfiles = dir.listFiles(FileUtil.PLAINFILEFILTER);
 		if (plainfiles!= null) {
@@ -44,14 +47,14 @@ public class Folder {
 		
 		File[] files = dir.listFiles(FileUtil.DIRECTORYFILTER);
 		if (files != null && files.length > 0) {
-			String p = null;
-			if (relativepath == null) {
-				p = dir.getName();
-			} else {
-				p = relativepath + "/" + dir.getName();
-			}
 			folders = new ArrayList<>();
 			for (File f : files) {
+				String p;
+				if (path == null) {
+					p = f.getName();
+				} else {
+					p = path + "/" + f.getName();
+				}
 				folders.add(new Folder(f, p));
 			}
 		}

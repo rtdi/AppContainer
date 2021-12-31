@@ -3,6 +3,8 @@
 	<name>appcontainerapp</name>
 	<comment></comment>
 	<projects>
+		<project>dbactivationsnowflake</project>
+		<project>dbactivationbase</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

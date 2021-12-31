@@ -146,3 +146,9 @@ The structure of the `.requires` file:
 }
 ```
 
+### Java implementation
+
+As each database has a different method to check if a table exists, column, the SQL syntax for parsing, etc this code must be database specific.
+The code is using Java Service Provider Interface (SPI) to enable that. 
+For better isolation the Maven module `dbactivationbase` contains all interfaces and other modules implement those interfaces. 
+The only additional requirement in the implementation is to add a `META-INF/services/io.rtdi.appcontainer.plugins.database.IDatabaseProvider` file with its only content the exact class name implementing the IDatabaseProvider interface.

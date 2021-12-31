@@ -84,7 +84,12 @@ public abstract class DatabaseServlet extends HttpServlet {
 		super.doPost(req, resp); // default implementation which should  be overwritten - returns an http error that this method is not implemented.
 	}
 
-	public static IDatabaseLoginPrincipal getPrincipal(HttpServletRequest req) throws ServletException, IOException {
+	/**
+	 * @param req
+	 * @return must return the servlet principal of type IDatabaseLoginPrincipal
+	 * @throws ServletException in case no correct IDatabaseLoginPrincipal can be found
+	 */
+	public static IDatabaseLoginPrincipal getPrincipal(HttpServletRequest req) throws ServletException {
 		Principal principal = req.getUserPrincipal();
 		if (principal == null) {
 			throw new ServletException("There seems to be a web server configuration error. "

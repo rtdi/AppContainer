@@ -12,6 +12,10 @@ public class FileData implements Comparable<FileData> {
 	private String extension;
 	private String path;
 	
+	public FileData() {
+		super();
+	}
+	
 	public FileData(@NotNull File file, String path) throws IOException {
 		if (!file.exists()) {
 			throw new IOException("The requested file \"" + file.getAbsolutePath() + "\" does not exist");
@@ -40,6 +44,18 @@ public class FileData implements Comparable<FileData> {
 
 	public String getPath() {
 		return path;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	@Override
