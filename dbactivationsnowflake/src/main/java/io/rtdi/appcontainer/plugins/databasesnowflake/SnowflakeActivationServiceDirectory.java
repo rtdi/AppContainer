@@ -1,6 +1,5 @@
 package io.rtdi.appcontainer.plugins.databasesnowflake;
 
-import io.rtdi.appcontainer.plugins.activation.CSVImport;
 import io.rtdi.appcontainer.plugins.database.ActivationServiceDirectory;
 
 public class SnowflakeActivationServiceDirectory extends ActivationServiceDirectory {
@@ -12,7 +11,7 @@ public class SnowflakeActivationServiceDirectory extends ActivationServiceDirect
 	@Override
 	protected void addServices() {
 		addService(".sql", new SnowflakeSQLParser());
-		addService(".csv", new CSVImport());
+		addService(".csv", new SnowflakeCSVImport());
 	}
 	
 
