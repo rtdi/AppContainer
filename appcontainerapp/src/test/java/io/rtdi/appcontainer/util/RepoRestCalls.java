@@ -1,4 +1,4 @@
-package appcontainerapp;
+package io.rtdi.appcontainer.util;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,12 +33,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.rtdi.appcontainer.repo.rest.GitService.GitCommit;
+import io.rtdi.appcontainer.repo.rest.GitService.GitConfig;
+
 public class RepoRestCalls {
 	private HttpClientContext context;
 	private CloseableHttpClient httpClient;
 	private static String WEBAPPURL = "http://localhost:8080/appcontainerapp";
 	private static String FSAPI = WEBAPPURL + "/protected/rest/repo";
 	private static String ACTIVATIONAPI = WEBAPPURL + "/protected/rest/activation";
+	private static String GITAPI = WEBAPPURL + "/protected/rest/git";
 	private static ObjectMapper mapper = new ObjectMapper();
 	
 	public RepoRestCalls() throws URISyntaxException, ClientProtocolException, IOException {
@@ -173,12 +177,58 @@ public class RepoRestCalls {
     	}
 	}
 
+	public JsonNode gitconfig(String path, GitConfig gitconfig) throws ClientProtocolException, IOException {
+		HttpPost p = new HttpPost(GITAPI + "/gitconfig" + path);
+		p.setEntity(new StringEntity(objectToJson(gitconfig), ContentType.APPLICATION_JSON));
+    	try (CloseableHttpResponse response = httpClient.execute(p, context);) {
+    		String ret = EntityUtils.toString(response.getEntity());
+    		if (response.getStatusLine().getStatusCode() != 200) {
+    			throw new IOException("git config " + path + " failed with: " + ret);
+    		} else {
+    			return parseJson(ret);
+    		}
+    	}
+	}
+
+	public JsonNode gitpush(String path, GitCommit commit) throws ClientProtocolException, IOException {
+		HttpPost p = new HttpPost(GITAPI + "/gitpush" + path);
+		p.setEntity(new StringEntity(objectToJson(commit), ContentType.APPLICATION_JSON));
+    	try (CloseableHttpResponse response = httpClient.execute(p, context);) {
+    		String ret = EntityUtils.toString(response.getEntity());
+    		if (response.getStatusLine().getStatusCode() != 200) {
+    			throw new IOException("git push " + path + " failed with: " + ret);
+    		} else {
+    			return parseJson(ret);
+    		}
+    	}
+	}
+
+	public JsonNode gitpull(String path) throws ClientProtocolException, IOException {
+		HttpGet p = new HttpGet(GITAPI + "/gitpull" + path);
+    	try (CloseableHttpResponse response = httpClient.execute(p, context);) {
+    		String ret = EntityUtils.toString(response.getEntity());
+    		if (response.getStatusLine().getStatusCode() != 200) {
+    			throw new IOException("git pull of " + path + " failed with: " + ret);
+    		} else {
+    			return parseJson(ret);
+    		}
+    	}
+	}
+
 	
 	public JsonNode parseJson(String payload) throws IOException {
 		try {
 			return mapper.readTree(payload);
 		} catch (JsonProcessingException e) {
 			throw new IOException("Failed to parse the result as a JSON payload", e);
+		}
+	}
+	
+	public String objectToJson(Object o) throws IOException {
+		try {
+			return mapper.writeValueAsString(o);
+		} catch (JsonProcessingException e) {
+			throw new IOException("Failed to convert the object to a JSON string", e);
 		}
 	}
 	

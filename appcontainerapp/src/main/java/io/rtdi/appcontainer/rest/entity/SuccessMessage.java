@@ -33,4 +33,8 @@ public class SuccessMessage {
 		return Response.ok().entity(OK).build();
 	}
 
+	public static Response createResponseOK(String message) {
+		return Response.ok().entity(new SuccessMessage(message)).build();
+	}
+
 }

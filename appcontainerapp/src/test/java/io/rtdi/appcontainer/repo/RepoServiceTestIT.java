@@ -1,4 +1,4 @@
-package appcontainerapp;
+package io.rtdi.appcontainer.repo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import io.rtdi.appcontainer.util.RepoRestCalls;
 
 class RepoServiceTestIT {
 	private static RepoRestCalls c;

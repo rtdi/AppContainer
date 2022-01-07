@@ -1,4 +1,4 @@
-package appcontainerapp;
+package io.rtdi.appcontainer.repo;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import io.rtdi.appcontainer.util.RepoRestCalls;
 
 class ActivationServiceTestIT {
 	private static RepoRestCalls c;
