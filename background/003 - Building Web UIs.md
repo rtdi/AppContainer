@@ -20,4 +20,16 @@ The first finding was that UIs consists of different layers
 A service returning metadata about the user, at least all the roles the user belongs to, must exist.
 `rest/system/usersettings`
 
+### Conclusion 2 - Each application defines the required role(s)
+
+For global navigation each application provides a list of roles the user must have in order to open the application.
+If no role is specified it is PUBLIC but for example an application showing sensitive sales data can only be called by users who have the database roles SALES and MANAGER assigned.
+Whereever a link to this application is shown, the role membership is tested and in case the user lacks the permissions, the link is either disabled or invisible.
+
+### Conclusion 3 - OpenUI5 with Fiori design language is the primary targeted
+
+While any kind of html page can be created, thus all UI frameworks can be used, it should be easy to create OpenUI5 applications.
+This is achieved by preinstalling the framework but also providing helper methods and services.
+The general guidline shall be that required OpenUI5 files are created automatically on the fly, unless one exists in particular. The html page with its bootstrapping is a good example. UI5 requires such html page to exist but it will be similar for most applications. It sets the window title, loads the UI5 framework, the shell and user defaults and within is the application specific view rendered. If the html file exists in the repository it is used, else a servlet generates that automatically.
+
 
