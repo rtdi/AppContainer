@@ -26,7 +26,7 @@ For global navigation each application provides a list of roles the user must ha
 If no role is specified it is PUBLIC but for example an application showing sensitive sales data can only be called by users who have the database roles SALES and MANAGER assigned.
 Whereever a link to this application is shown, the role membership is tested and in case the user lacks the permissions, the link is either disabled or invisible.
 
-### Conclusion 3 - OpenUI5 with Fiori design language is the primary targeted
+### Conclusion 3 - OpenUI5 with Fiori design language is the primary target
 
 While any kind of html page can be created, thus all UI frameworks can be used, it should be easy to create OpenUI5 applications.
 This is achieved by preinstalling the framework but also providing helper methods and services.
