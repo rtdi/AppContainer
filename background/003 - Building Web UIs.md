@@ -1,6 +1,7 @@
 # Building UIs - Design Thinking
 
-**Goal**: As a developer I want to be able to build enterprise grade Web-UIs efficiently. All the customizations the UI framework provides should still be possible but for the normal case defaults are generated.
+**Goal**: _As a developer I want to be able to build enterprise grade Web-UIs efficiently. All the customizations the UI framework provides should still be possible but for the normal case defaults are generated._
+
 
 This allows building UIs for the appcontainer, like the repository browsing UI, but also other developers using the appcontainer to build applications for their end users.
 
@@ -12,6 +13,11 @@ The first finding was that UIs consists of different layers
    - Permissions: One user is allowed to view and edit, another can only view, another can see additional sensitive data and one user does not have the permissions to open the screen at all.
    - Navigation permissions: When navigation options are shown to the user, the permissions should be considered as well. It would be a bad UI design to show all navigation options and raise a not-allowed error after the user clicked on it. The UI should only render navigation options the user is allowed to use.
  - **Floorplans**: While a MVC design pattern allows to build UIs based on a single model, in database applications screens often use multiple models. For example a master-detail screen for sales orders shows one sales order at the top and a list of all line items the order consists of in the detail area.
+ - **Shell**: A common frame shared by all applications with menu, logout, user preferences, breadcrumbs and other navigation options.
 
+### Conclusion 1 - Service for user metadata
+
+A service returning metadata about the user, at least all the roles the user belongs to, must exist.
+`rest/system/usersettings`
 
 
