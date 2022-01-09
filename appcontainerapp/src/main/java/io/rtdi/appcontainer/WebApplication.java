@@ -1,5 +1,7 @@
 package io.rtdi.appcontainer;
 
+import java.nio.file.Path;
+
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.ApplicationPath;
 
 
@@ -66,4 +69,9 @@ public class WebApplication extends ResourceConfig {
 		Object[] r = { new OpenApiResource() };
         return r;
 	}
+	
+	public static Path getWebAppRootPath(ServletContext servletcontext) {
+		return Path.of(servletcontext.getRealPath("/"));
+	}
+
 }  

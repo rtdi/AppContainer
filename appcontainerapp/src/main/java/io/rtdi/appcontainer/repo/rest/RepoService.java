@@ -119,7 +119,7 @@ public class RepoService {
    		 String path) {
 		try {
 			java.nio.file.Path targetpath = getEffectivePath(request, path);
-			Folder directorytree = new Folder(targetpath.toFile(), path); 
+			Folder directorytree = Folder.getFolder(targetpath.toFile(), path); 
 			return Response.ok(directorytree).build();
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);

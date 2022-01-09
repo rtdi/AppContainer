@@ -1,15 +1,13 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
-	"sap/ui/model/odata/v4/ODataModel",
+	"ui5libs/controls/Controller",
 	"ui5libs/ui5ajax",
 	"ui5libs/errorfunctions",
 	"ui5libs/controls/ActivationResultDialog"],
-function(Controller, ODataModel, ui5ajax, errorfunctions) {
+function(Controller, ui5ajax, errorfunctions) {
 	"use strict";
 	var thisControl;
 	return Controller.extend("io.rtdi.appcontainer.browseapp.Controller", {
-		onInit : function() {
-			this.onDirectoryRefresh();
+		init : function() {
 			this.oDialog = new ui5libs.controls.ActivationResultDialog();
 			thisControl = this;
 		},
@@ -55,19 +53,23 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			return undefined;
 		},
 		onDirectoryRefresh : function() {
-			var oModel = new sap.ui.model.json.JSONModel();
-			oModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/browse");
-			this.getView().setModel(oModel);
-			var oFileModel = new sap.ui.model.json.JSONModel();
-			oFileModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/files/.");
-			this.getView().byId("idFiles").setModel(oFileModel);
+			var oBrowseTreeModel = this.getView().byId("idBrowseTree").data("model");
+			if (oBrowseTreeModel) {
+				oBrowseTreeModel.reload();
+			}
+			var oFilesModel = this.getView().byId("idFiles").data("model");
+			if (oFilesModel) {
+				oFilesModel.reload();
+			}
 		},
 		onSelectDir : function(oEvent) {
-			var oContext = oEvent.getParameters().rowBindingContext;
+			var oContext = oEvent.getParameters().rowContext;
 			if (oContext && oContext.getObject()) {
-				var oModel = new sap.ui.model.json.JSONModel();
-				oModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/files/" + oContext.getObject().path);
-				this.getView().byId("idFiles").setModel(oModel);
+				var oModelContainer = this.getView().byId("idFiles").data("model");
+				if (oModelContainer) {
+					oModelContainer.setUrl(sap.ui.require.toUrl("ui5rest/repo/files/" + oContext.getObject().path));
+					oModelContainer.reload();
+				}
 			}
 		},
 		onActivateDirectory : function(oEvent) {
@@ -75,7 +77,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			var oContext = oControl.getBindingContext();
 			if (oContext && oContext.getObject()) {
 				this.getView().setBusy(true);
-				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/activationapp/activateall/" + oContext.getObject().path)
+				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/activationapp/activateall/" + oContext.getObject().path))
 					.then(
 						data => {
 							this.oDialog.getModel().setJSON(data.text);
@@ -97,16 +99,16 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			}
 		},
 		onFilesRefresh : function(oEvent) {
-			var oControl = this.getView().byId("idFiles");
-			var oModel = oControl.getModel();
-			oModel.loadData(sap.ui.require.toUrl("ui5rest")+"/browseapp/files/" + oModel.getProperty("/path"));
-			oControl.setModel(oModel);
+			var oModelContainer = this.getView().byId("idFiles").data("model");
+			oModelContainer.reload();
 		},
 		onAddSubdirectory : function(oEvent) {
 			var oControl = oEvent.getSource();
 			var oContext = oControl.getBindingContext();
 			var sParentPath = oContext.getPath();
-			var oModel = this.getView().getModel();
+			var oBrowseTree = this.getView().byId("idBrowseTree");
+			var oModelContainer = oBrowseTree.data("model");
+			var oModel = oModelContainer.getModel();
 			var oDirectory = oModel.getProperty(sParentPath);
 			var oDataExchange = {
 				"currentname": "newdir",
@@ -118,9 +120,9 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doCallAddSubDir : function(oDataExchange) {
-			var oModel = thisControl.getView().getModel();
+			var oModel = thisControl.getView().byId("idBrowseTree").getModel();
 			var aFiles = oModel.getProperty("/files");
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/browseapp/mkdir/" + oDataExchange.newpath)
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/mkdir/" + oDataExchange.newpath))
 				.then(
 					data => {
 						var sParentPath = oDataExchange.parentpath;
@@ -160,7 +162,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameDirectory : function(oDataExchange) {
-			ui5ajax.postObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mv/" + oDataExchange.currentpath), { "name": oDataExchange.newname, "path": oDataExchange.newpath})
 				.then(
 					data => {
 			    		var oView = thisControl.getView();
@@ -191,18 +193,18 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			var oControl = oEvent.getSource();
 			var oContext = oControl.getBindingContext();
 			var sModelPath = oContext.getPath();
-			var oModel = this.getView().getModel();
+			var oModel = thisControl.getView().byId("idBrowseTree").getModel();
 			var oDirectory = oModel.getProperty(sModelPath);
 			var sFoldersPath = sModelPath.substring(0, sModelPath.lastIndexOf('/')); // .....folders/7/folders/5
 			var index = Number(sModelPath.substring(sModelPath.lastIndexOf('/')+1));
 			if (index !== NaN && index != -1 && oDirectory.path !== '.') {
 				var oFolders = oModel.getProperty(sFoldersPath);
-				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/browseapp/rmdir/" + oDirectory.path)
+				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/rmdir/" + oDirectory.path))
 					.then(
 						data => {
 						oFolders.splice(index, 1);
 						oModel.setProperty(sFoldersPath, oFolders);
-						thisControl.getView().byId("idFiles").setModel(new sap.ui.model.json.JSONModel()); // empty model for files
+						thisControl.getView().byId("idFiles").getModel().setData(null); // empty model for files
 						}, 
 						error => {
 							errorfunctions.addError(thisControl.getView(), error);
@@ -221,7 +223,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			var oControl = thisControl.getView().byId("idFiles");
 			var oModel = oControl.getModel();
 			var aFiles = oModel.getProperty("/files");
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/browseapp/touchfile/" + oDataExchange.newpath)
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/touch/" + oDataExchange.newpath))
 				.then(
 					data => {
 						oModel.setProperty("/files/" + aFiles.length, {"path": oDataExchange.newpath, "name": oDataExchange.newname } );
@@ -241,7 +243,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameFile : function(oDataExchange) {
-			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mvfile/" + oDataExchange.currentpath), { "name": oDataExchange.newname, "path": oDataExchange.newpath})
 				.then(
 					data => {
 						var oFilesControl = thisControl.getView().byId("idFiles");
@@ -262,7 +264,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			var index = Number(sModelPath.substring(sModelPath.lastIndexOf("/")+1));
 			if (index !== NaN && index != -1) {
 				var oModelRmFile = new sap.ui.model.json.JSONModel();
-				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/browseapp/rmfile/" + oFile.path)
+				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/rm/" + oFile.path))
 					.then(
 						data => {
 							var aFiles = oModel.getProperty("/files");
@@ -286,7 +288,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			
 			if (oSourceRow.folders === undefined) {
 				// dropped a file
-				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name})
+				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mvfile/" + oSourceRow.path), { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name})
 					.then(
 						data => {
 				    		/*
@@ -309,7 +311,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 					);
 			} else {
 				// dropped a directory				
-				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest")+"/browseapp/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name })
+				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mvfile/" + oSourceRow.path), { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name })
 					.then(
 						data => {
 				    		/*
@@ -365,6 +367,12 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 				text1 = 'New';
 				text2 = 'Name...';
 			}
+			var onOkay = function() {
+				oDataExchange.newname = sap.ui.getCore().byId('renameInput').getValue();
+				oDataExchange.newpath = oDataExchange.currentpath.substring(0, oDataExchange.currentpath.lastIndexOf('/')) + "/" + oDataExchange.newname;
+				oDialog.close();
+				oDataExchange.callback(oDataExchange);
+			}
 			var oDialog = new sap.m.Dialog({
 				title: text1,
 				type: 'Message',
@@ -381,10 +389,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 					text: text1,
 					enabled: true,
 					press: function () {
-						oDataExchange.newname = sap.ui.getCore().byId('renameInput').getValue();
-						oDataExchange.newpath = oDataExchange.currentpath.substring(0, oDataExchange.currentpath.lastIndexOf('/')) + "/" + oDataExchange.newname;
-						oDialog.close();
-						oDataExchange.callback(oDataExchange);
+						onOkay();
 					}.bind(this)
 				}),
 				endButton: new sap.m.Button({
@@ -397,7 +402,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 					oDialog.destroy();
 				}
 			});
-
+			oDialog.addEventDelegate({onsapenter: onOkay}, this);
 			oDialog.open();
 		},
 		onGitRemote: function() {
@@ -418,8 +423,10 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 						new sap.m.Input({id: "dialogurl", value: "{/remoteurl}"}),
 						new sap.m.Label({text: "Username/AccessKey"}),
 						new sap.m.Input({id: "dialogusername", value: "{/username}"}),
-						new sap.m.Label({text: "Password/AccessSecret"}),
+						new sap.m.Label({text: "Password"}),
 						new sap.m.Input({id: "dialogpassword", value: "{/password}"}),
+						new sap.m.Label({text: "Token"}),
+						new sap.m.Input({id: "dialogtoken", value: "{/token}"}),
 						new sap.m.Label({text: "email"}),
 						new sap.m.Input({id: "email", value: "{/email}"})
 					],
@@ -428,7 +435,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 						text: "OK",
 						press: function () {
 							var oModel = that.oGitSettingDialog.getModel();
-							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitconfig", oModel)
+							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest")+"/git/gitconfig", oModel)
 								.then(
 									data => {
 										that.oGitSettingDialog.close();
@@ -477,7 +484,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 						press: function () {
 							var oModel = that.oCommitDialog.getModel();
 							that.getView().setBusy(true);
-							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitpush", oModel)
+							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest/git/gitpush", oModel))
 								.then(
 									data => {
 										that.getView().setBusy(false);
@@ -509,7 +516,7 @@ function(Controller, ODataModel, ui5ajax, errorfunctions) {
 			this.oCommitDialog.open();
 		},
 		onGitPull: function() {
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/browseapp/gitpull")
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/git/gitpull"))
 				.then(
 					data => {
 						errorfunctions.uiSuccess(thisControl.getView(), { message: 'Pull succeeded' } );

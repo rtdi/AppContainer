@@ -1,4 +1,4 @@
-<mvc:View height="100vh"
+<mvc:XMLView height="100vh"
 	class="sapUiSizeCompact" 
 	displayBlock="true"
 	id="mainview"
@@ -8,9 +8,9 @@
 	xmlns:l="sap.ui.layout"
 	xmlns:t="sap.ui.table"
 	xmlns:dnd="sap.ui.core.dnd"
-	xmlns:ui5libs.controls="ui5libs.controls"
+	xmlns:ui5libs="ui5libs"
 	xmlns:core="sap.ui.core">
-	<ui5libs.controls:AppContainerPage pageTitle="Design time browser">
+	<ui5libs:controls.AppContainerPage pageTitle="Design time browser">
 		<l:ResponsiveSplitter defaultPane="default" height="100%">
 			<l:layoutData>
 				<FlexItemData growFactor="1"/>
@@ -19,10 +19,13 @@
 				<l:SplitPane requiredParentWidth="400" id="default">
 					<t:TreeTable id="idBrowseTree"
 						rows="{path:'/', parameters: {arrayNames:['folders']}}"
-						selectionMode="None" enableSelectAll="false"
+						selectionMode="Single" selectionBehavior="RowOnly" enableSelectAll="false"
 						ariaLabelledBy="title"
-						cellClick="onSelectDir"
+						rowSelectionChange="onSelectDir"
 						visibleRowCountMode="Auto">
+					   	<t:customData>
+					   		<ui5libs:controls.JsonContainer key="model" url="ui5rest/repo/dir" />
+					   	</t:customData>
 		                <t:extension>
 		                    <OverflowToolbar>
 		                        <Title id="title" text="Directory for user"/>
@@ -30,6 +33,7 @@
 								<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush" />
 								<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull" />
 								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote" />
+								<ToolbarSpacer />
 		                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
 		                    </OverflowToolbar>
 		                </t:extension>
@@ -48,12 +52,6 @@
 								<Label text="Folder"/>
 								<t:template>
 									<Text text="{name}" wrapping="false" /> 
-								</t:template>
-							</t:Column>
-							<t:Column>
-								<Label text="File count"/>
-								<t:template>
-									<Text text="{filecount}" wrapping="false" /> 
 								</t:template>
 							</t:Column>
 							<t:Column hAlign="Right">
@@ -81,6 +79,9 @@
 						ariaLabelledBy="title"
 						cellClick="onSelectDir"
 						visibleRowCountMode="Auto">
+					   	<t:customData>
+					   		<ui5libs:controls.JsonContainer key="model" url="ui5rest/repo/files/." />
+					   	</t:customData>
 		                <t:extension>
 		                    <OverflowToolbar>
 								<Title text="Files in folder: {/path}/" level="H2" />
@@ -127,5 +128,5 @@
 				</l:SplitPane>
 			</l:PaneContainer>
 		</l:ResponsiveSplitter>
-	</ui5libs.controls:AppContainerPage>
-</mvc:View>
+	</ui5libs:controls.AppContainerPage>
+</mvc:XMLView>

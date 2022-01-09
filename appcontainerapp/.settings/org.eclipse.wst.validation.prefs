@@ -1,0 +1,9 @@
+DELEGATES_PREFERENCE=delegateValidatorList
+USER_BUILD_PREFERENCE=enabledBuildValidatorListorg.eclipse.jst.j2ee.internal.classpathdep.ClasspathDependencyValidator;
+USER_MANUAL_PREFERENCE=enabledManualValidatorListorg.eclipse.jst.j2ee.internal.classpathdep.ClasspathDependencyValidator;
+USER_PREFERENCE=overrideGlobalPreferencestruedisableAllValidationfalseversion1.2.801.v202007142017
+eclipse.preferences.version=1
+override=true
+suspend=false
+vals/org.eclipse.wst.jsdt.core.JsValidator/groups=0107include01113projectNature134org.eclipse.wst.jsdt.core.jsNature0107include02111contentType134org.eclipse.wst.jsdt.core.jsSourceT07fileext02jsF0107exclude0104file136src/main/webapp/protected/swagger-uiF02
+vf.version=3

@@ -51,4 +51,14 @@ public class FileUtil {
 		
 	}
 
+	public static String makeRelativePath(String path) {
+		if (path == null || path.length() == 0) {
+			return ".";
+		} else if (path.charAt(0) == '/') {
+			return path.substring(1);
+		} else {
+			return path;
+		}
+	}
+
 }

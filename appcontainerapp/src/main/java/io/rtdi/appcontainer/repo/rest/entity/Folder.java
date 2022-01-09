@@ -18,12 +18,36 @@ public class Folder {
 	protected List<Folder> folders;
 	protected String name = null;
 	protected String path = null;
-	private int filecount = 0;
+
+	private Folder() {
+		super();
+	}
 
 	public Folder(@NotNull File rootdir) throws IOException {
 		this(rootdir, null);
 	}
 	
+	/**
+	 * Calls the {@link #Folder(File, String)} but adds the directory itself has the root node of the structure.
+	 * 
+	 * @param dir
+	 * @param relativepath
+	 * @return
+	 * @throws IOException
+	 */
+	public static Folder getFolder(@NotNull File dir, String relativepath) throws IOException {
+		Folder f = new Folder();
+		f.addFolder(new Folder(dir, relativepath));
+		return f;
+	}
+	
+	private void addFolder(Folder folder) {
+		if (folders == null) {
+			folders = new ArrayList<>();
+		}
+		folders.add(folder);
+	}
+
 	public Folder(@NotNull File dir, String relativepath) throws IOException {
 		if (!dir.exists()) {
 			throw new IOException("The requested directory \"" + dir.getAbsolutePath() + "\" does not exist");
@@ -31,18 +55,11 @@ public class Folder {
 			throw new IOException("The requested path \"" + dir.getAbsolutePath() + "\" exists but is not a directory");
 		}
 		if (relativepath == null) {
-			name = null;
-			path = null;
+			name = dir.getName();
+			path = "";
 		} else {
 			name = dir.getName();
 			path = relativepath;
-		}
-		
-		File[] plainfiles = dir.listFiles(FileUtil.PLAINFILEFILTER);
-		if (plainfiles!= null) {
-			filecount = plainfiles.length;
-		} else {
-			filecount = 0;
 		}
 		
 		File[] files = dir.listFiles(FileUtil.DIRECTORYFILTER);
@@ -50,7 +67,7 @@ public class Folder {
 			folders = new ArrayList<>();
 			for (File f : files) {
 				String p;
-				if (path == null) {
+				if (path == null || path.length() == 0) {
 					p = f.getName();
 				} else {
 					p = path + "/" + f.getName();
@@ -70,8 +87,4 @@ public class Folder {
 		return path;
 	}
 
-	public int getFilecount() {
-		return filecount;
-	}
-	
 }
