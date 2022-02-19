@@ -406,69 +406,91 @@ function(Controller, ui5ajax, errorfunctions) {
 			oDialog.open();
 		},
 		onGitRemote: function() {
-			if (!this.oGitSettingDialog) {
-				var that = this; 
-				this.oGitSettingDialog = new sap.m.Dialog({
-					title: "Remote git settings",
-					contentWidth: "550px",
-					contentHeight: "300px",
-					customHeader: [ new sap.m.Toolbar(
-						{content: [ 
-							new sap.m.Image({src: "../../../public/media/git-logo-64-64.png"}),
-							new sap.m.Text({ text: 'Git configuration'})
-						]})
-					],
-					content: [
-						new sap.m.Label({text: "Remote git url"}),
-						new sap.m.Input({id: "dialogurl", value: "{/remoteurl}"}),
-						new sap.m.Label({text: "Username/AccessKey"}),
-						new sap.m.Input({id: "dialogusername", value: "{/username}"}),
-						new sap.m.Label({text: "Password"}),
-						new sap.m.Input({id: "dialogpassword", value: "{/password}"}),
-						new sap.m.Label({text: "Token"}),
-						new sap.m.Input({id: "dialogtoken", value: "{/token}"}),
-						new sap.m.Label({text: "email"}),
-						new sap.m.Input({id: "email", value: "{/email}"})
-					],
-					beginButton: new sap.m.Button({
-						type: sap.m.ButtonType.Emphasized,
-						text: "OK",
-						press: function () {
-							var oModel = that.oGitSettingDialog.getModel();
-							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest")+"/git/gitconfig", oModel)
-								.then(
-									data => {
-										that.oGitSettingDialog.close();
-									},
-									error => {
-										errorfunctions.addError(thisControl.getView(), error);
-									}
-								);
-						}.bind(this)
-					}),
-					endButton: new sap.m.Button({
-						text: "Close",
-						press: function () {
-							this.oGitSettingDialog.close();
-						}.bind(this)
-					})
-				});
-				var oDialogModel = new sap.ui.model.json.JSONModel();
-				this.oGitSettingDialog.setModel(oDialogModel);
-
-				//to get access to the controller's model
-				this.getView().addDependent(this.oGitSettingDialog);
+			var oFilesModel = this.getView().byId("idFiles").getModel();
+			var sPath = oFilesModel.getProperty("/path");
+			if (sPath) {
+				if (!this.oGitSettingDialog) {
+					var that = this; 
+					this.oGitSettingDialog = new sap.m.Dialog({
+						title: "Remote git settings",
+						contentWidth: "550px",
+						contentHeight: "500px",
+						resizable: true,
+						draggable: true,
+						customHeader: [ new sap.m.Toolbar(
+							{content: [ 
+								new sap.m.Image({src: "../../../public/media/git-logo-64-64.png"}),
+								new sap.m.Text({ text: 'Git configuration'})
+							]})
+						],
+						content: [
+							new sap.m.Label({text: "Remote git url (*)"}),
+							new sap.m.Input({id: "dialogurl", value: "{/remoteurl}"}),
+							new sap.m.Label({text: "Username (*)"}),
+							new sap.m.Input({id: "dialogusername", value: "{/username}"}),
+							new sap.m.Label({text: "Password"}),
+							new sap.m.Input({id: "dialogpassword", value: "{/password}"}),
+							new sap.m.Label({text: "Token"}),
+							new sap.m.Input({id: "dialogtoken", value: "{/token}"}),
+							new sap.m.Label({text: "email (*)"}),
+							new sap.m.Input({id: "email", value: "{/email}"}),
+							new sap.m.Text({text: "(*) Mandatory input"})
+						],
+						beginButton: new sap.m.Button({
+							type: sap.m.ButtonType.Emphasized,
+							text: "OK",
+							press: function () {
+								var oModel = that.oGitSettingDialog.getModel();
+								if (!oModel.getProperty("/remoteurl")) {
+									errorfunctions.uiError(that.getView(), "Remote git url not set");
+								} else if (!oModel.getProperty("/username")) {
+									errorfunctions.uiError(that.getView(), "Username not set");
+								} else if (!oModel.getProperty("/email")) {
+									errorfunctions.uiError(that.getView(), "email not set");
+								} else if (!oModel.getProperty("/password") && !oModel.getProperty("/token")) {
+									errorfunctions.uiError(that.getView(), "either password or token must be set");
+								}
+								ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest/git/gitconfig/" + sPath), oModel)
+									.then(
+										data => {
+											that.oGitSettingDialog.close();
+										},
+										error => {
+											errorfunctions.addError(thisControl.getView(), error);
+										}
+									);
+							}.bind(this)
+						}),
+						endButton: new sap.m.Button({
+							text: "Close",
+							press: function () {
+								this.oGitSettingDialog.close();
+							}.bind(this)
+						})
+					});
+					var oDialogModel = new sap.ui.model.json.JSONModel();
+					oDialogModel.loadData(sap.ui.require.toUrl("ui5rest/git/gitconfig/" + sPath));
+					this.oGitSettingDialog.setModel(oDialogModel);
+	
+					//to get access to the controller's model
+					this.getView().addDependent(this.oGitSettingDialog);
+				}
+				this.oGitSettingDialog.open();
+			} else {
+				errorfunctions.uiError(this.getView(), "A git repo requires a directory");
 			}
-
-			this.oGitSettingDialog.open();
 		},
 		onGitPush: function() {
+			var oFilesModel = this.getView().byId("idFiles").getModel();
+			var sPath = oFilesModel.getProperty("/path");
 			if (!this.oCommitDialog) {
 				var that = this; 
 				this.oCommitDialog = new sap.m.Dialog({
 					title: "Commit message",
 					contentWidth: "550px",
 					contentHeight: "300px",
+					resizable: true,
+					draggable: true,
 					customHeader: [ new sap.m.Toolbar(
 						{content: [ 
 							new sap.m.Image({src: "../../../public/media/git-logo-64-64.png"}),
@@ -484,7 +506,7 @@ function(Controller, ui5ajax, errorfunctions) {
 						press: function () {
 							var oModel = that.oCommitDialog.getModel();
 							that.getView().setBusy(true);
-							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest/git/gitpush", oModel))
+							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest/git/gitpush/" + sPath, oModel))
 								.then(
 									data => {
 										that.getView().setBusy(false);
@@ -516,7 +538,9 @@ function(Controller, ui5ajax, errorfunctions) {
 			this.oCommitDialog.open();
 		},
 		onGitPull: function() {
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/git/gitpull"))
+			var oFilesModel = this.getView().byId("idFiles").getModel();
+			var sPath = oFilesModel.getProperty("/path");
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/git/gitpull/" + sPath))
 				.then(
 					data => {
 						errorfunctions.uiSuccess(thisControl.getView(), { message: 'Pull succeeded' } );

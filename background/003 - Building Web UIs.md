@@ -30,6 +30,6 @@ Whereever a link to this application is shown, the role membership is tested and
 
 While any kind of html page can be created, thus all UI frameworks can be used, it should be easy to create OpenUI5 applications.
 This is achieved by preinstalling the framework but also providing helper methods and services.
-The general guidline shall be that required OpenUI5 files are created automatically on the fly, unless one exists in particular. The html page with its bootstrapping is a good example. UI5 requires such html page to exist but it will be similar for most applications. It sets the window title, loads the UI5 framework, the shell and user defaults and within is the application specific view rendered. If the html file exists in the repository it is used, else a servlet generates that automatically.
+The general guideline shall be that required OpenUI5 files are created automatically on the fly, unless one exists in particular. The html page with its bootstrapping is a good example. UI5 requires such html page to exist but it will be similar for most applications. It sets the window title, loads the UI5 framework, the shell and user defaults and within is the application specific view rendered. If the html file exists in the repository it is used, else a servlet generates that automatically.
 
 

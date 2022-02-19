@@ -6,6 +6,9 @@ sap.ui.define([
    		postJsonString : function (sUri, sJson) {
    			return this.ajaxSend(sUri, sJson, "application/json", "POST");
    		},
+   		getJsonString : function (sUri) {
+   			return this.ajaxGet(sUri);
+   		},
    		postText : function (sUri, sText) {
    			return this.ajaxSend(sUri, sText, "text/plain", "POST");
    		},
@@ -14,6 +17,9 @@ sap.ui.define([
    		},
    		postJsonObject : function (sUri, oObject) {
    			return this.postJsonString(sUri, JSON.stringify(oObject));
+   		},
+   		getJsonObject : function (sUri) {
+   			return JSON.stringify(this.getJsonString(sUri));
    		},
    		ajaxGet : function (sUri) {
    			return this.ajaxSend(sUri, undefined, undefined, "GET");

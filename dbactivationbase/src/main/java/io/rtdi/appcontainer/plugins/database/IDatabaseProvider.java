@@ -5,5 +5,6 @@ public interface IDatabaseProvider {
 	String getJDBCDriverName();
 	ActivationServiceDirectory getActivationServices();
 	ICatalogService getCatalogService();
-
+	public IStoredProcedure getProcedureService();
+	
 }

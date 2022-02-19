@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.rtdi.appcontainer.repo.rest.GitService.GitCommit;
-import io.rtdi.appcontainer.repo.rest.GitService.GitConfig;
+import io.rtdi.appcontainer.repo.rest.entity.GitCommit;
+import io.rtdi.appcontainer.repo.rest.entity.GitConfig;
 import io.rtdi.appcontainer.util.RepoRestCalls;
 
 public class GitServiceTestIT {

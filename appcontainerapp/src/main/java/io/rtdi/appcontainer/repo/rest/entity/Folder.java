@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jgit.lib.Constants;
+
 import io.rtdi.appcontainer.repo.FileUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +20,7 @@ public class Folder {
 	protected List<Folder> folders;
 	protected String name = null;
 	protected String path = null;
+	protected boolean gitRoot = false;
 
 	private Folder() {
 		super();
@@ -61,7 +64,8 @@ public class Folder {
 			name = dir.getName();
 			path = relativepath;
 		}
-		
+		File gitdir = new File(dir, Constants.DOT_GIT);
+		gitRoot = gitdir.exists();
 		File[] files = dir.listFiles(FileUtil.DIRECTORYFILTER);
 		if (files != null && files.length > 0) {
 			folders = new ArrayList<>();

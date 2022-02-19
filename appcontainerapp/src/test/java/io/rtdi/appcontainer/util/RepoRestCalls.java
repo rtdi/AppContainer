@@ -33,8 +33,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.rtdi.appcontainer.repo.rest.GitService.GitCommit;
-import io.rtdi.appcontainer.repo.rest.GitService.GitConfig;
+import io.rtdi.appcontainer.repo.rest.entity.GitCommit;
+import io.rtdi.appcontainer.repo.rest.entity.GitConfig;
 
 public class RepoRestCalls {
 	private HttpClientContext context;

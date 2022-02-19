@@ -29,10 +29,6 @@
 		                <t:extension>
 		                    <OverflowToolbar>
 		                        <Title id="title" text="Directory for user"/>
-		                        <ToolbarSpacer/>
-								<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush" />
-								<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull" />
-								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote" />
 								<ToolbarSpacer />
 		                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
 		                    </OverflowToolbar>
@@ -85,6 +81,12 @@
 		                <t:extension>
 		                    <OverflowToolbar>
 								<Title text="Files in folder: {/path}/" level="H2" />
+								<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush" 
+									enabled="{= ${/git} }" />
+								<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull"  
+									enabled="{= ${/git} }"/>
+								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote"  
+									enabled="{= !!${/path} }"/>
 								<ToolbarSpacer />
 								<Button icon="sap-icon://add" tooltip="Add new file" press="onAddFile" />
 		                        <Button icon="sap-icon://refresh" tooltip="Refresh file list" press="onFilesRefresh"/>

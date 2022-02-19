@@ -33,7 +33,7 @@ public class DatabaseProvider {
 					return candidate;
 				}
 			}
-			// Should nto be reached
+			// Should not be reached
 			throw new IOException("Cannot find a service loader for the database");
 		} else {
 			return (IDatabaseProvider) ctx.getAttribute(DATABASE_PROVIDER);
