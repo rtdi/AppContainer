@@ -8,13 +8,6 @@
 			"icon": "sap-icon://sap-box"
 		},
 		{
-			"name": "Importer",
-			"description": "Import existing database objects into your repository",
-			"tooltip": null,
-			"href": "protected/apps/importapp",
-			"icon": "sap-icon://action"
-		},
-		{
 			"name": "Swagger",
 			"description": "Swagger Definitions of all APIs",
 			"tooltip": null,

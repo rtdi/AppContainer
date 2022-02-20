@@ -549,7 +549,63 @@ function(Controller, ui5ajax, errorfunctions) {
 						errorfunctions.addError(thisControl.getView(), error);
 					}
 				);
-		}
+		},
+		onImportSchema : function(oEvent) {
+			var that = this;
+			var onOkay = function() {
+				var oFilesModel = that.getView().byId("idFiles").getModel();
+				var sPath = oFilesModel.getProperty("/path");
+				var sSchema = oDialog.getContent()[1].getSelectedKey();
+				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/reveng/importall/" + sSchema + "/" + sPath))
+					.then(
+						data => {
+							errorfunctions.uiSuccess(thisControl.getView(), { message: 'Import-all succeeded' } );
+							that.onDirectoryRefresh();
+							oDialog.close();
+						}, 
+						error => {
+							errorfunctions.addError(thisControl.getView(), error);
+							that.onDirectoryRefresh();
+							oDialog.close();
+						}
+					);
+			}
+			var oDialog = new sap.m.Dialog({
+				title: "Select DB schema to import",
+				type: 'Message',
+				content: [
+					new sap.m.Label({ text: "Schema name", labelFor: 'schemaInput' }),
+					new sap.m.Select('schemaInput')
+				],
+				beginButton: new sap.m.Button({
+					type: sap.m.ButtonType.Emphasized,
+					text:"Import",
+					enabled: true,
+					press: function () {
+						onOkay();
+					}.bind(this)
+				}),
+				endButton: new sap.m.Button({
+					text: 'Cancel',
+					press: function () {
+						oDialog.close();
+					}
+				}),
+				afterClose: function () {
+					oDialog.destroy();
+				}
+			});
+			var oDialogModel = new sap.ui.model.json.JSONModel();
+			oDialogModel.loadData(sap.ui.require.toUrl("ui5rest/catalog/schemas"));
+			oDialog.setModel(oDialogModel);
+			oDialog.addEventDelegate({onsapenter: onOkay}, this);
+			oDialog.getContent()[1].bindItems({
+				path: "/schemas",
+				template: new sap.ui.core.ListItem({ text: "{schemaname}", key: "{schemaname}" })
+			});
+			oDialog.open();
+		},
+
 	});
 
 });

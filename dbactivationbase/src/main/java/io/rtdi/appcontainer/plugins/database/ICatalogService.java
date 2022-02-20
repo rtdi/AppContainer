@@ -27,4 +27,11 @@ public interface ICatalogService {
 	 * @throws SQLException 
 	 */
 	boolean columnExists(Connection conn, String schema, String name, String columnname) throws SQLException;
+	
+	String getTableDDL(Connection conn, String schema, String name) throws SQLException;
+	String getViewDDL(Connection conn, String schema, String name) throws SQLException;
+	String getFunctionDDL(Connection conn, String schema, String name) throws SQLException;
+	String getProcedureDDL(Connection conn, String schema, String name) throws SQLException;
+
+	
 }

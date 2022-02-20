@@ -88,6 +88,8 @@
 								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote"  
 									enabled="{= !!${/path} }"/>
 								<ToolbarSpacer />
+								<Button icon="sap-icon://factory" tooltip="Import" press="onImportSchema" />
+								<ToolbarSpacer />
 								<Button icon="sap-icon://add" tooltip="Add new file" press="onAddFile" />
 		                        <Button icon="sap-icon://refresh" tooltip="Refresh file list" press="onFilesRefresh"/>
 		                    </OverflowToolbar>

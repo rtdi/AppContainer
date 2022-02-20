@@ -1,4 +1,4 @@
-package io.rtdi.appcontainer.db.rest;
+package io.rtdi.appcontainer.db.rest.entity;
 
 import io.rtdi.appcontainer.utils.Util;
 import io.swagger.v3.oas.annotations.media.Schema;

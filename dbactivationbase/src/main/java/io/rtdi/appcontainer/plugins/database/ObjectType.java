@@ -5,6 +5,7 @@ public enum ObjectType {
 	VIEW,
 	PROCEDURE,
 	SEQUENCE,
-	SYNONYM
+	SYNONYM,
+	FUNCTION
 
 }

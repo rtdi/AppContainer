@@ -16,6 +16,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.db.rest.entity.StoredProcedure;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.IStoredProcedure;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureMetadata;
@@ -74,7 +75,7 @@ public class StoredProcedureService {
 				responses = {
 						@ApiResponse(
 		                    responseCode = "200",
-		                    description = "The list of all Hana Stored Procedures the user has access to",
+		                    description = "The list of all Stored Procedures the user has access to",
 		                    content = {
 		                            @Content(
 		                                    array = @ArraySchema(schema = @Schema(implementation = StoredProcedure.class))

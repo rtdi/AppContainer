@@ -47,7 +47,12 @@ public class ErrorMessage {
 	}
 
 	public String getSourceCodeLine() {
-		StackTraceElement line = exception.getStackTrace()[0];
+		StackTraceElement line;
+		if (exception instanceof AppContainerSQLException) {
+			line = ((AppContainerSQLException) exception).getActualException().getStackTrace()[0];
+		} else {
+			line = exception.getStackTrace()[0];
+		}
 		String filename = line.getFileName();
 		int lineno = line.getLineNumber();
 		String link = null;
@@ -71,7 +76,12 @@ public class ErrorMessage {
 	}
 
 	public String getJavaClass() {
-		StackTraceElement line = exception.getStackTrace()[0];
+		StackTraceElement line;
+		if (exception instanceof AppContainerSQLException) {
+			line = ((AppContainerSQLException) exception).getActualException().getStackTrace()[0];
+		} else {
+			line = exception.getStackTrace()[0];
+		}
 		return line.getClassName();
 	}
 

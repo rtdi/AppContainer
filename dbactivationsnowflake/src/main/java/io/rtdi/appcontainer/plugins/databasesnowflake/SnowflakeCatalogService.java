@@ -1,5 +1,6 @@
 package io.rtdi.appcontainer.plugins.databasesnowflake;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,6 +56,43 @@ public class SnowflakeCatalogService implements ICatalogService {
 		} catch (SQLException e) {
 			throw AppContainerSQLException.cloneFrom(e, "Failed to search for the column in the Snowflake Information schema using the SQL \"" + sql + "\"", null);
 		}
+	}
+
+	private String getDDL(Connection conn, String schema, String name, String type) throws AppContainerSQLException {
+		String sql = "call GET_DDL(? , ?)";
+		try (CallableStatement stmt = conn.prepareCall(sql);) {
+			stmt.setString(1, type);
+			stmt.setString(2, schema + "." + name);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next() ) {
+					return rs.getString(1);
+				} else {
+					throw new AppContainerSQLException("call GET_DDL() did return no data", sql, null);
+				}
+			}
+		} catch (SQLException e) {
+			throw AppContainerSQLException.cloneFrom("Failed to generate the table DDL", e, sql, null);
+		}
+	}
+	
+	@Override
+	public String getTableDDL(Connection conn, String schema, String name) throws SQLException {
+		return getDDL(conn, schema, name, "TABLE");
+	}
+
+	@Override
+	public String getViewDDL(Connection conn, String schema, String name) throws SQLException {
+		return getDDL(conn, schema, name, "VIEW");
+	}
+
+	@Override
+	public String getFunctionDDL(Connection conn, String schema, String name) throws SQLException {
+		return getDDL(conn, schema, name, "FUNCTION");
+	}
+
+	@Override
+	public String getProcedureDDL(Connection conn, String schema, String name) throws SQLException {
+		return getDDL(conn, schema, name, "PRODEDURE");
 	}
 
 }
