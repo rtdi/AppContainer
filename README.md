@@ -1,14 +1,100 @@
-# Bachelor
+# The AppContainer
 
-_Continuous Integration/Continuous Delivery (CI/CD) in the context of database applications_
+_provide a development environment with the focus of Continuous Integration/Continuous Delivery (CI/CD) in the context of database applications_
 
 ## Design Thinking Goal
 
-The user is able to deploy database applications similar to CI/CD pipelines in classic software development. Must support the initial creation of a database application, non-destructive upgrade from each version at the customer, automated testing and git integration.
+Developers for database application need an easy to use, light weight, development environment, which supports all methods of modern software development but with the specialities needed for database centric apps.
+
+In particular these are:
+
+ - Develop Web based UIs
+ - Multi-developer environment using git
+ - Deploy database artifacts
+ - Backend for accessing database data via a Restful API
+ - Unit testing
+ - CI/CD pipeline for development automation
+ - Secure by default
 
 ## Motivation
 
-Professional software development is using CI/CD pipelines. The aim is to compile the software immediately after each code change (commit/push) and having automated tests, to validate the result is still correct. 
+All large software vendors provide Web based development environments and programs can interact with databases. In that sense all requirements from above can be fulfilled. But it takes a while to get all setup.
+
+### Develop Web based UIs
+
+#### Webserver
+
+**Industry standard**
+The bare minimum for developing a web based UI is to have a web server. In the Eclipse IDE a full blown web server is started for debugging, which is quite heavy weight.
+That is one of the reasons Node.js got popular, as it includes a web server.
+Deploying the code for testing a large application can still take a while.
+
+**AppContainer**
+In contrast, the AppContainer is a webserver with file change interceptors. The moment a file is changed it is available via the webserver.
+There is no need to start/stop a webserver, to package and deploy code, to deal with caching issues in the browser or server.
+
+#### Webserver Security and Session handling
+
+**Industry standard**
+The common approach is to have an [IdentityProvider](https://www.cloudflare.com/learning/access-management/what-is-an-identity-provider/) (IdP) [(_[1] cloudflare_)](#1) and all services contact it directly for authentication and authorization.
+The webserver, every single Restful service,...
+
+Following the Microservice paradime of stateless services, these queries must be done constantly. Either direct or every few minutes when a [JWT](https://jwt.io/) token expires [(_[2] IETF, 2015_)](#2).
+For single database applications this creates a massive overhead.
+
+**AppContainer**
+The webserver has a database realm using the database users itself as authentication and authorization system. So the webserver asks for the database login/password, creates a database connection for this user and reads the database roles the user has assigned.
+This does not prevent using the IdP but it is not used directly. The database is configured to use the IdP and the webserver utilizes the database functionality.
+
+The database connection pool is therefore made available via the user (Principal) the session belongs to.
+
+This has a whole set of advantages:
+ - Better performance
+ - Using the database authentication and authorization for the web applications as well
+ - Using the database security - the logged in user has access to the database objects and rows the database user has permissions on. There is no technical user to connect to the database, it is the actual database user itself interacting with the database.
+ - Due to the stable webserver session, intermediate states can be preserved between Restful calls. This speeds up pagination requests, where the first call returns 1000 rows from a query and the next call the next set of data. Thanks to the session the query can stay open so that the next call just fetches more records until all data has been read or the query runs into a timeout.
+
+ The only dowside is that this model does not scale into millions of parallel users, just a couple of 10'000 - which is more than enough for business applications.
+
+([Implementation](docs/003 - Security.md))
+
+#### UI Component Library
+
+**Industry standard**
+Installing and using the library is part of the initial code setup.
+
+**AppContainer**
+By providing a HTML5 component framework out of the box, building web applications is much easier. It must not get installed, its files are cached by the browser and additional custom controls can be provided to help with database centric applications.
+And if the provided library is not the desired one, nothing prevents to install another in addition.
+
+### Multi-developer environment using git
+
+All modern IDEs have git integration. For some it is an additional external storage in the sense of the objects get exported and imported from git. But the majority works directly on the local git repository. So no difference here.
+
+([Implementation](docs/008 - Git integration.md))
+
+### Deploy database artifacts
+
+**Industry standard**
+A huge problem for database applications are their database artifacts. How to create tables, views and all other database objects. 
+There are multiple approaches, one is to generate the database artifacts out of their corresponding Class definitions using an Object-Relational-Mapping. In the Java world the [Java Persistence API](https://docs.oracle.com/javaee/6/tutorial/doc/bnbpz.html) (JPA) is the standard for such [(_[3] Oracle, 2013_)](#3).
+
+Another approach is to embed SQL scripts or run them seperately or even manually.
+
+**AppContainer**
+The AppContainer uses directory structures to create the objects in the desired order via SQL scripts. This allows to break apart the huge script creating all objects into more digestable parts and still honor the dependencies.
+
+While these scripts suppport the full syntax of the database - there are no limitations in regards to the allowed SQL statements and options - a few additional features are provided in the script parser.
+
+ - Conditional execution: Execute a statement only if a condition applies, e.g. execute the create-table statement if the table does not exist, else check if the table has column xyz and execute the alter table add column statement if needed.
+ - Schema aliases: Allows to parameter the schema name where the table is created for cases where one database should get the same application installed but in different schemas.
+
+### Backend for accessing database data via a Restful API
+### Unit testing
+### CI/CD pipeline for development automation
+### Secure by default
+
+Professional software development is using CI/CD pipelines. The aim is to compile the software immediately after each code change (commit/push) and having automated tests, to validate that the results are correct, still. 
 For a library this is pretty straight forward. For example it has a method with the signature _int multiply(int a, int b)_. Whenever that library is changed, a series of tests validate the result is the expected one.
 
 - _assertEquals(0, multiply(0,100))_
@@ -60,3 +146,10 @@ The detailed discussion and motivation of the application authentication and aut
 
 (details [here](docs/002 - Projectplan.md))
 
+## References
+
+<a id="1">[1]</a> Cloudflare. "What is an identity provider (IdP)?", [link](https://www.cloudflare.com/learning/access-management/what-is-an-identity-provider/)
+
+<a id="2">[2]</a> IETF. "RFC 7519 - JSON Web Token", [link](https://datatracker.ietf.org/doc/html/rfc7519)
+
+<a id="3">[3]</a> Oracle. "Introduction to the Java Persistence API", [link](https://docs.oracle.com/javaee/6/tutorial/doc/bnbpz.html)
