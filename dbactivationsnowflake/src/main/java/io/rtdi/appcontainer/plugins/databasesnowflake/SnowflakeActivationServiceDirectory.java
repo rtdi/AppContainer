@@ -1,11 +1,13 @@
 package io.rtdi.appcontainer.plugins.databasesnowflake;
 
+import java.nio.file.Path;
+
 import io.rtdi.appcontainer.plugins.database.ActivationServiceDirectory;
 
 public class SnowflakeActivationServiceDirectory extends ActivationServiceDirectory {
 
-	protected SnowflakeActivationServiceDirectory() {
-		super();
+	protected SnowflakeActivationServiceDirectory(Path rootpath) {
+		super(rootpath);
 	}
 
 	@Override

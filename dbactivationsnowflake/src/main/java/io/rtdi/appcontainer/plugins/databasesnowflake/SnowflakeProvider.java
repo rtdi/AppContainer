@@ -1,5 +1,7 @@
 package io.rtdi.appcontainer.plugins.databasesnowflake;
 
+import java.nio.file.Path;
+
 import io.rtdi.appcontainer.plugins.database.ActivationServiceDirectory;
 import io.rtdi.appcontainer.plugins.database.ICatalogService;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
@@ -12,9 +14,9 @@ public class SnowflakeProvider implements IDatabaseProvider {
 	private static IStoredProcedure procedureservice;
 
 	@Override
-	public ActivationServiceDirectory getActivationServices() {
+	public ActivationServiceDirectory getActivationServices(Path rootpath) {
 		if (activationservice == null) {
-			activationservice = new SnowflakeActivationServiceDirectory();
+			activationservice = new SnowflakeActivationServiceDirectory(rootpath);
 		}
 		return activationservice;
 	}

@@ -16,7 +16,9 @@ import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
+import io.rtdi.appcontainer.repo.CreateCSV;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
+import io.rtdi.appcontainer.rest.entity.SuccessMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.DatabaseProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -100,7 +102,7 @@ public class DatabaseReverseEngineer {
     @Produces(MediaType.APPLICATION_JSON)
 	@Operation(
 			summary = "Import specific objects",
-			description = "Returns a list of all import-able objects in the database",
+			description = "Import all selected objects into the repo directory",
 			responses = {
 					@ApiResponse(
 	                    responseCode = "200",
@@ -123,12 +125,12 @@ public class DatabaseReverseEngineer {
             })
 	@Tag(name = "Repository")
     public Response importObjects(
-      		 @PathParam("path") 
-       		 @Parameter(
+    		@PathParam("path") 
+       		@Parameter(
        	    		description = "Path where to import the db objects to",
        	    		example = "dir1"
        	    		)
-       		 String path,
+       		String path,
 			DBObjectTree tree
     	) {
 		try {
@@ -144,6 +146,54 @@ public class DatabaseReverseEngineer {
 		}
 	}
 	
+	@POST
+	@Path("importdata/{path:.*}")
+    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Import a single table",
+			description = "Import the contents of a table/view as CSV file",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "Simple success message",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = SuccessMessage.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "202", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Repository")
+    public Response importData(
+    		@PathParam("path") 
+       		@Parameter(
+       	    		description = "Path of the CSV file to be created",
+       	    		example = "dir1/TABLE1.csv"
+       	    		)
+       		String path,
+			String sql
+    	) {
+		try {
+			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
+			java.nio.file.Path targetpath = RepoService.getEffectivePath(request, path);
+			try (Connection conn = dbprincipal.getConnection();) {
+				int rowcount = CreateCSV.createCSV(conn, sql, targetpath);
+				return SuccessMessage.createResponseOK(String.format("Data imported, %d rows", rowcount));
+			}
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
+	}
+		
 	@GET
 	@Path("importall/{schema}/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)

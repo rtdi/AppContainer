@@ -19,7 +19,7 @@ sap.ui.define([
 			if (this.getModel()) {
 				var url = this.getUrl();
 				if (url) {
-					if (!url.startsWith("/")) {
+				if (!url.startsWith("/") && !url.startsWith(".")) {
 						url = sap.ui.require.toUrl(url);
 					}
 					this.getModel().loadData(url);

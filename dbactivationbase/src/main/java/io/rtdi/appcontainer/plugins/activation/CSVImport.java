@@ -10,6 +10,7 @@ import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -519,7 +520,7 @@ public class CSVImport implements IActivationService {
 						"HH:mm[:ss[.SSS]]")).set(i);
 				break;
 			case TIMESTAMP:
-				convertIndexes(new UnivocityDateTimeFormatter(Locale.ENGLISH, null, null,
+				convertIndexes(new UnivocityInstantFormatter(Locale.ENGLISH, null, null,
 						"yyyy.MM.dd[ ]['T']HH:mm[:ss[.SSS]]",
 						"MM/dd/yyyy[ ]['T']HH:mm[:ss[.SSS]]",
 						"yyyy-MM-dd[ ]['T']HH:mm[:ss[.SSS]]")).set(i);
@@ -621,7 +622,63 @@ public class CSVImport implements IActivationService {
 			return parsers;
 		}
 	}
-	
+
+	public static class UnivocityInstantFormatter extends ObjectConversion<Instant> implements FormattedConversion<DateTimeFormatter> {
+
+		private final Locale locale;
+		private final DateTimeFormatter[] parsers;
+		private final String[] formats;
+
+
+	    public UnivocityInstantFormatter(Locale locale, Instant valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
+			super(valueIfStringIsNull, valueIfObjectIsNull);
+			ArgumentUtils.noNulls("Date formats", dateFormats);
+			this.locale = locale == null ? Locale.getDefault() : locale;
+			this.formats = dateFormats.clone();
+			this.parsers = new DateTimeFormatter[dateFormats.length];
+			for (int i = 0; i < dateFormats.length; i++) {
+				String dateFormat = dateFormats[i];
+				parsers[i] = DateTimeFormatter.ofPattern(dateFormat, this.locale).withZone(ZoneOffset.UTC);
+			}
+	    }
+
+		@Override
+		public String revert(Instant input) {
+			if (input == null) {
+				return super.revert(null);
+			}
+			return parsers[0].format(input);
+		}
+
+		@Override
+		protected Instant fromString(String input) {
+			for (DateTimeFormatter formatter : parsers) {
+				try {
+					synchronized (formatter) {
+						TemporalAccessor dt = formatter.parseBest(input, ZonedDateTime::from, LocalDateTime::from);
+						if (dt instanceof ZonedDateTime) {
+							return ((ZonedDateTime) dt).toInstant();
+						} else if (dt instanceof LocalDateTime) {
+							LocalDateTime ld = (LocalDateTime) dt;
+							return ZonedDateTime.of(ld, ZoneOffset.UTC).toInstant();
+						}
+						return null; // cannot happen
+					}
+				} catch (DateTimeParseException ex) {
+					//ignore and continue
+				}
+			}
+			DataProcessingException exception = new DataProcessingException("Cannot parse '{value}' as a valid date of locale '" + locale + "'. Supported formats are: " + Arrays.toString(formats));
+			exception.setValue(input);
+			throw exception;
+		}
+
+		@Override
+		public DateTimeFormatter[] getFormatterObjects() {
+			return parsers;
+		}
+	}
+
 	public static class UnivocityDateFormatter extends ObjectConversion<LocalDate> implements FormattedConversion<DateTimeFormatter> {
 
 		private final Locale locale;

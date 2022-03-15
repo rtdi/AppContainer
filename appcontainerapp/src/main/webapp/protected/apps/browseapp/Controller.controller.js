@@ -45,9 +45,9 @@ function(Controller, ui5ajax, errorfunctions) {
 		formatterLinkRun: function(spath) {
 			if (spath) {
 				if (spath.endsWith(".html")) {
-					return "../../repo/currentuser/" + spath;
+					return "../../repofiles/currentuser/" + spath;
 				} else if (spath.endsWith(".view.xml")) {
-					return "../../repo/currentuser/" + spath.substring(0, spath.length - 9) + ".html";
+					return "../../repofiles/currentuser/" + spath.substring(0, spath.length - 9) + ".html";
 				}
 			}
 			return undefined;
@@ -243,7 +243,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameFile : function(oDataExchange) {
-			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mvfile/" + oDataExchange.currentpath), { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mv/" + oDataExchange.currentpath), { "name": oDataExchange.newname, "path": oDataExchange.newpath})
 				.then(
 					data => {
 						var oFilesControl = thisControl.getView().byId("idFiles");

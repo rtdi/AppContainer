@@ -125,7 +125,7 @@ public class ActivationService {
 			// activate a single file
 			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
 			IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
-			ActivationServiceDirectory service = provider.getActivationServices();
+			ActivationServiceDirectory service = provider.getActivationServices(upath);
 			return service.activate(targetpath.toFile(), dbprincipal, gm, parentvariables, provider.getCatalogService());
 		} else if (targetpath.toFile().isDirectory()) {
 			/*
