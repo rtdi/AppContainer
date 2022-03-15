@@ -14,11 +14,27 @@ In particular these are:
  - Backend for accessing database data via a Restful API
  - Unit testing
  - CI/CD pipeline for development automation
- - Secure by default
 
 ## Motivation
 
-All large software vendors provide Web based development environments and programs can interact with databases. In that sense all requirements from above can be fulfilled. But it takes a while to get all setup.
+All large software vendors provide Web based development environments and programs can interact with databases. In that sense all requirements from above can be fulfilled. But all the work is left to the end user. The AppContainer aims to simplify the entire process for databse backed business applications.
+
+## Architecture
+
+A Tomcat webserver with some apps is wrapped into a container and all operations are done via web technologies. It is as simple as that. The components implemented are:
+
+- Tomcat Realms to delegate the authorization and authentication to the connected database - one realm per database type
+- Swagger UI to document all Restful end points
+- oData and Restful to expose database data
+- Repository operation endpoints
+- UIs for repository operations
+- Activation logic for different types of resources (database specific)
+
+([Implementation](docs/001 - Architecture basics.md))
+
+## Project plan
+
+(details [here](docs/002 - Projectplan.md))
 
 ### Develop Web based UIs
 
@@ -32,6 +48,8 @@ Deploying the code for testing a large application can still take a while.
 **AppContainer**
 In contrast, the AppContainer is a webserver with file change interceptors. The moment a file is changed it is available via the webserver.
 There is no need to start/stop a webserver, to package and deploy code, to deal with caching issues in the browser or server.
+
+([Implementation](docs/006 - WebApp basics.md))
 
 #### Webserver Security and Session handling
 
@@ -73,6 +91,8 @@ All modern IDEs have git integration. For some it is an additional external stor
 
 ([Implementation](docs/008 - Git integration.md))
 
+([Repository](docs/007 - Repository.md))
+
 ### Deploy database artifacts
 
 **Industry standard**
@@ -89,13 +109,35 @@ While these scripts suppport the full syntax of the database - there are no limi
  - Conditional execution: Execute a statement only if a condition applies, e.g. execute the create-table statement if the table does not exist, else check if the table has column xyz and execute the alter table add column statement if needed.
  - Schema aliases: Allows to parameter the schema name where the table is created for cases where one database should get the same application installed but in different schemas.
 
-### Backend for accessing database data via a Restful API
-### Unit testing
-### CI/CD pipeline for development automation
-### Secure by default
+ In case the developer has database artifacts already, the AppContainer provides a reverse-engineering option as well. To create the scripts for individual objects or entire schemas.
 
-Professional software development is using CI/CD pipelines. The aim is to compile the software immediately after each code change (commit/push) and having automated tests, to validate that the results are correct, still. 
-For a library this is pretty straight forward. For example it has a method with the signature _int multiply(int a, int b)_. Whenever that library is changed, a series of tests validate the result is the expected one.
+([Implementation](docs/004 - DesignTimeObjects.md))
+
+([SQL Script usage options](docs/004a - SQL Scripts.md))
+
+([SQL Parser Implementation](docs/004b - SQL Script Parser.md))
+
+### Backend for accessing database data via a Restful API
+
+**Industry standard**
+Clound vendors do have simple Restful APIs to interact with a database service. For onPremise databases and for classic software development tools these APIs must be either explicitly configured or coded from scratch. That should not come as a surprise as this API must handle security.
+
+The root cause for all these problems is again the fact, that a technical user used to connect to the database, not the actual user.
+
+**AppContainer**
+In the AppContainer life is much easier. It exposes an API whith which any SQL query can be executed. Is that a security problem? Of course not, the database protects itself from returning data to a user who does not have permissions. If the user does not have permissions on an object, the query fails. If the user has permissions on specific rows in the object, the query does return only those.
+
+Therefore the AppContainer provides APIs for:
+ - Executing any SQL query
+ - Reading tables/views
+ - Invoking stored procedures with input/output parameters including result sets.
+
+([Implementation](docs/005 - Restful API.md))
+
+### Unit testing
+
+**Industry standard**
+For a library the Unit testing is pretty straight forward. For example the library has a method with the signature _int multiply(int a, int b)_. Whenever that library is changed, a series of tests validate that the result is the expected one.
 
 - _assertEquals(0, multiply(0,100))_
 - _assertEquals(100, multiply(1,100))_
@@ -104,12 +146,12 @@ For a library this is pretty straight forward. For example it has a method with 
 
 If the tests are covering all normal and edge cases, a side effect of a code change will be uncovered early.
 
-If graphical user interfaces are involved, things get more complex. The automated tests must simulate the user input, either indirectly by calling the various widget methods or by recording user input and using that in tests. Software for that exists, too.
-
-A different kind of problem is when the application has states. For example the user clicks on the _order_ button and one time the result is a new order being posted and another time an error message "product out of stock" is presented. Obviously the more states, the more cases must be tested.
+When the application has states, things get more difficult. For example the user clicks on the _order_ button and one time the result is a new order being posted and another time an error message "product out of stock" is presented. Obviously the more states, the more cases must be tested.
 A tpyical database application with hundreds of tables is per definition a stateful application and it has lots of combinations to test.
 
-The naive approach would use normal CI/CD pipeline. A test run simulates the complete cycle from instantiating the database, loading data into the tables and then run the tests. That is doable for tiny projects but generally speaking has the following issues.
+Because of that there are almost no tools that provide help to the developer. All must be built manually.
+
+The naive approach would use normal CI/CD pipeline. A test run simulates the complete cycle from instantiating the database, loading data into the tables and then run the tests. That is doable for tiny projects but generally speaking has the following issues:
 
 1. Deploying a large database application can take a long time, too long to be done at every code push.
 2. The sequence of the tests matter. Example: One test orders a product and the other modifies the inventory level. Within one test that would be fine, e.g. create an order then modify this order, but such dependencies occur even between different subject areas like in the provided example.
@@ -120,31 +162,27 @@ The naive approach would use normal CI/CD pipeline. A test run simulates the com
 7. Hence upgrade scripts must be implemented and tested as well.
 8. The customer might not upgrade to every new version but skip some. So upgrade scripts must handle different starting points.
 
-All these problems require more functionality is needed for this type of applications.
+All these problems require more functionality for these types of applications.
 
+**AppContainer**
+Similar to activation of SQL scripts, the AppContainer can also activate *.test.js files. These contain normal JavaScript code which has a `db` object to interact with the database. It allows to execute queries and use the resulting dataset in the JS code. This can then be compared with a reference dataset, e.g. one that has been preserved as CSV file.
 
-## Architecture
+As stated above, due to the stateful nature of database objects, the comparison must be more flexible. Data can be returned in different order, columns that change, like ORDERID coming from a static database sequence, should not be compared. The AppContainer provides all these options.
 
-(details [here](docs/001 - Architecture basics.md))
+([Implementation](docs/009 - Testing.md))
 
-The detailed architecture is discussed [here](docs/001 - Architecture basics.md) but essentially a Tomcat webserver with some apps is wrapped into a container and all operations are done via web technologies. The components implemented are:
+### CI/CD pipeline for development automation
 
-- Tomcat Realms to delegate the authorization and authentication to the connected database - one realm per database type
-- Swagger UI to document all Restful end points
-- oData and Restful to expose database data
-- Repository operation endpoints
-- UIs for repository operations
-- Activation logic for different types of resources (database specific)
+**Industry standard**
+To deploy software all tools package the application into a file, transport it and deploy it in the target.
+For software libraries this approach does make sense as the library itself is a single file. A Java library is a JAR file for example.
+For applications that consists of many different types of artifacts, there are no good solutions. For such database centric applications static html pages, javascript code, database scripts, and much more must be installed and executed.
 
-## Security
+**AppContainer**
+The AppContainer is using the git repository itself as deployment vehicle. On the production system a git-pull copies the latest code version into the local repository and the activation call copies the web server files and executes the database scripts.
 
-(details [here](docs/003 - Security.md))
+The git-pull and the activation call can be triggered either via the UI manually or via rest calls to automate the deployment process completely.
 
-The detailed discussion and motivation of the application authentication and authorization is written up [here](docs/003 - Security.md).
-
-## Project plan
-
-(details [here](docs/002 - Projectplan.md))
 
 ## References
 
