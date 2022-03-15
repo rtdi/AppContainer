@@ -35,3 +35,11 @@ responses = {
 		)
 })
 ```
+
+## Implementation
+
+The Restful APIs are implemented using the JAX-RS framework with Jackson configured as JSON serializer.
+
+To initialize the framework a [WebApplication](https://git.sbg.ac.at/s1080660/bachelor/-/blob/main/appcontainerapp/src/main/java/io/rtdi/appcontainer/WebApplication.java) class with an ApplicationPath annotation is required.
+
+
