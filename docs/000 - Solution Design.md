@@ -26,11 +26,13 @@ A Tomcat webserver with some apps is wrapped into a container and all operations
 ### Webserver
 
 **Industry standard**
+
 The bare minimum for developing a web based UI is to have a web server. In the Eclipse IDE a full blown web server is started for debugging, which is quite heavy weight.
 That is one of the reasons Node.js got popular, as it includes a web server.
 Deploying the code for testing a large application can still take a while.
 
 **AppContainer**
+
 In contrast, the AppContainer is a webserver with file change interceptors. The moment a file is changed it is available via the webserver.
 There is no need to start/stop a webserver, to package and deploy code, to deal with caching issues in the browser or server.
 
@@ -39,6 +41,7 @@ There is no need to start/stop a webserver, to package and deploy code, to deal 
 ### Webserver Security and Session handling
 
 **Industry standard**
+
 The common approach is to have an [IdentityProvider](https://www.cloudflare.com/learning/access-management/what-is-an-identity-provider/) (IdP) [(_[1] cloudflare_)](#1) and all services contact it directly for authentication and authorization.
 The webserver, every single Restful service,...
 
@@ -46,6 +49,7 @@ Following the Microservice paradime of stateless services, these queries must be
 For single database applications this creates a massive overhead.
 
 **AppContainer**
+
 The webserver has a database realm using the database users itself as authentication and authorization system. So the webserver asks for the database login/password, creates a database connection for this user and reads the database roles the user has assigned.
 This does not prevent using the IdP but it is not used directly. The database is configured to use the IdP and the webserver utilizes the database functionality.
 
@@ -64,9 +68,11 @@ This has a whole set of advantages:
 ### UI Component Library
 
 **Industry standard**
+
 Installing and using the library is part of the initial code setup.
 
 **AppContainer**
+
 By providing a HTML5 component framework out of the box, building web applications is much easier. It must not get installed, its files are cached by the browser and additional custom controls can be provided to help with database centric applications.
 And if the provided library is not the desired one, nothing prevents to install another in addition.
 
@@ -81,12 +87,14 @@ All modern IDEs have git integration. For some it is an additional external stor
 ## Deploy database artifacts
 
 **Industry standard**
+
 A huge problem for database applications are their database artifacts. How to create tables, views and all other database objects. 
 There are multiple approaches, one is to generate the database artifacts out of their corresponding Class definitions using an Object-Relational-Mapping. In the Java world the [Java Persistence API](https://docs.oracle.com/javaee/6/tutorial/doc/bnbpz.html) (JPA) is the standard for such [(_[3] Oracle, 2013_)](#3).
 
 Another approach is to embed SQL scripts or run them seperately or even manually.
 
 **AppContainer**
+
 The AppContainer uses directory structures to create the objects in the desired order via SQL scripts. This allows to break apart the huge script creating all objects into more digestable parts and still honor the dependencies.
 
 While these scripts suppport the full syntax of the database - there are no limitations in regards to the allowed SQL statements and options - a few additional features are provided in the script parser.
@@ -105,11 +113,13 @@ While these scripts suppport the full syntax of the database - there are no limi
 ## Backend for accessing database data via a Restful API
 
 **Industry standard**
+
 Clound vendors do have simple Restful APIs to interact with a database service. For onPremise databases and for classic software development tools these APIs must be either explicitly configured or coded from scratch. That should not come as a surprise as this API must handle security.
 
 The root cause for all these problems is again the fact, that a technical user used to connect to the database, not the actual user.
 
 **AppContainer**
+
 In the AppContainer life is much easier. It exposes an API whith which any SQL query can be executed. Is that a security problem? Of course not, the database protects itself from returning data to a user who does not have permissions. If the user does not have permissions on an object, the query fails. If the user has permissions on specific rows in the object, the query does return only those.
 
 Therefore the AppContainer provides APIs for:
@@ -122,6 +132,7 @@ Therefore the AppContainer provides APIs for:
 ## Unit testing
 
 **Industry standard**
+
 For a library the Unit testing is pretty straight forward. For example the library has a method with the signature _int multiply(int a, int b)_. Whenever that library is changed, a series of tests validate that the result is the expected one.
 
 - _assertEquals(0, multiply(0,100))_
@@ -150,6 +161,7 @@ The naive approach would use normal CI/CD pipeline. A test run simulates the com
 All these problems require more functionality for these types of applications.
 
 **AppContainer**
+
 Similar to activation of SQL scripts, the AppContainer can also activate *.test.js files. These contain normal JavaScript code which has a `db` object to interact with the database. It allows to execute queries and use the resulting dataset in the JS code. This can then be compared with a reference dataset, e.g. one that has been preserved as CSV file.
 
 As stated above, due to the stateful nature of database objects, the comparison must be more flexible. Data can be returned in different order, columns that change, like ORDERID coming from a static database sequence, should not be compared. The AppContainer provides all these options.
@@ -159,11 +171,13 @@ As stated above, due to the stateful nature of database objects, the comparison 
 ## CI/CD pipeline for development automation
 
 **Industry standard**
+
 To deploy software all tools package the application into a file, transport it and deploy it in the target.
 For software libraries this approach does make sense as the library itself is a single file. A Java library is a JAR file for example.
 For applications that consists of many different types of artifacts, there are no good solutions. For such database centric applications static html pages, javascript code, database scripts, and much more must be installed and executed.
 
 **AppContainer**
+
 The AppContainer is using the git repository itself as deployment vehicle. On the production system a git-pull copies the latest code version into the local repository and the activation call copies the web server files and executes the database scripts.
 
 The git-pull and the activation call can be triggered either via the UI manually or via rest calls to automate the deployment process completely.
