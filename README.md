@@ -24,7 +24,8 @@ The development process has the following challanges:
 1. Build a UI, first a mockup and then the actual solution.
 2. Design the database tables and other objects.
 3. Connect the UI with the database data.
-4. Deploy all into production.
+4. Unit tests
+5. Deploy all into production.
 
 In all these areas the user expects quick onboarding, easy to use, can do the normal tasks easily and the uncommon are possible.
 
@@ -121,7 +122,64 @@ For simple projects that is okay but for larger projects, where the view has a m
 Therefore in the AppContainer the controls in the view state which data they want to show. All in one place.
 
 
+## Stage 2 - Design the database tables
+
+Above UI reads the data from a JSON file, not from the database yet. 
+So the next step is to define the tables and the table content.
+
+For that a folder structure must be created. The names can be choosen freely but the order the objects are created is derived from that. 
+Hence a good practice might be to name the folder with the tables `01 - ...` to ensure the tables are created first and all other dependent objects later. Similar concept for the files within each folder.
+
+![image-16.png](./image-16.png)
+
+The editor used is again the same text editor as before, but because it is a *.sql file, it does SQL syntax highlighting.
+If that script does contain the create table statement only, it will succeed the first time and all subsequent activations it would fail with the error "object exists already". 
+
+Therefore the SQL script parser of the AppContainer supports annotations to control the code blocks. For the current situation a "execute only if the table does not exist yet" is sufficient but there can be all kinds of conditions, e.g. check if the column in the table exists and if not, add the column so that the table is of the most recent version.
+
+![image-18.png](./image-18.png)
+
+To create only the table, the activation button on the top right corner of the editor is clicked (or the activation buttons in the browser).
+The user gets detailed feedback about the activation process.
+
+![image-17.png](./image-17.png)
+
+But this table must get data as well as part of the deployment process and if all is activated, it must happen after the tables have been created. 
+Sounds like adding another directory and a file with the table name.
+
+![image-19.png](./image-19.png)
+
+This file is a regular CSV file with header and data. When clicking on the activate button, it truncate the existing data and loads the entire file data.
+
+![image-20.png](./image-20.png)
+
+As it is shown by the database tool.
+
+![image-21.png](./image-21.png)
+
+## Stage 3 - Connect the UI with the database data
+
+On the AppContainer's home page one tile is the link to the Swagger UI, which lists all Restful APIs exposed by the AppContainer.
+
+![image-22.png](./image-22.png)
+
+The Swagger UI also lets the user try out API calls. The `rest/query/{schemaname}/{tablename}` is exactly the one we need to read the data from the database instead from the Json file.
+
+So what does it need to read the data from a table/view of the database with the permissions of the current web user? Nothing. Absolutely nothing. The AppContainer does all of that for us.
+
+![image-23.png](./image-23.png)
+
+All that must be done is changing the model's URL (and the API returns the array directly, so the `items="{/}"` must be used instead of `items="{/apps}"`)
+
+![image-24.png](./image-24.png)
+
+for the UI to read the OVERVIEW table instead of the tables.json.
+
+![image-25.png](./image-25.png)
+
+## Stage 4 - Unit tests
 
 
 
+## Stage 5 - Deploy all into production
 
