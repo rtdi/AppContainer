@@ -28,3 +28,12 @@ These directories are used for:
 - /usr/local/tomcat/conf/security: The directory with ssl settings. The tomcat-users.xml user database is not used.
 - /usr/local/tomcat/repo: This is where all developed files are located, one directory per user and a global PUBLIC directory.
 - /usr/local/tomcat/webapps/ui5externallibs: A place to put all additional ui5 libraries and files not part of the deployed web application.
+
+## Extension points
+
+To extend this application and use it beyond the editing capabilities, own code can be added via various ways.
+* Deploy your web application
+* Mount more files via docker
+* Put custom files into the file repository
+* Use the framework to add services more easily
+
