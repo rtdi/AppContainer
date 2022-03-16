@@ -15,6 +15,24 @@ In particular these are:
  - Unit testing
  - CI/CD pipeline for development automation
 
+## Further reading
+
+- [Solution Design](docs/000 - Solution Design.md)
+  - [Architecture](docs/001 - Architecture basics.md)
+  - [Project Plan](docs/002 - Projectplan.md)
+  - [Authentication and Authorizations](docs/003 - Webserver and DB Security.md)
+  - [Design Time Objects](docs/004 - DesignTimeObjects.md)
+    - [SQL Scripts](docs/004a - SQL Scripts.md)
+    - [SQL Script Parser](docs/004b - SQL Script Parser.md)
+  - [Rest API Guidelines](docs/005 - Restful API.md)
+  - [WebServer configuration](docs/006 - WebApp basics.md)
+  - [Repository](docs/007 - Repository.md)
+  - [Git Integration](docs/008 - Git integration.md)
+  - [Unit Testing for Database Objects](docs/009 - Testing.md)
+- [Background information about CI/CD](background/001 - CICD.md)
+- [Important Software Design Patterns used](background/002 - Design Patterns.md)
+- [Design Thinking - WebUI development](background/003 - Building Web UIs.md)
+
 ## User Journey
 
 First and foremost is the user. So let's imagine a developer with the need to build a relatively complex database application from ground up but also consider cases where parts exist already, e.g. the database tables exist and only the UI must be built.
