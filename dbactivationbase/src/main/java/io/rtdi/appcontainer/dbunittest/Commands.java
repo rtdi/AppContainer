@@ -8,6 +8,7 @@ import org.graalvm.polyglot.HostAccess;
 
 import io.rtdi.appcontainer.dbunittest.commands.ReadCSV;
 import io.rtdi.appcontainer.dbunittest.commands.SQLQuery;
+import io.rtdi.appcontainer.dbunittest.commands.SQLSingleValueSelect;
 import io.rtdi.appcontainer.dbunittest.value.TableValue;
 
 public class Commands {
@@ -28,6 +29,11 @@ public class Commands {
 	@HostAccess.Export
 	public TableValue query(String sqltext, Object... parameters) throws SQLException {
 		return SQLQuery.execute(sqltext, parameters, conn);
+	}
+
+	@HostAccess.Export
+	public Object queryValue(String sqltext, Object... parameters) throws SQLException {
+		return SQLSingleValueSelect.execute(sqltext, parameters, conn);
 	}
 
 }

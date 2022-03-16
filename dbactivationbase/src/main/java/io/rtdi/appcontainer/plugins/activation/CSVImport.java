@@ -72,10 +72,10 @@ public class CSVImport implements IActivationService {
 		parser.parse(file);
 		if (errorhandler.getWarningCount() != 0) {
 			conn.rollback();
-			result.setActivationSuccess(ActivationSuccess.FAILED);
 		} else {
 			conn.commit();
 			result.setActivationSuccess(ActivationSuccess.SUCCESS);
+	    	result.addResult(file.toPath(), "CSV data loaded", null, ActivationSuccess.SUCCESS);
 		}
 		return result;
 	}

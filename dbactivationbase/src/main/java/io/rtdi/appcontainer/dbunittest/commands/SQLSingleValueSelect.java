@@ -14,7 +14,11 @@ public class SQLSingleValueSelect {
 				stmt.setObject(index++, param);
 			}
 			try (ResultSet rs = stmt.executeQuery();) {
-				return rs.getObject(1);
+				if (rs.next()) {
+					return rs.getObject(1);
+				} else {
+					return null;
+				}
 			}
 		}
 	}

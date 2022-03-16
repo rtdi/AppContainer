@@ -21,6 +21,7 @@ public abstract class ActivationServiceDirectory {
 	public ActivationServiceDirectory(Path rootpath) {
 		addServices();
 		addService(".test.js", new JavaScriptExecutor(rootpath));
+		addService(".test.data", new Ignore(rootpath));
 	}
 
 	protected abstract void addServices();
@@ -35,13 +36,13 @@ public abstract class ActivationServiceDirectory {
 	public ActivationResult activate(File file, IDatabaseLoginPrincipal dbprincipal, GlobalSchemaMapping gm, SQLVariables variables,
 			ICatalogService catalogservice) throws IOException, SQLException {
 		String name = file.getName();
-		int pos = name.lastIndexOf('.');
-		if (pos != -1) {
-			String extension = name.substring(pos);
-			IActivationService service = services.get(extension);
-			if (service != null) {
-				try (Connection conn = dbprincipal.getConnection();) {
-					return service.activate(file, conn, gm, variables, catalogservice);
+		for (String key : services.keySet()) {
+			if (name.endsWith(key)) {
+				IActivationService service = services.get(key);
+				if (service != null) {
+					try (Connection conn = dbprincipal.getConnection();) {
+						return service.activate(file, conn, gm, variables, catalogservice);
+					}
 				}
 			}
 		}
