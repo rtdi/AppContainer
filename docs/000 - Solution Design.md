@@ -21,9 +21,9 @@ A Tomcat webserver with some apps is wrapped into a container and all operations
 
 (details [here](docs/002 - Projectplan.md))
 
-### Develop Web based UIs
+## Develop Web based UIs
 
-#### Webserver
+### Webserver
 
 **Industry standard**
 The bare minimum for developing a web based UI is to have a web server. In the Eclipse IDE a full blown web server is started for debugging, which is quite heavy weight.
@@ -36,7 +36,7 @@ There is no need to start/stop a webserver, to package and deploy code, to deal 
 
 ([Implementation](docs/006 - WebApp basics.md))
 
-#### Webserver Security and Session handling
+### Webserver Security and Session handling
 
 **Industry standard**
 The common approach is to have an [IdentityProvider](https://www.cloudflare.com/learning/access-management/what-is-an-identity-provider/) (IdP) [(_[1] cloudflare_)](#1) and all services contact it directly for authentication and authorization.
@@ -61,7 +61,7 @@ This has a whole set of advantages:
 
 ([Implementation](docs/003 - Security.md))
 
-#### UI Component Library
+### UI Component Library
 
 **Industry standard**
 Installing and using the library is part of the initial code setup.
@@ -70,7 +70,7 @@ Installing and using the library is part of the initial code setup.
 By providing a HTML5 component framework out of the box, building web applications is much easier. It must not get installed, its files are cached by the browser and additional custom controls can be provided to help with database centric applications.
 And if the provided library is not the desired one, nothing prevents to install another in addition.
 
-### Multi-developer environment using git
+## Multi-developer environment using git
 
 All modern IDEs have git integration. For some it is an additional external storage in the sense of the objects get exported and imported from git. But the majority works directly on the local git repository. So no difference here.
 
@@ -78,7 +78,7 @@ All modern IDEs have git integration. For some it is an additional external stor
 
 ([Repository](docs/007 - Repository.md))
 
-### Deploy database artifacts
+## Deploy database artifacts
 
 **Industry standard**
 A huge problem for database applications are their database artifacts. How to create tables, views and all other database objects. 
@@ -102,7 +102,7 @@ While these scripts suppport the full syntax of the database - there are no limi
 
 ([SQL Parser Implementation](docs/004b - SQL Script Parser.md))
 
-### Backend for accessing database data via a Restful API
+## Backend for accessing database data via a Restful API
 
 **Industry standard**
 Clound vendors do have simple Restful APIs to interact with a database service. For onPremise databases and for classic software development tools these APIs must be either explicitly configured or coded from scratch. That should not come as a surprise as this API must handle security.
@@ -119,7 +119,7 @@ Therefore the AppContainer provides APIs for:
 
 ([Implementation](docs/005 - Restful API.md))
 
-### Unit testing
+## Unit testing
 
 **Industry standard**
 For a library the Unit testing is pretty straight forward. For example the library has a method with the signature _int multiply(int a, int b)_. Whenever that library is changed, a series of tests validate that the result is the expected one.
@@ -156,7 +156,7 @@ As stated above, due to the stateful nature of database objects, the comparison 
 
 ([Implementation](docs/009 - Testing.md))
 
-### CI/CD pipeline for development automation
+## CI/CD pipeline for development automation
 
 **Industry standard**
 To deploy software all tools package the application into a file, transport it and deploy it in the target.
