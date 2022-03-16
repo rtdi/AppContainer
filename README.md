@@ -33,6 +33,32 @@ In particular these are:
 - [Important Software Design Patterns used](background/002 - Design Patterns.md)
 - [Design Thinking - WebUI development](background/003 - Building Web UIs.md)
 
+
+## Quickstart
+
+Attention: A better docker run command is explained in the [Installation](docs/000 - Installation details.md) document.
+
+On any computer capable of running software containers the image can be downloaded from docker hub
+
+    docker pull rtdi/appcontainer:latest-hana
+    docker pull rtdi/appcontainer:latest-snowflake
+
+Then start the image via docker run. Only one parameter must be set, the environment variable JDBCURL. For Hana this consists of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE). For Snowflake see the [Snowflake JDBC documentation](https://docs.snowflake.com/en/user-guide/jdbc-configure.html#jdbc-driver-connection-string).
+
+Examples:
+Hana:
+
+    docker run -d -p 80:8080 -e JDBCURL="jdbc:sap://hana.rtdi.io:39015/?databaseName=HXE" \
+      rtdi/appcontainer:latest-hana
+
+Snowflake:
+
+    docker run -d -p 80:8080 -e JDBCURL="jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE" \
+      rtdi/appcontainer:latest-snowflake
+
+From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
+
+
 ## User Journey
 
 First and foremost is the user. So let's imagine a developer with the need to build a relatively complex database application from ground up but also consider cases where parts exist already, e.g. the database tables exist and only the UI must be built.
