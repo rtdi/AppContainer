@@ -2,7 +2,7 @@
 
 ## SQL Script parser
 
-The SQL script parser is implemented as State Pattern <a href=#1>(_[1] Pree, 1995_)</a>.
+The SQL script parser is implemented as State Pattern <a href="#1">(_[1] Pree, 1995_)</a>.
 
 It is based on the IParser interface and implements a read() method, reading character after character.
 Depending on the state the read text has different meanings, e.g. within double quotes it is plain text and the only subsequent state possible is when an escape char is found to escape an inline double quote character.
