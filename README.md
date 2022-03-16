@@ -8,12 +8,12 @@ Developers for database application need an easy to use and light weight develop
 
 In particular these are:
 
- - Develop Web based UIs
- - Multi-developer environment using git
- - Deploy database artifacts
- - Backend for accessing database data via a Restful API
- - Unit testing
- - CI/CD pipeline for development automation
+- Develop Web based UIs
+- Multi-developer environment using git
+- Deploy database artifacts
+- Backend for accessing database data via a Restful API
+- Unit testing
+- CI/CD pipeline for development automation
 
 ## Further reading
 
@@ -32,7 +32,6 @@ In particular these are:
 - [Background information about CI/CD](background/001 - CICD.md)
 - [Important Software Design Patterns used](background/002 - Design Patterns.md)
 - [Design Thinking - WebUI development](background/003 - Building Web UIs.md)
-
 
 ## Quickstart
 
@@ -57,7 +56,6 @@ Snowflake:
       rtdi/appcontainer:latest-snowflake
 
 From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
-
 
 ## User Journey
 
@@ -85,7 +83,7 @@ The important tile is the Repository Browser. The Swagger tile is to see the Res
 
 Because the Repository is user specific and should not be accessible by everybody, the web server asks the user to login first.
 
-![image-1.png](_media/readme/image-1.png)
+<img src="_media/readme/image-1.png" title="" alt="image-1.png" width="300">
 
 The repository browser shows on the left hand side the directory structure for the logged in user and on the right half of the screen the files in the currently selected directory.
 
@@ -95,7 +93,7 @@ The user can do all the normal file operations, rename, delete, create, move fil
 
 To create any new file the add button is clicked
 
-![image-3.png](_media/readme/image-3.png)
+<img src="_media/readme/image-3.png" title="" alt="image-3.png" width="300">
 
 and the the name of the file to be created can be specified. In this case the user wants to create a UI screen, hence the extension *.view.xml.
 
@@ -103,7 +101,7 @@ and the the name of the file to be created can be specified. In this case the us
 
 This is a regular text file and can be edit as such by clicking on its name.
 
-![image-4.png](_media/readme/image-4.png)
+<img src="_media/readme/image-4.png" title="" alt="image-4.png" width="300">
 
 The text editor shows the empty file and allows to create the XML structure. The editor supports basic syntax highlighting.
 
@@ -133,7 +131,7 @@ A screen with the text "Select Data Area" in the ShellBar, the text "Configure a
 
 Why three tiles and with that name? Because the table.json used in the view contains the data.
 
-![image-11.png](_media/readme/image-11.png)
+<img src="_media/readme/image-11.png" title="" alt="image-11.png" width="300">
 
 ![image-12.png](_media/readme/image-12.png)
 
@@ -143,6 +141,7 @@ How such a tile must look like is defined using a UI5 fragment, which is another
 
 The interesting part is why it was enough to create the view.xml file to render a page. If that xml file would be opened via the browser, the browser would show the XML text and not build a UI!
 In fact all UI frameworks need some additional files to work. In case of UI5 these are as bare minimum:
+
 - a html file to bootstrap the UI framework and loading the correct view.xml file.
 - a controller that does initialize the system and provides the data as model
 - a manifest file with masterdata about the application
@@ -164,7 +163,6 @@ The `Controller.controller.js` used to initialize the application has by default
 The way UI5 suggests to load a model is by specifying which model goes to what control in the Controller and to maintain the model details (URL for the data, model type,...) in the Manifest file.
 For simple projects that is okay but for larger projects, where the view has a model, all the list and combo boxes, all selectors, all tables have their own models for the lookup data, it is very hard to keep the three areas in sync.
 Therefore in the AppContainer the controls in the view state which data they want to show. All in one place.
-
 
 ### Stage 2 - Design the database tables
 
@@ -232,7 +230,6 @@ In this example the test code is very simple and fails, because we loaded three 
 
 ![image-27.png](_media/readme/image-27.png)
 
-
 ### Stage 5 - Deploy all into production
 
 Moving all into production is very simple.
@@ -245,4 +242,3 @@ Moving all into production is very simple.
 This goes through the entire directory structure and activates the logic. The activation logic for *.sql files is to execute them, for *.csv files to import the data, for *.test.js to execute the tests and all other files are static files, which get copied into the PUBLIC folder of the repository so they are no longer user specific.
 
 Note: the git pull and the activation are also Restful APIs. The UI does nothing else than calling those, so can any other program that triggers the deployment.
-
