@@ -1,4 +1,4 @@
-# Installation Part 2
+# Installation
 
 An even better docker run command is to overlay a few server directories, here all are in the host's /dockermountpoints directory, and point them into various predefined points.
 
