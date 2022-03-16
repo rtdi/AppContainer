@@ -179,7 +179,26 @@ for the UI to read the OVERVIEW table instead of the tables.json.
 
 ## Stage 4 - Unit tests
 
+Tests are written in JavaScript as *.test.js files. As the order is important also, all test files are placed into a separate directory.
+
+![image-26.png](./image-26.png)
+
+The tests can be any JavaScript code, the interaction with the database happens through the `db` object.
+In this example the test code is very simple and fails, because we loaded three records into the table but the tests - for demonstration purposes - expects 9999 rows.
+
+![image-27.png](./image-27.png)
 
 
 ## Stage 5 - Deploy all into production
+
+Moving all into production is very simple.
+
+1. Perform a git pull on the production system with the user who has the permissions to deply all into the database. The user who can create all tables etc.
+2. Perform an activation on the root folder.
+
+![image-28.png](./image-28.png)
+
+This goes through the entire directory structure and activates the logic. The activation logic for *.sql files is to execute them, for *.csv files to import the data, for *.test.js to execute the tests and all other files are static files, which get copied into the PUBLIC folder of the repository so they are no longer user specific.
+
+Note: the git pull and the activation are also Restful APIs. The UI does nothing else than calling those, so can any other program that triggers the deployment.
 
