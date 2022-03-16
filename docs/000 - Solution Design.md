@@ -17,13 +17,24 @@ A Tomcat webserver with some apps is wrapped into a container and all operations
 
 ([Implementation](docs/001 - Architecture basics.md))
 
-## Project plan
+## Design Considerations
 
-(details [here](docs/002 - Projectplan.md))
+In the [README.md](/README.md) document the following aspects have been called out:
 
-## Develop Web based UIs
+ - Develop Web based UIs
+ - Multi-developer environment using git
+ - Deploy database artifacts
+ - Backend for accessing database data via a Restful API
+ - Unit testing
+ - CI/CD pipeline for development automation
 
-### Webserver
+The goal is to provide a superior user experience in all these areas.
+
+### Develop Web based UIs
+
+To build web based database centric application the developer needs a web server, which is connected to the backend database in a secure manner and allows to build applications quickly.
+
+#### Webserver
 
 **Industry standard**
 
@@ -38,7 +49,7 @@ There is no need to start/stop a webserver, to package and deploy code, to deal 
 
 ([Implementation](docs/006 - WebApp basics.md))
 
-### Webserver Security and Session handling
+#### Webserver Security and Session handling
 
 **Industry standard**
 
@@ -65,7 +76,7 @@ This has a whole set of advantages:
 
 ([Implementation](docs/003 - Security.md))
 
-### UI Component Library
+#### UI Component Library
 
 **Industry standard**
 
@@ -76,7 +87,7 @@ Installing and using the library is part of the initial code setup.
 By providing a HTML5 component framework out of the box, building web applications is much easier. It must not get installed, its files are cached by the browser and additional custom controls can be provided to help with database centric applications.
 And if the provided library is not the desired one, nothing prevents to install another in addition.
 
-## Multi-developer environment using git
+### Multi-developer environment using git
 
 All modern IDEs have git integration. For some it is an additional external storage in the sense of the objects get exported and imported from git. But the majority works directly on the local git repository. So no difference here.
 
@@ -84,7 +95,7 @@ All modern IDEs have git integration. For some it is an additional external stor
 
 ([Repository](docs/007 - Repository.md))
 
-## Deploy database artifacts
+### Deploy database artifacts
 
 **Industry standard**
 
@@ -110,7 +121,7 @@ While these scripts suppport the full syntax of the database - there are no limi
 
 ([SQL Parser Implementation](docs/004b - SQL Script Parser.md))
 
-## Backend for accessing database data via a Restful API
+### Backend for accessing database data via a Restful API
 
 **Industry standard**
 
@@ -129,7 +140,7 @@ Therefore the AppContainer provides APIs for:
 
 ([Implementation](docs/005 - Restful API.md))
 
-## Unit testing
+### Unit testing
 
 **Industry standard**
 
@@ -168,7 +179,7 @@ As stated above, due to the stateful nature of database objects, the comparison 
 
 ([Implementation](docs/009 - Testing.md))
 
-## CI/CD pipeline for development automation
+### CI/CD pipeline for development automation
 
 **Industry standard**
 
