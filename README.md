@@ -166,7 +166,7 @@ For simple projects that is okay but for larger projects, where the view has a m
 Therefore in the AppContainer the controls in the view state which data they want to show. All in one place.
 
 
-## Stage 2 - Design the database tables
+### Stage 2 - Design the database tables
 
 Above UI reads the data from a JSON file, not from the database yet. 
 So the next step is to define the tables and the table content.
@@ -201,7 +201,7 @@ As it is shown by the database tool.
 
 ![image-21.png](_media/readme/image-21.png)
 
-## Stage 3 - Connect the UI with the database data
+### Stage 3 - Connect the UI with the database data
 
 On the AppContainer's home page one tile is the link to the Swagger UI, which lists all Restful APIs exposed by the AppContainer.
 
@@ -221,7 +221,7 @@ for the UI to read the OVERVIEW table instead of the tables.json.
 
 ![image-25.png](_media/readme/image-25.png)
 
-## Stage 4 - Unit tests
+### Stage 4 - Unit tests
 
 Tests are written in JavaScript as *.test.js files. As the order is important also, all test files are placed into a separate directory.
 
@@ -233,7 +233,7 @@ In this example the test code is very simple and fails, because we loaded three 
 ![image-27.png](_media/readme/image-27.png)
 
 
-## Stage 5 - Deploy all into production
+### Stage 5 - Deploy all into production
 
 Moving all into production is very simple.
 
