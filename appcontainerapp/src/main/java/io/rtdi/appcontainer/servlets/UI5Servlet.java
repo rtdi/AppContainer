@@ -10,8 +10,6 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.connector.Response;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -77,7 +75,7 @@ public abstract class UI5Servlet extends HttpServlet {
         	writeEmpty(response, requestedpath);
         	return;
         }
-		response.sendError(Response.SC_NOT_FOUND, "File at location \"" + file.getAbsolutePath() + "\" does not exist");
+		response.sendError(404, "File at location \"" + file.getAbsolutePath() + "\" does not exist");
     }
     
     public static int getInvocations() {
