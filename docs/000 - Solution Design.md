@@ -72,7 +72,7 @@ This has a whole set of advantages:
  - Using the database security - the logged in user has access to the database objects and rows the database user has permissions on. There is no technical user to connect to the database, it is the actual database user itself interacting with the database.
  - Due to the stable webserver session, intermediate states can be preserved between Restful calls. This speeds up pagination requests, where the first call returns 1000 rows from a query and the next call the next set of data. Thanks to the session the query can stay open so that the next call just fetches more records until all data has been read or the query runs into a timeout.
 
- The only dowside is that this model does not scale into millions of parallel users, just a couple of 10'000 - which is more than enough for business applications.
+ The only downside is that this model does not scale into millions of parallel users, just a couple of 10'000 - which is more than enough for business applications.
 
 ([Implementation](docs/003 - Security.md))
 

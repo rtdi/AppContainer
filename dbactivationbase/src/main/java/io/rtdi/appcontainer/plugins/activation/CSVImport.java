@@ -168,6 +168,9 @@ public class CSVImport implements IActivationService {
 	    	if (upsert != null) {
 	    		upsert.executeBatch();
 	    	}
+	    	if (update != null) {
+	    		update.executeBatch();
+	    	}
 	    	batchrowcount = 0;
 	    }
 

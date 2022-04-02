@@ -1,0 +1,30 @@
+<mvc:View height="100%" class="sapUiSizeCompact"
+    controllerName="ui5app.App1"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:sap.m="sap.m"
+    xmlns:sap.ui.layout="sap.ui.layout"
+    xmlns:sap.ui.core.dnd="sap.ui.core.dnd" 
+    xmlns:sap.ui.core="sap.ui.core" 
+    xmlns:ui5libs.controls="ui5libs.controls">
+    <ui5libs.controls:AppContainerPage>
+        <sap.m:Panel height="100%">
+    <sap.m:Button 
+        text="New Button">
+    </sap.m:Button>
+    <sap.m:List 
+        noDataText="Keine Daten"
+        items="{/RS}">
+        <sap.m:customData>
+            <ui5libs.controls:ODataContainer url="/AppContainer/protected/rest/odata/tables/INFORMATION_SCHEMA/DATABASES/" />
+        </sap.m:customData>
+        <sap.m:items>
+            <sap.m:StandardListItem 
+                type="Active"
+                counter="0"
+                title="{DATABASE_NAME}">
+            </sap.m:StandardListItem>
+        </sap.m:items>
+    </sap.m:List>
+        </sap.m:Panel>
+    </ui5libs.controls:AppContainerPage>
+</mvc:View>

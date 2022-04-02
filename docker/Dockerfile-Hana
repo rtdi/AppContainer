@@ -1,0 +1,17 @@
+FROM rtdi/connectorrootapp:latest-tomcat9
+
+LABEL maintainer="info@rtdi.io"
+
+ADD https://github.com/rtdi/AppContainerRealm/releases/latest/download/appcontainerrealm.jar ./lib
+ADD https://github.com/rtdi/hanaappserverrealm/releases/latest/download/hanarealm.jar ./lib
+ADD https://github.com/rtdi/SnowflakeRealm/releases/latest/download/snowflakerealm.jar ./lib
+ADD https://repo1.maven.org/maven2/com/sap/cloud/db/jdbc/ngdbc/2.7.15/ngdbc-2.7.15.jar ./lib
+ADD https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.13.2/snowflake-jdbc-3.13.2.jar ./lib
+ADD https://raw.githubusercontent.com/rtdi/AppContainer/master/docker/server-hana.xml conf/server.xml
+ADD https://github.com/rtdi/AppContainer/releases/latest/download/AppContainer.war ./webapps/
+
+EXPOSE 8080
+EXPOSE 8443
+
+
+CMD ["catalina.sh", "run"]
