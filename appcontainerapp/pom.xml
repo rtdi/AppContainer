@@ -29,10 +29,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<properties>
-		<junit.jupiter.version>5.8.1</junit.jupiter.version>
-		<log4j.version>2.17.0</log4j.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>

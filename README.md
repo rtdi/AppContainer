@@ -19,7 +19,6 @@ In particular these are:
 
 - [Solution Design](docs/000 - Solution Design.md)
   - [Architecture](docs/001 - Architecture basics.md)
-  - [Project Plan](docs/002 - Projectplan.md)
   - [Authentication and Authorizations](docs/003 - Webserver and DB Security.md)
   - [Design Time Objects](docs/004 - DesignTimeObjects.md)
     - [SQL Scripts](docs/004a - SQL Scripts.md)
