@@ -5,7 +5,30 @@
 		<artifactId>appcontainerbase</artifactId>
 		<version>${revision}</version>
 	</parent>
-	<artifactId>appcontainer</artifactId>
+	<artifactId>AppContainer</artifactId>
+	<version>0.9.36</version>
+	<packaging>war</packaging>
+	<scm>
+		<connection>scm:git:git://github.com/rtdi/AppContainer.git</connection>
+		<developerConnection>scm:git:ssh:git@github.com:rtdi/AppContainer.git</developerConnection>
+		<url>https://github.com/rtdi/AppContainer</url>
+	</scm>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/rtdi/*</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
@@ -23,10 +46,6 @@
 					<warSourceDirectory>WebContent</warSourceDirectory>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -35,6 +54,11 @@
 			<artifactId>jakarta.servlet-api</artifactId>
 			<version>5.0.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>JDBCoData</artifactId>
+			<version>0.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -66,34 +90,26 @@
 			<artifactId>jaxb-runtime</artifactId>
 			<version>3.0.2</version>
 		</dependency>
-       	<dependency>
+		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>3.0.4</version>
 		</dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
-        </dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.4.0-b180830.0359</version>
+		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2-jakarta</artifactId>
 			<version>2.1.13</version>
 		</dependency>
-		
 		<dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-jaxb</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        
-        
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-jaxb</artifactId>
+			<version>3.0.2</version>
+		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2-servlet-initializer-jakarta</artifactId>
@@ -110,9 +126,14 @@
 			<version>2.13.2</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.fasterxml.jackson.dataformat</groupId>
-		    <artifactId>jackson-dataformat-xml</artifactId>
+		    <groupId>com.fasterxml.jackson.jaxrs</groupId>
+		    <artifactId>jackson-jaxrs-json-provider</artifactId>
 		    <version>2.13.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-xml-provider</artifactId>
+			<version>2.13.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -144,25 +165,9 @@
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
-			<groupId>io.rtdi.appcontainer</groupId>
-			<artifactId>dbactivationsnowflake</artifactId>
-			<version>${revision}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>6.0.0.202111291000-r</version>
-		</dependency>
-		<dependency>
-			<groupId>net.snowflake</groupId>
-			<artifactId>snowflake-jdbc</artifactId>
-			<version>3.13.15</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.rtdi.appcontainer</groupId>
-			<artifactId>JDBCoData</artifactId>
-			<version>0.1.1</version>
 		</dependency>
 	</dependencies>
 </project>

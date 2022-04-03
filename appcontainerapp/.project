@@ -3,7 +3,10 @@
 	<name>appcontainerapp</name>
 	<comment></comment>
 	<projects>
+		<project>JDBCoData</project>
+		<project>databaseloginrealmsnowflake</project>
 		<project>dbactivationsnowflake</project>
+		<project>databaseloginrealm</project>
 		<project>dbactivationbase</project>
 	</projects>
 	<buildSpec>

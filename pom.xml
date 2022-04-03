@@ -31,9 +31,7 @@
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
 	</properties>
 	<modules>
-	<module>databaseloginrealm</module>
 	<module>appcontainerapp</module>
-	<module>databaseloginrealmsnowflake</module>
 	<module>dbactivationbase</module>
 	<module>dbactivationsnowflake</module>
 	</modules>
