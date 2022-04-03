@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
+
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -46,6 +48,7 @@ public class WebApplication extends ResourceConfig {
 		packages(p);
 		register(JacksonFeature.class);
 		register(RolesAllowedDynamicFeature2.class);
+		register(JakartaXmlBindAnnotationModule.class);
 		
 		Object[] objects = getObjectsToRegister();
 		if (objects != null) {
