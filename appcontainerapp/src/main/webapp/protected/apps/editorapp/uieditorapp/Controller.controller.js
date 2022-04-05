@@ -31,7 +31,7 @@ sap.ui.define([
 			}
 			
 			var that = this;
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename)
+			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/repo/file/" + sFilename)
 				.then(
 					data => {
 						var parser = new DOMParser();
@@ -42,7 +42,7 @@ sap.ui.define([
 						}
 					}, 
 					error => {
-						thisControl.getView().setBusy(false);
+						oView.setBusy(false);
 						if (error.code === 202) {
 							errorfunctions.addError(that.getView(), error);
 						} else {
@@ -52,7 +52,7 @@ sap.ui.define([
 				);
 			
 		    var oModel = new sap.ui.model.odata.v4.ODataModel({
-		    		serviceUrl : sap.ui.require.toUrl("ui5root") + "/protected/catalog/odataendpoints/", 
+		    		serviceUrl : sap.ui.require.toUrl("ui5rest") + "/odata/tables/", 
 		    		"autoExpandSelect": true,
 					"operationMode": "Server",
 					"groupId": "$direct",
@@ -67,7 +67,7 @@ sap.ui.define([
 		    oModelSchemaControl.setModel(oModelSchema);
 		    
 			var oBinding = oModelControl.getBinding("items");
-			oBinding.sort( [ new sap.ui.model.Sorter("SCHEMA_NAME"), new sap.ui.model.Sorter("OBJECT_NAME") ] );
+			oBinding.sort( [ new sap.ui.model.Sorter("SCHEMANAME"), new sap.ui.model.Sorter("OBJECTNAME") ] );
 			
 			var oPropertiesTable = oView.byId("properties");
 			var oPropertiesModel = new sap.ui.model.json.JSONModel();
@@ -94,10 +94,10 @@ sap.ui.define([
 			var oBinding = oModelControl.getBinding("items");
 			var aFilter = [];
 			if (sSearch) {
-				aFilter.push(new sap.ui.model.Filter("OBJECT_NAME", sap.ui.model.FilterOperator.Contains, sSearch));
+				aFilter.push(new sap.ui.model.Filter("OBJECTNAME", sap.ui.model.FilterOperator.Contains, sSearch));
 			}
 			if (sSchema) {
-				aFilter.push(new sap.ui.model.Filter("SCHEMA_NAME", sap.ui.model.FilterOperator.EQ, sSchema));
+				aFilter.push(new sap.ui.model.Filter("SCHEMANAME", sap.ui.model.FilterOperator.EQ, sSchema));
 			}
 			oBinding.filter(aFilter, "Application");
 		},
@@ -162,6 +162,8 @@ sap.ui.define([
 						var aggregationname = node.localName;
 						if (aggregationname === "customData") {
 							sODataURL = this._findODataURLAttributeValue(node.childNodes);
+						} else if (aggregationname === "layoutData") {
+							// TODO: assign layout data to the wrapped control
 						} else if (aggregationname in oSettings) {
 							/*
 							 * In case "items" was set already in the attributes above, this is a template and items needs to be set again with the full binding info
@@ -173,7 +175,7 @@ sap.ui.define([
 							oSettings[aggregationname] = this._buildContentTreeAggregation(node.childNodes, showProperties);
 						} else {
 							// default aggregation
-							if (oSettings[aggregationname]) {
+							if (!oSettings[aggregationname]) {
 								oSettings[aggregationname] = [];
 							}
 							oSettings[aggregationname].push(this._buildContentTreeControl(node, sClassName, showProperties));
@@ -440,13 +442,14 @@ sap.ui.define([
 						'    </ui5libs.controls:AppContainerPage>\r\n' +
 						'</mvc:View>';
 				var that = this;
-				ui5ajax.postText(sap.ui.require.toUrl("ui5rest")+"/editorapp/file/" + sFilename, viewcontent)
+				var oView = this.getView();
+				ui5ajax.postText(sap.ui.require.toUrl("ui5rest")+"/repo/file/" + sFilename, viewcontent)
 					.then(
 						data => {
 							errorfunctions.uiSuccess(that.getView(), data);
 						}, 
 						error => {
-							thisControl.getView().setBusy(false);
+							oView.setBusy(false);
 							if (error.code === 202) {
 								errorfunctions.addError(that.getView(), error);
 							} else {
@@ -464,7 +467,7 @@ sap.ui.define([
 			if (oControl instanceof ui5app.controls.ControlWrapper) {
 				return oControl.generateXML(buffer, level, oControl.getWrappedControl());
 			} else {
-				return this.generateXMLInnerControl(buffer, level, oControl);
+				return this.generateXMLInnerControl.call(this, buffer, level, oControl);
 			}
 		},
 	
@@ -566,7 +569,7 @@ sap.ui.define([
 							 */
 							buffer.splice(bindingposition, 0, "\r\n" + indent(sName + "=\"{" + oBindingInfo.path + "}\"", level+1));
 							buffer.push("\r\n" + indent("<" + ns + sName + ">\r\n", level+1 ));
-							var ret = this.generateXML(buffer, level+2, oTemplate);
+							var ret = this.generateXML.call(this, buffer, level+2, oTemplate);
 							if (!ret) {
 								buffer.pop(); // <tagname...>
 							} else {
@@ -588,8 +591,8 @@ sap.ui.define([
 									var ret = false;
 									buffer.push("\r\n" + indent("<" + ns + sName + ">\r\n", level+1 ));
 									aElements.forEach(function(oItem, index) {
-										ret |= this.generateXML(buffer, level+2, oItem);
-									});
+										ret |= this.generateXML.call(this, buffer, level+2, oItem);
+									}, this);
 									if (!ret) {
 										buffer.pop(); // <tagname...>
 									} else {
@@ -602,7 +605,7 @@ sap.ui.define([
 							} else {
 								// ???? layoutdata aggregation for example
 								buffer.push("\r\n" + indent("<" + ns + sName + ">\r\n", level+1 ));
-								var ret = this.generateXML(buffer, level+2, aElements);
+								var ret = this.generateXML.call(this, buffer, level+2, aElements);
 								if (!ret) {
 									buffer.pop(); // <tagname...>
 								} else {

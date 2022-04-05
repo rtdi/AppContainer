@@ -166,7 +166,7 @@ public abstract class UI5Servlet extends HttpServlet {
 		out.println("jQuery.sap.registerModulePath(\"ui5libs\", \"" + rootname + "/ui5libs\");");
 		out.println("jQuery.sap.registerModulePath(\"am4charts\", \"" + rootname + "/ui5libs/am4charts/dist\");");
 		out.println("jQuery.sap.registerModulePath(\"ui5rest\", \"" + rootname + "/protected/rest\");");
-		out.println("jQuery.sap.registerModulePath(\"ui5odata\", \"" + rootname + "/protected/odata\");");
+		out.println("jQuery.sap.registerModulePath(\"ui5odata\", \"" + rootname + "/protected/rest/odata\");");
 		out.println("jQuery.sap.registerModulePath(\"ui5root\", \"" + rootname + "\");");
 		out.println("jQuery.sap.registerModulePath(\"ui5externallibs\", \"ui5externallibs\");");
 		out.println("jQuery.sap.registerModulePath(\"ui5app\", \"./\");");

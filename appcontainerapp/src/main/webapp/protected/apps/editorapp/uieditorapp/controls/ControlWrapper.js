@@ -415,7 +415,7 @@ sap.ui.define( [
 			 * A oData model has been dropped over a control.
 			 */
 			var sEndpoint = oSourceControl.getCustomData()[0].getValue();
-			oTargetControl.setODataURL(sEndpoint);
+			oTargetControl.setODataURL(sap.ui.require.toUrl("ui5odata") + "/tables/" + sEndpoint + "/");
 		},
 		findListBindingOwner : function(oControl) {
 			var o = oControl;
@@ -491,7 +491,7 @@ sap.ui.define( [
 				var oTemplate = oBindingOwner.getControlTemplate();
 				if (oTemplate) {
 					oInnerControl.bindAggregation(sDefaultAggregation, {
-						path: "/TABLE",
+						path: "/RS",
 						template: oTemplate.clone(),
 						templateShareable: false
 					});
@@ -516,9 +516,11 @@ sap.ui.define( [
 		 * If it is a ControlWrapper call its generateXML method, so the wrapper has the option to do something control specific.
 		 */
 		generateXML: function(buffer, level = 0, oControl) {
-			var oView = sap.ui.getCore().byId("__xmlview0");
-			var oController = oView.getController();
-			return oController.generateXML(buffer, level, oControl);
+			if (oControl) {
+				var oView = sap.ui.getCore().byId("__xmlview0");
+				var oController = oView.getController();
+				return oController.generateXML(buffer, level, oControl);
+			}
 		},
 
 		/*

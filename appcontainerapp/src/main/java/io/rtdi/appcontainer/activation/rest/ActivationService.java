@@ -21,6 +21,7 @@ import io.rtdi.appcontainer.repo.FileUtil;
 import io.rtdi.appcontainer.repo.RepoDirectory;
 import io.rtdi.appcontainer.repo.rest.RepoService;
 import io.rtdi.appcontainer.repo.rest.entity.Folder;
+import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.DatabaseProvider;
@@ -43,7 +44,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/activation")
-public class ActivationService {
+public class ActivationService extends RestService {
 
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
 	
@@ -100,6 +101,7 @@ public class ActivationService {
 			java.nio.file.Path upath = RepoDirectory.getRepoUserDir(request);
 			GlobalSchemaMapping gm = GlobalSchemaMapping.read(upath);
 			SQLVariables variables = SQLVariables.read(upath);
+			tickRepo();
 			return Response.ok(activate(targetpath, targetpath, gm, variables)).build();
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);

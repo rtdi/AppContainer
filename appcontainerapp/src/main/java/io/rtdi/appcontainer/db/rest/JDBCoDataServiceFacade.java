@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
 import io.rtdi.appcontainer.odata.JDBCoDataService;
 import io.rtdi.appcontainer.odata.ODataIdentifier;
+import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import jakarta.servlet.ServletException;
 import jakarta.ws.rs.GET;
@@ -18,7 +19,8 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/odata")
 public class JDBCoDataServiceFacade extends JDBCoDataService {
-
+	private static RestService counter = new  RestService();
+	
 	@Override
 	protected Connection getConnection() throws SQLException, ServletException {
 		IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
@@ -79,6 +81,7 @@ public class JDBCoDataServiceFacade extends JDBCoDataService {
     		@QueryParam("$format")
     		String format
 			) {
+		counter.tickOData();
 		return super.getODataEntitySet(schemaraw, nameraw, select, filter, order, top, skip, skiptoken, format);
 	}
 
@@ -98,6 +101,7 @@ public class JDBCoDataServiceFacade extends JDBCoDataService {
     		@QueryParam("$format")
     		String format
 			) {
+		counter.tickOData();
 		return super.getODataEntityRow(schemaraw, nameraw, keys, select, format);
 	}
 
