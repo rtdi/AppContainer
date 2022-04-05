@@ -96,9 +96,38 @@
 			<version>3.0.4</version>
 		</dependency>
 		<dependency>
+<<<<<<< HEAD
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-jaxb</artifactId>
 			<version>3.0.2</version>
+=======
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2-jakarta</artifactId>
+			<version>2.1.13</version>
+		</dependency>
+		
+		<dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        
+        
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2-servlet-initializer-jakarta</artifactId>
+			<version>2.1.13</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>2.1.13</version>
+>>>>>>> origin/main
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
