@@ -10,8 +10,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.connector.Response;
-
 import io.rtdi.appcontainer.WebApplication;
 import io.rtdi.appcontainer.repo.FileUtil;
 import io.rtdi.appcontainer.utils.Util;
@@ -52,7 +50,7 @@ public class RepoAppServlet extends UI5Servlet {
 			Path requestedpath = rootpath.resolve(FileUtil.makeRelativePath(relativepath.toString()));
 			process(request, response, requestedpath, relativepath, getServletContext());
     	} catch (IOException | URISyntaxException e) {
-    		response.sendError(Response.SC_NOT_FOUND, "RepoServlet throw an error: " + e.getMessage());
+    		response.sendError(404, "RepoServlet throw an error: " + e.getMessage());
     	}
     }
 

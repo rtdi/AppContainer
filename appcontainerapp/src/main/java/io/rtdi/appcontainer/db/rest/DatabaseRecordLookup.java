@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.Util;
@@ -38,7 +39,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/")
-public class DatabaseRecordLookup {
+public class DatabaseRecordLookup extends RestService {
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
 
 	@Context
@@ -147,6 +148,7 @@ public class DatabaseRecordLookup {
 				    			DatabaseQuery.setRestObject(rs, i, rootnode, timeformatter, timestampformatter);
 				    		}
 						}
+						tickRest();
 						return Response.ok(rootnode).build();
 					}
 				} catch (SQLException e) {

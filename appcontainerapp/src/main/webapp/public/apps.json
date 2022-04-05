@@ -20,6 +20,13 @@
 			"tooltip": null,
 			"href": "../openui5",
 			"image": "./public/media/logo_ui5.png"
+		},
+		{
+			"name": "How-To",
+			"description": "User Documentation",
+			"tooltip": null,
+			"href": "https://github.com/rtdi/AppContainer/blob/master/docs/100%20-%20How%20to.md",
+			"icon": "sap-icon://learning-assistant"
 		}
 	]
 }

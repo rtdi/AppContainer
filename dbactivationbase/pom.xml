@@ -28,9 +28,15 @@
 			<version>3.0.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.graalvm.js</groupId>
-		    <artifactId>js</artifactId>
-		    <version>22.0.0.2</version>
+			<groupId>org.graalvm.js</groupId>
+			<artifactId>js</artifactId>
+			<version>22.0.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>appcontainerrealm</artifactId>
+			<version>0.9.2</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

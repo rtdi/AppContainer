@@ -31,12 +31,23 @@
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
 	</properties>
 	<modules>
-	<module>databaseloginrealm</module>
 	<module>appcontainerapp</module>
-	<module>databaseloginrealmsnowflake</module>
 	<module>dbactivationbase</module>
 	<module>dbactivationsnowflake</module>
 	</modules>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/rtdi/*</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>

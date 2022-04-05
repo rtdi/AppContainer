@@ -2,7 +2,7 @@ package io.rtdi.appcontainer.repo.rest;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +38,6 @@ import jakarta.ws.rs.core.Configuration;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import net.snowflake.client.jdbc.internal.google.common.io.Files;
 
 @Path("/repo/reveng")
 public class DatabaseReverseEngineer {
@@ -281,7 +280,7 @@ public class DatabaseReverseEngineer {
 				if (file.exists()) {
 					node.importresult = "File exists .. skipped";
 				} else {
-					Files.write(ddl.getBytes(StandardCharsets.UTF_8), file);
+					Files.writeString(file.toPath(), ddl);
 					node.importresult = "File created";
 				}
 			}

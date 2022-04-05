@@ -20,6 +20,7 @@ import io.rtdi.appcontainer.db.rest.entity.StoredProcedure;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.IStoredProcedure;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureMetadata;
+import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.DatabaseProvider;
@@ -46,10 +47,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/")
-public class StoredProcedureService {
-	private static int invocations = 0;
-	private static long starttime = System.currentTimeMillis();
-	private static long lastprocessedtime = 0;
+public class StoredProcedureService extends RestService {
 
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
 
@@ -165,23 +163,12 @@ public class StoredProcedureService {
 				schema = Util.getSchema(schema, request);
 				IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 				IStoredProcedure procedureservice = provider.getProcedureService();
+				tickRest();
 				return Response.ok(procedureservice.callProcedure(conn, schema, procedurename, data, cache)).build();
 			}
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
 	}
-
-    public static int getInvocations() {
-    	return invocations;
-    }
-
-    public static long getStarttime() {
-    	return starttime;
-    }
-
-    public static long getLastProcessedtime() {
-    	return lastprocessedtime;
-    }
 
 }

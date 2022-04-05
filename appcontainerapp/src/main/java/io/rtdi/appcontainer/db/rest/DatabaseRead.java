@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.Util;
@@ -39,7 +40,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/")
-public class DatabaseRead {
+public class DatabaseRead extends RestService {
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
 
 	@Context
@@ -165,6 +166,7 @@ public class DatabaseRead {
 								throw new AppContainerSQLException("The query read more than 30k records, that is prevented as safety precaution", sql.toString(), null);
 							}
 						}
+						tickRest();
 						return Response.ok(rows).build();
 					}
 

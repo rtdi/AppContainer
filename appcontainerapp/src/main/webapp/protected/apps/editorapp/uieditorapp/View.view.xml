@@ -117,7 +117,7 @@
 							    <SearchField liveChange=".onmodelsearch" id="odatamodelsearch" width="70%" />
 							    <Table 
 									id="odatamodels"
-									items="{/TABLE}"
+									items="{/RS}"
 									>
 									<dragDropConfig>
 										<dnd:DragInfo
@@ -135,11 +135,11 @@
 									<items>
 										<ColumnListItem>
 											<customData>
-												<core:CustomData key="ENDPOINT" value="{ENDPOINT}" />
+												<core:CustomData key="ENDPOINT" value="{URL}" />
 											</customData>
 											<cells>
-												<Text text="{SCHEMA_NAME}" wrapping="false" />
-												<Text text="{OBJECT_NAME}" wrapping="false" />
+												<Text text="{SCHEMANAME}" wrapping="false" />
+												<Text text="{OBJECTNAME}" wrapping="false" />
 											</cells>
 										</ColumnListItem>
 									</items>
