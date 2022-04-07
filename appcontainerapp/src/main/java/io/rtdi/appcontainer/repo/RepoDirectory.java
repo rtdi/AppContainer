@@ -50,7 +50,7 @@ public class RepoDirectory {
 		ctx.setAttribute(JDBCREPO, p);
 	}
 
-	public static Path getRepoUserDir(@NotNull HttpServletRequest request) throws ServletException, IOException {
+	public static synchronized Path getRepoUserDir(@NotNull HttpServletRequest request) throws ServletException, IOException {
 		IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
 		if (dbprincipal == null) {
 			throw new IOException("The user did not log in yet");
