@@ -19,13 +19,17 @@
 	</developers>
 	<licenses>
 		<license>
-			<name>The Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<name>GPL</name>
+			<url>https://github.com/rtdi/AppContainer/blob/master/LICENSE</url>
+		</license>
+		<license>
+			<name>Commercial</name>
+			<url>https://github.com/rtdi/AppContainer/blob/master/LICENSE_COMMERCIAL</url>
 		</license>
 	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<revision>0.10.13</revision>
+		<revision>0.10.14</revision>
 		<tomcatversion>10.0.13</tomcatversion>
 		<log4j.version>2.17.1</log4j.version>
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
@@ -34,6 +38,7 @@
 	<module>appcontainerapp</module>
 	<module>dbactivationbase</module>
 	<module>dbactivationsnowflake</module>
+	<module>dbactivationhana</module>
 	</modules>
 	<repositories>
 		<repository>

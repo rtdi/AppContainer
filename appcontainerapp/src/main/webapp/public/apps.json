@@ -15,6 +15,13 @@
 			"image": "./public/media/swagger_logo.svg"
 		},
 		{
+			"name": "Demo App",
+			"description": "A trivial App showing how UI5 and Rest/oData works together",
+			"tooltip": null,
+			"href": "./protected/apps/demo/App1.html",
+			"icon": "sap-icon://internet-browser"
+		},
+		{
 			"name": "OpenUI5",
 			"description": "A local installation of the SAP OpenUI5 library",
 			"tooltip": null,
