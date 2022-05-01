@@ -1,0 +1,30 @@
+<mvc:View height="100vh"
+	controllerName="ui5app.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:ui5libs="ui5libs"
+	>
+	<ui5libs:controls.AppContainerPage pageTitle="Word Cloud">
+	    <ui5libs:amcharts.Chart
+	    	id="dependencychart"
+	    	width="100%"
+	    	height="100%"
+	    	>
+			<ui5libs:layoutData>
+				<FlexItemData growFactor="1" />
+			</ui5libs:layoutData>
+			<ui5libs:children>
+				<ui5libs:amcharts.base.WordCloud
+					maxCounts="150"
+					maxFontSize="25%"
+					minWordLength="2"
+					text="{/text}"
+				>
+				   	<ui5libs:customData>
+				   		<ui5libs:controls.JsonContainer key="model" url="ui5app/data.json" />
+				   	</ui5libs:customData>
+				</ui5libs:amcharts.base.WordCloud>
+			</ui5libs:children>
+	    </ui5libs:amcharts.Chart>
+    </ui5libs:controls.AppContainerPage>
+</mvc:View>

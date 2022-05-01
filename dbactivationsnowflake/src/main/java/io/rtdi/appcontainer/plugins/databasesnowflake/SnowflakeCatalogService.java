@@ -5,8 +5,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.ICatalogService;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
 
@@ -93,6 +96,124 @@ public class SnowflakeCatalogService implements ICatalogService {
 	@Override
 	public String getProcedureDDL(Connection conn, String schema, String name) throws SQLException {
 		return getDDL(conn, schema, name, "PRODEDURE");
+	}
+
+	@Override
+	public DatabaseObjectTree getDependencies(Connection conn, String schema, String name) throws SQLException {
+		updateDependencyTable(conn, false);
+		String sql = "select referenced_database, referenced_schema, referenced_object_name, referenced_object_id, referenced_object_domain,\r\n"
+				+ "  referencing_database, referencing_schema, referencing_object_name, referencing_object_id, referencing_object_domain,\r\n"
+				+ "  dependency_type, level\r\n"
+				+ "from \"__DEPENDENCIES\"\r\n"
+				+ "    start with referencing_object_name = ? and referencing_schema = ? and referencing_database = ?\r\n"
+				+ "    connect by\r\n"
+				+ "      referenced_object_id = prior referencing_object_id\r\n"
+				+ "order by level";
+		String database = conn.getCatalog();
+		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, "TABLE");
+		Map<Integer, DatabaseObjectTree> index = new HashMap<>();
+		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
+			stmt.setString(1, name);
+			stmt.setString(2, schema);
+			stmt.setString(3, database);
+			try (ResultSet rs = stmt.executeQuery();) {
+				DatabaseObjectTree referencing;
+				while (rs.next()) {
+					if (index.size() == 0) {
+						index.put(rs.getInt(9), tree);
+						referencing = tree;
+					} else {
+						referencing = index.get(rs.getInt(9));
+					}
+					DatabaseObjectTree child;
+					if (rs.getString(1).equals(database)) {
+						child = new DatabaseObjectTree(rs.getString(2), rs.getString(3), rs.getString(5));
+					} else {
+						String identifier = '"' + rs.getString(1) + "\".\"" + rs.getString(2) + "\".\"" + rs.getString(3) + '"';
+						child = new DatabaseObjectTree(identifier, rs.getString(5));
+					}
+					referencing.addChild(child);
+					index.put(rs.getInt(4), child);
+				}
+			}
+		}
+		return tree;
+	}
+
+	@Override
+	public DatabaseObjectTree getImpact(Connection conn, String schema, String name) throws SQLException {
+		updateDependencyTable(conn, false);
+		String sql = "select referenced_database, referenced_schema, referenced_object_name, referenced_object_id, referenced_object_domain,\r\n"
+				+ "  referencing_database, referencing_schema, referencing_object_name, referencing_object_id, referencing_object_domain,\r\n"
+				+ "  dependency_type, level\r\n"
+				+ "from \"__DEPENDENCIES\"\r\n"
+				+ "    start with referenced_object_name = ? and referenced_schema = ? and referenced_database = ?\r\n"
+				+ "    connect by\r\n"
+				+ "      referencing_object_id = prior referenced_object_id"
+				+ "order by level";
+		String database = conn.getCatalog();
+		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, "TABLE");
+		Map<Integer, DatabaseObjectTree> index = new HashMap<>();
+		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
+			stmt.setString(1, name);
+			stmt.setString(2, schema);
+			stmt.setString(3, database);
+			try (ResultSet rs = stmt.executeQuery();) {
+				DatabaseObjectTree referencing;
+				while (rs.next()) {
+					if (index.size() == 0) {
+						index.put(rs.getInt(4), tree);
+						referencing = tree;
+					} else {
+						referencing = index.get(rs.getInt(4));
+					}
+					DatabaseObjectTree child;
+					if (rs.getString(6).equals(database)) {
+						child = new DatabaseObjectTree(rs.getString(7), rs.getString(8), rs.getString(10));
+					} else {
+						String identifier = '"' + rs.getString(6) + "\".\"" + rs.getString(7) + "\".\"" + rs.getString(8) + '"';
+						child = new DatabaseObjectTree(identifier, rs.getString(10));
+					}
+					referencing.addChild(child);
+					index.put(rs.getInt(9), child);
+				}
+			}
+		}
+		return tree;
+	}
+	
+	private void updateDependencyTable(Connection conn, boolean force) throws SQLException {
+		boolean tablereload = true;
+		boolean tableexists = false;
+		try (PreparedStatement stmt = conn.prepareStatement("select table_type, datediff(minute, last_altered, CURRENT_TIMESTAMP) as minutes from information_schema.tables where table_schema = ? and table_name = ?"); ) {
+			stmt.setString(1, conn.getSchema());
+			stmt.setString(2, "__DEPENDENCIES");
+			try (ResultSet rs = stmt.executeQuery();) {
+				if (rs.next()) {
+					if (rs.getString(1).equals("LOCAL TEMPORARY")) {
+						tableexists = true;
+					}
+					if (rs.getInt(2) < 15 && force == false) {
+						tablereload = false;
+					}
+				}
+			}
+		}
+		String identifier = '"' + conn.getSchema() + "\".\"" + "__DEPENDENCIES\"";
+		if (tableexists) {
+			if (tablereload) {
+				try (PreparedStatement stmt = conn.prepareStatement("truncate table " + identifier); ) {
+					stmt.execute();
+				}
+				try (PreparedStatement stmt = conn.prepareStatement("insert into " + identifier + " select * from snowflake.account_usage.OBJECT_DEPENDENCIES;"); ) {
+					stmt.execute();
+				}
+			}
+		} else {
+			try (PreparedStatement stmt = conn.prepareStatement("create temporary table " + identifier + " as select * from snowflake.account_usage.OBJECT_DEPENDENCIES;"); ) {
+				stmt.execute();
+			}
+		}
 	}
 
 }

@@ -1,0 +1,18 @@
+[
+	{
+		"stage": "Stage #1",
+		"applicants": 100
+	},
+	{
+		"stage": "Stage #2",
+		"applicants": 70
+	},
+	{
+		"stage": "Stage #3",
+		"applicants": 35
+	},
+	{
+		"stage": "Stage #4",
+		"applicants": 10
+	}
+]

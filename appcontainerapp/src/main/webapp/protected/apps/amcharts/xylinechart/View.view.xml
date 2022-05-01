@@ -1,0 +1,116 @@
+<mvc:View height="100vh"
+	controllerName="ui5app.Controller"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m"
+	xmlns:ui5libs="ui5libs"
+	>
+	<ui5libs:controls.AppContainerPage pageTitle="XY Chart">
+	    <ui5libs:amcharts.Chart
+	    	id="dependencychart"
+	    	width="100%"
+	    	height="100%"
+	    	>
+			<ui5libs:layoutData>
+				<FlexItemData growFactor="1" />
+			</ui5libs:layoutData>
+			<ui5libs:children>
+				<ui5libs:amcharts.base.XYChart
+					panY="false"
+					wheelY="zoomX"
+					layout="verticalLayout"
+				>
+				   	<ui5libs:customData>
+				   		<ui5libs:controls.JsonContainer key="model" url="ui5app/data.json" />
+				   	</ui5libs:customData>
+					<ui5libs:xAxis>
+						<ui5libs:amcharts.base.CategoryAxis
+							maxDeviation="0.2"
+							categoryField="year"
+							componentData="{/}"
+						>
+						</ui5libs:amcharts.base.CategoryAxis>
+					</ui5libs:xAxis>
+					<ui5libs:yAxis>
+						<ui5libs:amcharts.base.ValueAxis
+						>
+						</ui5libs:amcharts.base.ValueAxis>
+					</ui5libs:yAxis>
+					<ui5libs:series>
+						<ui5libs:amcharts.base.LineSeries
+							name="Europe" 
+							xAxisIndex="0" 
+							yAxisIndex="0" 
+							valueYField="europe" 
+							categoryXField="year"
+							stacked="true"
+							componentData="{/}"
+						>
+							<ui5libs:strokes>
+								<ui5libs:amcharts.base.Graphics
+									strokeWidth="3"
+									strokeDasharray= "10, 5"
+								>
+								</ui5libs:amcharts.base.Graphics>
+							</ui5libs:strokes>
+							<ui5libs:fills>
+								<ui5libs:amcharts.base.Graphics
+									fillOpacity="0.5"
+									visible= "true"
+								>
+								</ui5libs:amcharts.base.Graphics>
+							</ui5libs:fills>
+						</ui5libs:amcharts.base.LineSeries>
+						<ui5libs:amcharts.base.LineSeries
+							name="North America" 
+							xAxisIndex="0" 
+							yAxisIndex="0" 
+							valueYField="namerica" 
+							categoryXField="year" 
+							stacked="true"
+							componentData="{/}"
+						>
+							<ui5libs:strokes>
+								<ui5libs:amcharts.base.Graphics
+									strokeWidth="3"
+									strokeDasharray= "10, 5"
+								>
+								</ui5libs:amcharts.base.Graphics>
+							</ui5libs:strokes>
+							<ui5libs:fills>
+								<ui5libs:amcharts.base.Graphics
+									fillOpacity="0.5"
+									visible= "true"
+								>
+								</ui5libs:amcharts.base.Graphics>
+							</ui5libs:fills>
+						</ui5libs:amcharts.base.LineSeries>
+						<ui5libs:amcharts.base.LineSeries
+							name="Asia" 
+							xAxisIndex="0" 
+							yAxisIndex="0" 
+							valueYField="asia" 
+							categoryXField="year" 
+							stacked="true"
+							componentData="{/}"
+						>
+							<ui5libs:strokes>
+								<ui5libs:amcharts.base.Graphics
+									strokeWidth="3"
+									strokeDasharray= "10, 5"
+								>
+								</ui5libs:amcharts.base.Graphics>
+							</ui5libs:strokes>
+							<ui5libs:fills>
+								<ui5libs:amcharts.base.Graphics
+									fillOpacity="0.5"
+									visible= "true"
+								>
+								</ui5libs:amcharts.base.Graphics>
+							</ui5libs:fills>
+						</ui5libs:amcharts.base.LineSeries>
+					</ui5libs:series>
+				</ui5libs:amcharts.base.XYChart>
+			</ui5libs:children>
+	    </ui5libs:amcharts.Chart>
+    </ui5libs:controls.AppContainerPage>
+</mvc:View>

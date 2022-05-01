@@ -3,6 +3,7 @@ package io.rtdi.appcontainer.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,8 +23,15 @@ public class Logout extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		PrintWriter out = resp.getWriter();
 		try {
+			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(req);
+			try {
+				dbprincipal.logout();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			req.getSession(false).invalidate();
 		} catch (IllegalStateException e) {
+			e.printStackTrace();
 		}
 		out.println("<!DOCTYPE html>");
 		out.println("<html><head><meta http-equiv=\"refresh\" content=\"0; URL=index.html\"></head><body>");

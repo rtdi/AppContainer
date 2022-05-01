@@ -1,0 +1,71 @@
+[
+	{
+		"name": "Root",
+		"children": [
+			{
+				"name": "A0",
+				"children": [
+					{
+						"name": "A00",
+						"value": 88
+					},
+					{
+						"name": "A01",
+						"value": 23
+					},
+					{
+						"name": "A02",
+						"value": 25
+					}
+				]
+			},
+			{
+				"name": "B0",
+				"children": [
+					{
+						"name": "B10",
+						"value": 62
+					},
+					{
+						"name": "B11",
+						"value": 4
+					}
+				]
+			},
+			{
+				"name": "C0",
+				"children": [
+					{
+						"name": "C20",
+						"value": 11
+					},
+					{
+						"name": "C21",
+						"value": 92
+					},
+					{
+						"name": "C22",
+						"value": 17
+					}
+				]
+			},
+			{
+				"name": "D0",
+				"children": [
+					{
+						"name": "D30",
+						"value": 95
+					},
+					{
+						"name": "D31",
+						"value": 84
+					},
+					{
+						"name": "D32",
+						"value": 75
+					}
+				]
+			}
+		]
+	}
+]
