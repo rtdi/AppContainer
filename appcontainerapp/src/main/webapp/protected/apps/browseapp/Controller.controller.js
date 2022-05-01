@@ -202,9 +202,9 @@ function(Controller, ui5ajax, errorfunctions) {
 				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/rmdir/" + oDirectory.path))
 					.then(
 						data => {
-						oFolders.splice(index, 1);
-						oModel.setProperty(sFoldersPath, oFolders);
-						thisControl.getView().byId("idFiles").getModel().setData(null); // empty model for files
+							oFolders.splice(index, 1);
+							oModel.setProperty(sFoldersPath, oFolders);
+							thisControl.getView().byId("idFiles").getModel().setData(null); // empty model for files
 						}, 
 						error => {
 							errorfunctions.addError(thisControl.getView(), error);
@@ -600,7 +600,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			oDialog.setModel(oDialogModel);
 			oDialog.addEventDelegate({onsapenter: onOkay}, this);
 			oDialog.getContent()[1].bindItems({
-				path: "/schemas",
+				path: "/",
 				template: new sap.ui.core.ListItem({ text: "{schemaname}", key: "{schemaname}" })
 			});
 			oDialog.open();

@@ -1,0 +1,20 @@
+[
+	{
+		"year": "2021",
+		"europe": 5,
+		"namerica": 2.5,
+		"asia": 1
+	},
+	{
+		"year": "2022",
+		"europe": 2.6,
+		"namerica": 6.7,
+		"asia": 2.2
+	},
+	{
+		"year": "2023",
+		"europe": 4.8,
+		"namerica": 1.9,
+		"asia": 4.4
+	}
+]

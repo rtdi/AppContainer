@@ -1,0 +1,402 @@
+[
+	{
+		"name": "Beer styles",
+		"children": [
+			{
+				"name": "Pale Ales",
+				"children": [
+					{
+						"name": "American Amber Ale",
+						"value": 1
+					},
+					{
+						"name": "American Pale Ale",
+						"value": 1
+					},
+					{
+						"name": "Blonde Ale",
+						"value": 1
+					},
+					{
+						"name": "English-Style Bitter",
+						"value": 1
+					},
+					{
+						"name": "English-Style Pale Ale (ESB)",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Dark Lagers",
+				"children": [
+					{
+						"name": "American Amber Lager",
+						"value": 1
+					},
+					{
+						"name": "German-Style Dunkel",
+						"value": 1
+					},
+					{
+						"name": "German-Style Marzen / Oktoberfest",
+						"value": 1
+					},
+					{
+						"name": "German-Style Schwarzbier",
+						"value": 1
+					},
+					{
+						"name": "Vienna-Style Lager",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Brown Ales",
+				"children": [
+					{
+						"name": "American Brown Ale",
+						"value": 1
+					},
+					{
+						"name": "English-Style Brown Ale",
+						"value": 1
+					},
+					{
+						"name": "English-Style Mild",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "India Pale Ales",
+				"children": [
+					{
+						"name": "American IPA",
+						"value": 1
+					},
+					{
+						"name": "English-Style IPA",
+						"value": 1
+					},
+					{
+						"name": "Imperial India Pale Ale",
+						"value": 1
+					},
+					{
+						"name": "New England IPA",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Wheat Beers",
+				"children": [
+					{
+						"name": "American-Style Wheat Wine Ale",
+						"value": 1
+					},
+					{
+						"name": "American Wheat",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Witbier",
+						"value": 1
+					},
+					{
+						"name": "Berliner-Style Weisse",
+						"value": 1
+					},
+					{
+						"name": "German-Style Dunkelweizen",
+						"value": 1
+					},
+					{
+						"name": "German-Style Hefeweizen",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Strong Ales",
+				"children": [
+					{
+						"name": "American Barley Wine",
+						"value": 1
+					},
+					{
+						"name": "American Imperial Red Ale",
+						"value": 1
+					},
+					{
+						"name": "British-Style Barley Wine Ale",
+						"value": 1
+					},
+					{
+						"name": "English-Style Old Ale",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Belgian Styles",
+				"children": [
+					{
+						"name": "Belgian-Style Blonde Ale",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Dubbel",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Golden Strong Ale",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Pale Ale",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Quadrupel",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Saison",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Tripel",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Hybrid Beers",
+				"children": [
+					{
+						"name": "American Cream Ale",
+						"value": 1
+					},
+					{
+						"name": "French-Style Biere de Garde",
+						"value": 1
+					},
+					{
+						"name": "California Common",
+						"value": 1
+					},
+					{
+						"name": "German-Style Altbier",
+						"value": 1
+					},
+					{
+						"name": "German-Style Kolsch",
+						"value": 1
+					},
+					{
+						"name": "Irish-Style Red Beer",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Porters",
+				"children": [
+					{
+						"name": "American Imperial Porter",
+						"value": 1
+					},
+					{
+						"name": "Baltic-Style Porter",
+						"value": 1
+					},
+					{
+						"name": "English-Style Brown Porter",
+						"value": 1
+					},
+					{
+						"name": "Robust Porter",
+						"value": 1
+					},
+					{
+						"name": "Smoke Porter",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Stouts",
+				"children": [
+					{
+						"name": "American Imperial Stout",
+						"value": 1
+					},
+					{
+						"name": "American Stout",
+						"value": 1
+					},
+					{
+						"name": "English-Style Oatmeal Stout",
+						"value": 1
+					},
+					{
+						"name": "English-Style Sweet Stout (Milk Stout)",
+						"value": 1
+					},
+					{
+						"name": "Irish-Style Dry Stout",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Bocks",
+				"children": [
+					{
+						"name": "German-Style Bock",
+						"value": 1
+					},
+					{
+						"name": "German-Style Doppelbock",
+						"value": 1
+					},
+					{
+						"name": "German-Style Maibock",
+						"value": 1
+					},
+					{
+						"name": "German-Style Weizenbock",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Scottish-Style Ales",
+				"children": [
+					{
+						"name": "Scotch Ale/Wee Heavy",
+						"value": 1
+					},
+					{
+						"name": "Scottish-Style Ale",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Wild/Sour Beers",
+				"children": [
+					{
+						"name": "American Brett",
+						"value": 1
+					},
+					{
+						"name": "American Sour",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Flanders",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Fruit Lambic",
+						"value": 1
+					},
+					{
+						"name": "Belgian-Style Lambic/Gueuze",
+						"value": 1
+					},
+					{
+						"name": "Contemporary Gose",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Pilseners and Pale Lagers",
+				"children": [
+					{
+						"name": "American Lager",
+						"value": 1
+					},
+					{
+						"name": "Bohemian-Style Pilsener",
+						"value": 1
+					},
+					{
+						"name": "European-Style Export",
+						"value": 1
+					},
+					{
+						"name": "German-Style Helles",
+						"value": 1
+					},
+					{
+						"name": "German-Style Pilsner",
+						"value": 1
+					}
+				]
+			},
+			{
+				"name": "Specialty Beers",
+				"children": [
+					{
+						"name": "American Black Ale",
+						"value": 1
+					},
+					{
+						"name": "Barrel-Aged Beer",
+						"value": 1
+					},
+					{
+						"name": "Chocolate Beer",
+						"value": 1
+					},
+					{
+						"name": "Coffee Beer",
+						"value": 1
+					},
+					{
+						"name": "Fruit and Field Beer",
+						"value": 1
+					},
+					{
+						"name": "Gluten-Free Craft Beer",
+						"value": 1
+					},
+					{
+						"name": "Herb and Spice Beer",
+						"value": 1
+					},
+					{
+						"name": "Honey Beer",
+						"value": 1
+					},
+					{
+						"name": "Pumpkin Beer",
+						"value": 1
+					},
+					{
+						"name": "Rye Beer",
+						"value": 1
+					},
+					{
+						"name": "Session Beer",
+						"value": 1
+					},
+					{
+						"name": "Smoke Beer",
+						"value": 1
+					},
+					{
+						"name": "Specialty Beer",
+						"value": 1
+					}
+				]
+			}
+		]
+	}
+]

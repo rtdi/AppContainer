@@ -5,8 +5,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.ICatalogService;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
 
@@ -107,6 +110,100 @@ public class HanaCatalogService implements ICatalogService {
 	@Override
 	public String getProcedureDDL(Connection conn, String schema, String name) throws SQLException {
 		return getDDL(conn, schema, name, "PRODEDURE");
+	}
+
+	@Override
+	public DatabaseObjectTree getDependencies(Connection conn, String schema, String name) throws SQLException {
+		String sql = "SELECT\r\n"
+				+ "    dependent_database_name, dependent_schema_name, dependent_object_name, dependent_object_type,\r\n"
+				+ "    base_database_name, base_schema_name, base_object_name, base_object_type,\r\n"
+				+ "    HIERARCHY_LEVEL,\r\n"
+				+ "    parent_id, node_id\r\n"
+				+ "FROM HIERARCHY (\r\n"
+				+ "    SOURCE (\r\n"
+				+ "    	SELECT	dependent_database_name || '.' || dependent_schema_name || '.' || dependent_object_name AS parent_id, \r\n"
+				+ "			    base_database_name || '.' || base_schema_name || '.' || base_object_name AS node_id,\r\n"
+				+ "			    *\r\n"
+				+ "		FROM object_dependencies WHERE dependency_type = 1 and base_object_type in ('TABLE', 'VIEW', 'SYNONYM'))\r\n"
+				+ "    START WHERE dependent_database_name = (select database_name from m_database) AND dependent_schema_name = ? AND dependent_object_name = ?)\r\n"
+				+ "ORDER BY HIERARCHY_LEVEL";
+		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, null);
+		Map<String, DatabaseObjectTree> index = new HashMap<>();
+		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
+			stmt.setString(1, schema);
+			stmt.setString(2, name);
+			String database = null;
+			try (ResultSet rs = stmt.executeQuery(); ) {
+				DatabaseObjectTree referencing;
+				while (rs.next()) {
+					if (index.size() == 0) {
+						index.put(rs.getString(10), tree);
+						referencing = tree;
+						tree.setType(rs.getString(4));
+						database = rs.getString(1);
+					} else {
+						referencing = index.get(rs.getString(10));
+					}
+					DatabaseObjectTree child;
+					if (rs.getString(5).equals(database)) {
+						child = new DatabaseObjectTree(rs.getString(6), rs.getString(7), rs.getString(8));
+					} else {
+						String identifier = '"' + rs.getString(5) + "\".\"" + rs.getString(6) + "\".\"" + rs.getString(7) + '"';
+						child = new DatabaseObjectTree(identifier, rs.getString(8));
+					}
+					referencing.addChild(child);
+					index.put(rs.getString(11), child);
+				}
+				return tree;
+			}
+		}
+	}
+
+	@Override
+	public DatabaseObjectTree getImpact(Connection conn, String schema, String name) throws SQLException {
+		String sql = "SELECT\r\n"
+				+ "    dependent_database_name, dependent_schema_name, dependent_object_name, dependent_object_type,\r\n"
+				+ "    base_database_name, base_schema_name, base_object_name, base_object_type,\r\n"
+				+ "    HIERARCHY_LEVEL,\r\n"
+				+ "    parent_id, node_id\r\n"
+				+ "FROM HIERARCHY (\r\n"
+				+ "    SOURCE (\r\n"
+				+ "    	SELECT	dependent_database_name || '.' || dependent_schema_name || '.' || dependent_object_name AS node_id, \r\n"
+				+ "			    base_database_name || '.' || base_schema_name || '.' || base_object_name AS parent_id,\r\n"
+				+ "			    *\r\n"
+				+ "		FROM object_dependencies WHERE dependency_type = 1 and dependent_object_type in ('TABLE', 'VIEW', 'SYNONYM'))\r\n"
+				+ "    START WHERE base_database_name = (select database_name from m_database) AND base_schema_name = ? AND base_object_name = ?)\r\n"
+				+ "ORDER BY HIERARCHY_LEVEL";
+		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, null);
+		Map<String, DatabaseObjectTree> index = new HashMap<>();
+		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
+			stmt.setString(1, schema);
+			stmt.setString(2, name);
+			String database = null;
+			try (ResultSet rs = stmt.executeQuery(); ) {
+				DatabaseObjectTree referencing;
+				while (rs.next()) {
+					if (index.size() == 0) {
+						index.put(rs.getString(11), tree);
+						tree.setType(rs.getString(8));
+						referencing = tree;
+						database = rs.getString(5);
+					} else {
+						referencing = index.get(rs.getString(11));
+					}
+					DatabaseObjectTree child;
+					if (rs.getString(1).equals(database)) {
+						child = new DatabaseObjectTree(rs.getString(2), rs.getString(3), rs.getString(4));
+					} else {
+						String identifier = '"' + rs.getString(1) + "\".\"" + rs.getString(2) + "\".\"" + rs.getString(3) + '"';
+						child = new DatabaseObjectTree(identifier, rs.getString(4));
+					}
+					referencing.addChild(child);
+					index.put(rs.getString(10), child);
+				}
+				return tree;
+			}
+		}
 	}
 
 }

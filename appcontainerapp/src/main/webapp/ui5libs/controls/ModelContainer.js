@@ -9,7 +9,11 @@ sap.ui.define([
 				url : {type : "string"},
 				sizeLimit: {type : "int", defaultValue : 1000},
 				model : {type: "sap.ui.model.ClientModel"},
-			}
+			},
+            aggregations: {
+				rowTransformations: {type: "ui5libs.libs.model.mt.RowTransformation", multiple: true, singularName: "rowTransformation"},
+				transformations: {type: "ui5libs.libs.model.mt.ModelTransformation", multiple: true, singularName: "transformation"},
+			},
 		},
 		setModelName : function(oValue) {
 			this.setProperty("modelName", oValue);

@@ -32,6 +32,8 @@ public interface ICatalogService {
 	String getViewDDL(Connection conn, String schema, String name) throws SQLException;
 	String getFunctionDDL(Connection conn, String schema, String name) throws SQLException;
 	String getProcedureDDL(Connection conn, String schema, String name) throws SQLException;
+	DatabaseObjectTree getDependencies(Connection conn, String schema, String name) throws SQLException;
+	DatabaseObjectTree getImpact(Connection conn, String schema, String name) throws SQLException;
 
 	
 }

@@ -107,7 +107,7 @@
 							<Panel expandable="true" headerText="Models" id="toolbarModel" expanded="false" class="sapUiResponsiveMargin">
 								<ComboBox 
 									id="odatamodelschema"
-									items="{/schemas}"
+									items="{/}"
 									width="70%"
 									selectionChange=".onmodelsearch">
 									<items>

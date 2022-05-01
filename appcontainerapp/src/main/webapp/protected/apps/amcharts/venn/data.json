@@ -1,0 +1,47 @@
+[
+	{
+		"name": "A",
+		"value": 10
+	},
+	{
+		"name": "B",
+		"value": 10
+	},
+	{
+		"name": "C",
+		"value": 5
+	},
+	{
+		"name": "X",
+		"value": 4,
+		"sets": [
+			"A",
+			"B"
+		]
+	},
+	{
+		"name": "Y",
+		"value": 2,
+		"sets": [
+			"A",
+			"C"
+		]
+	},
+	{
+		"name": "Z",
+		"value": 2,
+		"sets": [
+			"B",
+			"C"
+		]
+	},
+	{
+		"name": "Q",
+		"value": 1,
+		"sets": [
+			"A",
+			"B",
+			"C"
+		]
+	}
+]
