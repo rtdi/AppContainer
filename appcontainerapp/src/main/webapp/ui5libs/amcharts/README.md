@@ -8,7 +8,7 @@ The [amCharts](https://www.amcharts.com/demos/) library is different because it 
 
 To make that point clear the BubbleChart is a good example:
 
-![bubblechart](../../public/amcharts/bubblechart/thumpnail.png)
+![bubblechart](../../protected/apps/amcharts/bubblechart/thumbnail.png)
 
 [demo](https://www.amcharts.com/demos/zoomable-bubble-chart/)
 
@@ -22,28 +22,28 @@ This library here consists of a single UI5 control called `Chart` and within all
 
 Example:
 
-	    <Chart>
-			<children>
-				<base.XYChart>
-					<xAxis>
-						<base.ValueAxis />
-					</xAxis>
-					<yAxis>
-						<base.ValueAxis />
-					</yAxis>
-					<series>
-						<base.LineSeries
-							valueYField="y" 
-							valueXField="x"
-							valueField="value"
-							componentData="{/}"
-						>
-						   ...
-						</base.LineSeries>
-					</series>
-				</base.XYChart>
-			</children>
-	    </Chart>
+    <Chart>
+        <children>
+            <base.XYChart>
+                <xAxis>
+                    <base.ValueAxis />
+                </xAxis>
+                <yAxis>
+                    <base.ValueAxis />
+                </yAxis>
+                <series>
+                    <base.LineSeries
+                        valueYField="y" 
+                        valueXField="x"
+                        valueField="value"
+                        componentData="{/}"
+                    >
+                        ...
+                    </base.LineSeries>
+                </series>
+            </base.XYChart>
+	</children>
+    </Chart>
 
 Above XMLView does exactly that. Within the Chart Control an XYChart is added as sole child - other children could be a Legend, a chart heading (Label) and more.
 The x and y axis are both ValueAxis (because x,y can be any decimal number).
@@ -53,13 +53,13 @@ The UI5 JSONModel for this chart in this example looks like
 
 ```
 [
-	{
-		"y": 10,
-		"x": 14,
-		"value": 59,
-	},
-	...
-	...
+    {
+        "y": 10,
+        "x": 14,
+        "value": 59,
+    },
+    ...
+    ...
 ```
 
 and the entire array is assigned to the LineSeries via an UI5 binding to the property `componentData`.
@@ -69,34 +69,34 @@ This would be enough for a normal XYChart, but this chart should utilize the `va
 
 Hence the line must be made invisible/transparent via the line `strokes` aggregation.
 
-							<strokes>
-								<base.Graphics strokeOpacity="0" />
-							</strokes>
+                        <strokes>
+                            <base.Graphics strokeOpacity="0" />
+                        </strokes>
 
 Each end point of the LineSeries should have a Bullet with a Circle graphic.
 
-							<bullets>
-								<base.Bullet templateName="Bullet">
-									<sprite>
-										<base.Circle />
-									</sprite>
-								</base.Bullet>
-							</bullets>
+                        <bullets>
+                            <base.Bullet templateName="Bullet">
+                                <sprite>
+                                    <base.Circle />
+                                </sprite>
+                            </base.Bullet>
+                        </bullets>
 
 
 Finally the LineSeries has a IHeatRule that has the capability to set properties of other elements, here the radius based on the LineSeries's valueField within a range.
 Therefore the LineSeries above also got a `valueField` assigned  - although not used yet - together with `valueXField` and `valueYfield`.
 But a heat rule might work on different components. In this example it modifies the Bullet, in others it might change the color of a pie chart slice based on the temperature. The link between those two is to specify a chart-unique templateName, here at the Bullet, and in the heat rule use the `targetTemplateName`.
 
-							<heatRules>
-								<base.IHeatRule
-									min="3"
-									max="50"
-									dataField="value"
-									key="radius"
-									targetTemplateName="Bullet"
-								/>
-							</heatRules>
+                        <heatRules>
+                            <base.IHeatRule
+                                min="3"
+                                max="50"
+                                dataField="value"
+                                key="radius"
+                                targetTemplateName="Bullet"
+                            />
+                        </heatRules>
 
 As a result the LineSeries draws at each x,y position a circle with the radius taken from the valueField. The minimum value is rendered as radius 3pt and the maximum value with radius 50pt.
 
