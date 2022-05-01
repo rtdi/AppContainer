@@ -31,7 +31,7 @@ In particular these are:
   - [Git Integration](https://github.com/rtdi/AppContainer/blob/master/docs/008%20-%20Git%20integration.md)
   - [Unit Testing for Database Objects](https://github.com/rtdi/AppContainer/blob/master/docs/009%20-%20Testing.md)
 - [Background information about CI/CD](https://github.com/rtdi/AppContainer/blob/master/background/001%20-%20CICD.md)
-- [Important Software Design Patterns used](https://github.com/rtdi/AppContainer/blob/master/background/002%20-%20Design Patterns.md)
+- [Important Software Design Patterns used](https://github.com/rtdi/AppContainer/blob/master/background/002%20-%20Design%20Patterns.md)
 - [Design Thinking - WebUI development](https://github.com/rtdi/AppContainer/blob/master/background/003%20%20Building%20Web%20UIs.md)
 
 ## Quickstart
