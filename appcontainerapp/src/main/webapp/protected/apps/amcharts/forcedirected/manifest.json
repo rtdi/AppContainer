@@ -7,7 +7,7 @@
 		"applicationVersion": {
 			"version": "1.0.0"
 		},
-		"title": "am4Chart PieChart",
+		"title": "ForceDirected Chart",
 		"sourceTemplate": {
 			"id": "ui5template.basicSAPUI5ApplicationProject",
 			"version": "1.40.12"

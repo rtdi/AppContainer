@@ -38,5 +38,15 @@
 			<version>0.9.2</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.13.2</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.fasterxml.jackson.module</groupId>
+		  <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+		  <version>2.13.2</version>
+		</dependency>
 	</dependencies>
 </project>
