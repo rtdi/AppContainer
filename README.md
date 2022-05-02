@@ -121,7 +121,6 @@ The editor modifies the controls with a border to provide a visual handle for mo
 
 <img src="https://raw.githubusercontent.com/rtdi/AppContainer/master/_media/readme/image-8.png" width="750">
 
-
 Either way, it is just another option to create or modify the view.xml which is the main component in the UI5 framework for describing the UI. Because both editors work on the same XML file, there is no limitation is starting with the one editor and switching to the other back and forth. The developer can use whatever makes more sense for the sitation at hand.
 
 Building proper applications requires much more than just arranging UI controls. It starts with the shell bar at the top for navigation, error message visualization, a logout button. For consistency this shell bar must look identical in all screens and hence is provided as a custom control. The same control used by the AppContainer itself!
@@ -136,7 +135,7 @@ The result of this configuration looks like this.
 <img src="https://raw.githubusercontent.com/rtdi/AppContainer/master/_media/readme/image-10.png" width="750">
 
 
-A screen with the text "Select Data Area" in the ShellBar, the text "Configure a data area" in the Toolbar and underneath three tiles horizontally arranged.
+  A screen with the text "Select Data Area" in the ShellBar, the text "Configure a data area" in the Toolbar and underneath three tiles horizontally arranged.
 
 Why three tiles and with that name? Because the table.json used in the view contains the data.
 
