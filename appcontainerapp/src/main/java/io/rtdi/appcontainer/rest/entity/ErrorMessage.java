@@ -10,20 +10,24 @@ import jakarta.ws.rs.core.Response;
 public class ErrorMessage {
 	private Exception exception;
 	private String message;
+	private long timestamp;
 
 	public ErrorMessage() {
 		super();
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	public ErrorMessage(Exception e) {
 		super();
 		exception = e;
 		message = e.toString();
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	public ErrorMessage(String text) {
 		super();
 		this.message = text;
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	public String getMessage() {
@@ -46,31 +50,46 @@ public class ErrorMessage {
 		}
 	}
 
+	public String getType() {
+		return exception.getClass().getSimpleName();
+	}
+	
 	public String getSourceCodeLine() {
-		StackTraceElement line;
+		StackTraceElement[] lines;
 		if (exception instanceof AppContainerSQLException) {
-			line = ((AppContainerSQLException) exception).getActualException().getStackTrace()[0];
+			lines = ((AppContainerSQLException) exception).getActualException().getStackTrace();
 		} else {
-			line = exception.getStackTrace()[0];
+			lines = exception.getStackTrace();
 		}
-		String filename = line.getFileName();
-		int lineno = line.getLineNumber();
-		String link = null;
-		try {
-			Class<?> c = Class.forName(line.getClassName());
-			String jarlocation = c.getProtectionDomain().getCodeSource().getLocation().getPath();
-			String jarfile = jarlocation.substring(jarlocation.lastIndexOf('/')+1);
-			int p = jarfile.indexOf('-');
-			String module;
-			if (p != -1) {
-				module = jarfile.substring(0, p);
-			} else {
-				module = jarfile;
+		StackTraceElement line = null;
+		for (int i=0; i<lines.length; i++) {
+			if (lines[i].getClassName().startsWith("io.rtdi")) {
+				line = lines[i];
+				break;
 			}
-			String packagename = c.getCanonicalName().substring(0, c.getCanonicalName().lastIndexOf(filename.substring(0, filename.lastIndexOf(".java")))-1);
-			
-			link = module + "/src/main/java/" + packagename.replace('.', '/') + "/" + filename + "#L" + String.valueOf(lineno);
-		} catch (Exception e) {
+		}
+		String link = null;
+		if (line != null) {
+			String filename = line.getFileName();
+			int lineno = line.getLineNumber();
+			try {
+				Class<?> c = Class.forName(line.getClassName());
+				String jarlocation = c.getProtectionDomain().getCodeSource().getLocation().getPath();
+				String jarfile = jarlocation.substring(jarlocation.lastIndexOf('/')+1);
+				int p = jarfile.indexOf('-');
+				String module;
+				if (p != -1) {
+					module = jarfile.substring(0, p);
+				} else if (jarfile == null || jarfile.length() == 0) {
+					module = "appcontainerapp";
+				} else {
+					module = jarfile;
+				}
+				String packagename = c.getCanonicalName().substring(0, c.getCanonicalName().lastIndexOf(filename.substring(0, filename.lastIndexOf(".java")))-1);
+				
+				link = "https://github.com/rtdi/AppContainer/blob/master/" + module + "/src/main/java/" + packagename.replace('.', '/') + "/" + filename + "#L" + String.valueOf(lineno);
+			} catch (Exception e) {
+			}
 		}
 		return link;
 	}
@@ -92,10 +111,14 @@ public class ErrorMessage {
 	 * @return a Json with detailed information about the problem
 	 */
 	public static Response createResponse(Exception e) {
-		return Response.status(HttpURLConnection.HTTP_ACCEPTED).entity(new ErrorMessage(e)).build();
+		return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(new ErrorMessage(e)).build();
 	}
 
 	public static Response createResponse(String text) {
-		return Response.status(HttpURLConnection.HTTP_ACCEPTED).entity(new ErrorMessage(text)).build();
+		return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(new ErrorMessage(text)).build();
+	}
+
+	public long getTimestamp() {
+		return timestamp;
 	}
 }

@@ -10,12 +10,12 @@
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
-			<version>2.1.13</version>
+			<version>2.2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>3.0.4</version>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.univocity</groupId>
@@ -25,28 +25,28 @@
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.graalvm.js</groupId>
 			<artifactId>js</artifactId>
-			<version>22.0.0.2</version>
+			<version>22.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
 			<artifactId>appcontainerrealm</artifactId>
-			<version>0.9.2</version>
+			<version>${appcontainer}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.13.2</version>
+			<version>2.14.1</version>
 		</dependency>
 		<dependency>
 		  <groupId>com.fasterxml.jackson.module</groupId>
 		  <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
-		  <version>2.13.2</version>
+		  <version>2.14.1</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -72,7 +72,7 @@ public class DatabaseQuery extends RestService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -97,12 +97,26 @@ public class DatabaseQuery extends RestService {
 				} else if (query.toUpperCase().startsWith("SELECT ")) {
 					try (PreparedStatement stmt = conn.prepareStatement(query);) {
 						ObjectMapper objectMapper = new ObjectMapper();
+						ObjectNode root = objectMapper.createObjectNode();
 						ArrayNode rows = objectMapper.createArrayNode();
+						root.set("rows", rows);
 						DateFormat timeformatter = new SimpleDateFormat("HH:mm:ss");
 						DateTimeFormatter timestampformatter = DateTimeFormatter.ISO_INSTANT;
 						int rowcount = 0;
 						try (ResultSet rs = stmt.executeQuery(); ) {
 							int columncount = rs.getMetaData().getColumnCount();
+							root.put("columncount", columncount);
+							ArrayNode columns = objectMapper.createArrayNode();
+							for (int i=1; i<=rs.getMetaData().getColumnCount(); i++) {
+								ObjectNode coldef = objectMapper.createObjectNode();
+								coldef.put("label", rs.getMetaData().getColumnLabel(i));
+								coldef.put("jdbctype", rs.getMetaData().getColumnType(i));
+								coldef.put("typename", rs.getMetaData().getColumnTypeName(i));
+								coldef.put("displaysize", rs.getMetaData().getColumnDisplaySize(i));
+								coldef.put("name", rs.getMetaData().getColumnName(i));
+								columns.add(coldef);
+							}
+							root.set("columns", columns);
 							while (rs.next()) {
 					    		ObjectNode row = rows.objectNode();
 								for (int i = 1; i <= columncount; i++) {
@@ -115,7 +129,7 @@ public class DatabaseQuery extends RestService {
 								}
 							}
 							tickRest();
-							return Response.ok(rows).build();
+							return Response.ok(root).build();
 						}
 					} catch (SQLException e) {
 						throw AppContainerSQLException.cloneFrom(e, query, null);

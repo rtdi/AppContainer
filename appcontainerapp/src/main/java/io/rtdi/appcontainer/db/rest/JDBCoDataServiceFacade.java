@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
-import io.rtdi.appcontainer.odata.JDBCoDataService;
+import io.rtdi.appcontainer.odata.JDBCoDataServiceForSchema;
 import io.rtdi.appcontainer.odata.ODataIdentifier;
 import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
@@ -18,7 +18,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/odata")
-public class JDBCoDataServiceFacade extends JDBCoDataService {
+public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
 	private static RestService counter = new  RestService();
 	
 	@Override
@@ -119,6 +119,94 @@ public class JDBCoDataServiceFacade extends JDBCoDataService {
     		@QueryParam("$format")
     		String format) {
 		return super.getODataEntitySetCount(schemaraw, nameraw, filter, format);
+	}
+
+	@Override
+	@GET
+	@Path("/schemas/{schema}/")
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	public Response getODataEntitySetsForSchema(
+    		@PathParam("schema")
+    		String schemaraw,
+    		@QueryParam("$format")
+    		String format
+			) {
+		return super.getODataEntitySetsForSchema(schemaraw, format);
+	}
+
+	@Override
+	@GET
+	@Path("/schemas/{schema}/$metadata")
+    @Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+	public Response getODataMetadataForSchema(
+    		@PathParam("schema")
+    		String schemaraw,
+			@QueryParam("$format")
+    		String format
+			) {
+		return super.getODataMetadataForSchema(schemaraw, format);
+	}
+
+	@Override
+	@GET
+	@Path("/schemas/{schema}/{name}")
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	public Response getODataEntitySetForSchema(
+    		@PathParam("schema")
+    		String schemaraw,
+    		@PathParam("name")
+    		String nameraw,
+    		@QueryParam("$select")
+    		String select,
+    		@QueryParam("$filter")
+    		String filter,
+    		@QueryParam("$order")
+    		String order,
+    		@QueryParam("$top")
+    		Integer top,
+    		@QueryParam("$skip")
+    		Integer skip,
+    		@QueryParam("$skiptoken")
+    		String skiptoken,
+    		@QueryParam("$format")
+    		String format
+			) {
+		return super.getODataEntitySetForSchema(schemaraw, nameraw, select, filter, order, top, skip, skiptoken, format);
+	}
+
+	@Override
+	@GET
+	@Path("/schemas/{schema}/{name}({keys})")
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	public Response getODataEntityRowForSchema(
+    		@PathParam("schema")
+    		String schemaraw,
+    		@PathParam("name")
+    		String nameraw,
+    		@PathParam("keys")
+    		String keys,
+    		@QueryParam("$select")
+    		String select,
+    		@QueryParam("$format")
+    		String format
+			) {
+		return super.getODataEntityRowForSchema(schemaraw, nameraw, keys, select, format);
+	}
+
+	@Override
+	@GET
+	@Path("/schemas/{schema}/{name}/$count")
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	public Response getODataEntitySetCountForSchema(
+    		@PathParam("schema")
+    		String schemaraw,
+    		@PathParam("name")
+    		String nameraw,
+    		@QueryParam("$filter")
+    		String filter,
+    		@QueryParam("$format")
+    		String format) {
+		return super.getODataEntitySetCountForSchema(schemaraw, nameraw, filter, format);
 	}
 
 }

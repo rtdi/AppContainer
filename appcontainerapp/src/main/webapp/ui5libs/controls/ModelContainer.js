@@ -9,10 +9,11 @@ sap.ui.define([
 				url : {type : "string"},
 				sizeLimit: {type : "int", defaultValue : 1000},
 				model : {type: "sap.ui.model.ClientModel"},
+				afterLoad : {type: "function" },
 			},
             aggregations: {
 				rowTransformations: {type: "ui5libs.libs.model.mt.RowTransformation", multiple: true, singularName: "rowTransformation"},
-				transformations: {type: "ui5libs.libs.model.mt.ModelTransformation", multiple: true, singularName: "transformation"},
+				modelTransformations: {type: "ui5libs.libs.model.mt.ModelTransformation", multiple: true, singularName: "transformation"},
 			},
 		},
 		setModelName : function(oValue) {
@@ -24,8 +25,6 @@ sap.ui.define([
 				name = undefined;
 			}
 			return name;
-		},
-		reload : function() {
 		},
 		getValue : function() {
 			return this;

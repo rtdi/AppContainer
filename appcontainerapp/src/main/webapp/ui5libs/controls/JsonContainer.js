@@ -1,5 +1,6 @@
 sap.ui.define([
-	'ui5libs/controls/ModelContainer'
+	'ui5libs/controls/ModelContainer',
+	'ui5libs/libs/model/json/JSONModelE'
 ], function(ModelContainer) {
   return ModelContainer.extend("ui5libs.controls.JsonContainer", {
 		metadata : {
@@ -7,37 +8,24 @@ sap.ui.define([
 			},
 		},
 		createNewModel : function() {
-			var oModel = new sap.ui.model.json.JSONModel(); 
+			var oModel = new ui5libs.libs.model.json.JSONModelE(); 
 			if (this.getSizeLimit()) {
 				oModel.setSizeLimit(this.getSizeLimit());
 			}
+			oModel.setModelTransformations(this.getModelTransformations());
+			oModel.setRowTransformations(this.getRowTransformations());
 			var that = this;
 			oModel.attachRequestCompleted(function() {
-				if (that.getRowTransformations()) {
-					for (var transformation of that.getRowTransformations()) {
-						transformation.applyTransformation(oModel);
-					}
-				}
-				if (that.getTransformations()) {
-					for (var agg of that.getTransformations()) {
-						agg.setTransformedData(oModel);
-					}
+				if (that.getAfterLoad()) {
+					that.getAfterLoad().call(this, oModel);
 				}
 			});
     		this.setModel(oModel);
-    		this.reload();
+			this.getModel().loadData(this.getUrl());
 			return oModel;
 		},
 		reload : function() {
-			if (this.getModel()) {
-				var url = this.getUrl();
-				if (url) {
-				if (!url.startsWith("/") && !url.startsWith(".")) {
-						url = sap.ui.require.toUrl(url);
-					}
-					this.getModel().loadData(url);
-	    		}
-			}
+			this.getModel().loadData(this.getUrl());
 		}
 	});
 });

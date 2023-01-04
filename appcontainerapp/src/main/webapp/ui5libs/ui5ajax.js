@@ -3,38 +3,47 @@ sap.ui.define([
 ], function () {
 	"use strict";    
    	return {
-   		postJsonString : function (sUri, sJson) {
-   			return this.ajaxSend(sUri, sJson, "application/json", "POST");
+   		postJsonString : function (sUri, sJson, sNamespace) {
+   			return this.ajaxSend(sUri, sJson, "application/json", "POST", sNamespace);
    		},
-   		getJsonString : function (sUri) {
-   			return this.ajaxGet(sUri);
+   		getJsonString : function (sUri, sNamespace) {
+   			return this.ajaxGet(sUri, sNamespace);
    		},
-   		postText : function (sUri, sText) {
-   			return this.ajaxSend(sUri, sText, "text/plain", "POST");
+   		postText : function (sUri, sText, sNamespace) {
+   			return this.ajaxSend(sUri, sText, "text/plain", "POST", sNamespace);
    		},
-   		postJsonModel : function (sUri, oJsonModel) {
-   			return this.postJsonString(sUri, oJsonModel.getJSON());
+   		postJsonModel : function (sUri, oJsonModel, sNamespace) {
+   			return this.postJsonString(sUri, oJsonModel.getJSON(), sNamespace);
    		},
-   		postJsonObject : function (sUri, oObject) {
-   			return this.postJsonString(sUri, JSON.stringify(oObject));
+   		postJsonObject : function (sUri, oObject, sNamespace) {
+   			return this.postJsonString(sUri, JSON.stringify(oObject), sNamespace);
    		},
-   		getJsonObject : function (sUri) {
-   			return JSON.stringify(this.getJsonString(sUri));
+   		/*
+   		 * 	ui5ajax.ajaxGet("/method1", "ui5rest")
+		 *	.then(
+		 *		data => {
+		 *			...
+		 *		}, 
+		 *		error => {
+		 *			...
+		 *		}
+		 *	);
+   		 */
+   		ajaxGet : function (sUri, sNamespace) {
+   			return this.ajaxSend(sUri, undefined, undefined, "GET", sNamespace);
    		},
-   		ajaxGet : function (sUri) {
-   			return this.ajaxSend(sUri, undefined, undefined, "GET");
-   		},
-   		ajaxSend : function (sUri, sText, sPayloadType, sMethod) {
+   		ajaxSend : function (sUri, sText, sPayloadType, sMethod, sNamespace) {
 		    return new Promise((resolve, reject) => {
 		        let xhr = new XMLHttpRequest();
+		        if (sNamespace) {
+					sUri = sap.ui.require.toUrl(sNamespace) + (sUri.startsWith("/")?"":"/") + sUri
+				}
 		        xhr.open(sMethod, sUri);
 		        if (sMethod !== "GET") {
 					xhr.setRequestHeader("Content-Type", sPayloadType);
 				}
 		        xhr.onload = () => {
-		            if (xhr.status == 202) {
-		                reject( { text: xhr.response, code: xhr.status } ); // http is fine but the rest call returned a ErrorMessage object
-		            } else if (xhr.status >= 200 && xhr.status < 300) {
+		            if (xhr.status >= 200 && xhr.status < 300) {
 		                resolve( { text: xhr.response, code: xhr.status } );
 		            } else {
 		                reject( { text: xhr.response, code: xhr.status } );
@@ -43,7 +52,25 @@ sap.ui.define([
 		        xhr.onerror = () => reject( { text: xhr.response, code: xhr.status } );
 		        xhr.send(sText);
 		    });
-		}
+		},
+   		getJsonObject : function (sUri, sNamespace) {
+		    return new Promise((resolve, reject) => {
+		        let xhr = new XMLHttpRequest();
+		        if (sNamespace) {
+					sUri = sap.ui.require.toUrl(sNamespace) + (sUri.startsWith("/")?"":"/") + sUri
+				}
+		        xhr.open("GET", sUri);
+		        xhr.onload = () => {
+		            if (xhr.status >= 200 && xhr.status < 300) {
+		                resolve( { text: xhr.response, code: xhr.status, obj: JSON.parse(xhr.response) } );
+		            } else {
+		                reject( { text: xhr.response, code: xhr.status } );
+		            }
+		        };
+		        xhr.onerror = () => reject( { text: xhr.response, code: xhr.status } );
+		        xhr.send();
+		    });
+   		},
    	};   	
 });
 

@@ -39,7 +39,7 @@
 					</ui5libs:subelements>
 				   	<ui5libs:customData>
 				   		<ui5libs:controls.JsonContainer key="model" url="ui5app/data.json" >
-				   			<ui5libs:transformations>
+				   			<ui5libs:modelTransformations>
 				   				<ui5libs:libs.model.mt.ModelTransformation
 									groupBy="firstdayofweek"
 									sum="Distance"
@@ -47,7 +47,7 @@
 									targetPropertyPath="/weeklytotals"
 									totalsPropertyPath="/totals"
 								/>
-				   			</ui5libs:transformations>
+				   			</ui5libs:modelTransformations>
 				   			<ui5libs:rowTransformations>
 				   				<ui5libs:libs.model.mt.RowTransformation rootPropertyPath="/data">
 				   					<ui5libs:libs.model.mt.ct.FirstDayOfWeek inputField="day" field="firstdayofweek" />

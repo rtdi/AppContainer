@@ -4,7 +4,14 @@ sap.ui.define([
 	"use strict";    
    	return {
    		addError : function ( oView, oError ) {
-   			if (oError.code === 202) {
+			/*
+			 * oError can either be an object from the ui5ajax call or from the JsonModel
+			 */
+			if (!oError.code) {
+				oError.code = oError.statusCode;
+				oError.text = oError.responseText;
+			}
+   			if (oError.code === 400) {
    				var oJSON = JSON.parse(oError.text);
    				var oContainerPage = oView.getContent()[0];
    				if (oContainerPage['getShellBar']) {

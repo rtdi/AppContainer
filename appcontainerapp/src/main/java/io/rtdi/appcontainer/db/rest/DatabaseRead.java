@@ -69,7 +69,7 @@ public class DatabaseRead extends RestService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(

@@ -33,7 +33,7 @@ sap.ui.define([
           	} else if (sFilename.endsWith(".sql")) {
          		oEditorControl.setType("sql");
          	}
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/repo/file/" + sFilename)
+			ui5ajax.ajaxGet("/repo/file/" + sFilename, "ui5rest")
 				.then(
 					data => {
 						oEditorControl.setValue(JSON.parse(data.text).content); 
@@ -51,7 +51,7 @@ sap.ui.define([
 		    const urlParams = new URLSearchParams(queryString);
 		    const sFilename = urlParams.get('filename');
 			var sContent = oEditorControl.getValue();
-			ui5ajax.postText(sap.ui.require.toUrl("ui5rest")+"/repo/file/" + sFilename, sContent)
+			ui5ajax.postText("/repo/file/" + sFilename, sContent, "ui5rest")
 				.then(
 					data => {
 						errorfunctions.uiSuccess(this.getView(), { message: 'Saved' } );
@@ -69,7 +69,7 @@ sap.ui.define([
 		    const queryString = window.location.search;
 		    const urlParams = new URLSearchParams(queryString);
 		    const sFilename = urlParams.get('filename');
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest")+"/activation/activate/" + sFilename)
+			ui5ajax.ajaxGet("/activation/activate/" + sFilename, "ui5rest")
 				.then(
 					data => {
 						this.oDialog.getModel().setJSON(data.text);
@@ -77,7 +77,7 @@ sap.ui.define([
 						this.oDialog.open();
 					}, 
 					error => {
-						if (error.code === 202) {
+						if (error.code === 400) {
 							errorfunctions.addError(this.getView(), error);
 						} else {
 							this.oDialog.getModel().setJSON(error.text);

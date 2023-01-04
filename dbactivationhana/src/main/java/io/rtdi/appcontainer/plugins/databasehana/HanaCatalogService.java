@@ -5,13 +5,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.ICatalogService;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
+import io.rtdi.appcontainer.plugins.database.SelectSource;
 
 public class HanaCatalogService implements ICatalogService {
 	
@@ -202,6 +205,30 @@ public class HanaCatalogService implements ICatalogService {
 					index.put(rs.getString(10), child);
 				}
 				return tree;
+			}
+		}
+	}
+
+	@Override
+	public List<SelectSource> getAllSelectSources(Connection conn) throws SQLException {
+		List<SelectSource> res = new ArrayList<>();
+		String sql = "SELECT schema_name, synonym_name AS object_name, 'SYNONYM' AS object_type, "
+				+ "object_schema AS target_schema, object_name AS target_object_name, object_type as target_object_type "
+				+ "FROM synonyms WHERE is_valid = 'TRUE'\r\n"
+				+ "UNION all\r\n"
+				+ "SELECT schema_name, view_name AS object_name, 'VIEW' AS object_type, "
+				+ "schema_name AS target_schema, view_name AS target_object_name, 'VIEW' as target_object_type "
+				+ "FROM views WHERE is_valid = 'TRUE'\r\n"
+				+ "UNION ALL \r\n"
+				+ "SELECT schema_name, table_name AS object_name, 'TABLE' AS object_type, "
+				+ "schema_name AS target_schema, table_name AS target_object_name, 'TABLE' as target_object_type "
+				+ "FROM tables WHERE is_temporary = 'FALSE'";
+		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
+			try (ResultSet rs = stmt.executeQuery(); ) {
+				while (rs.next()) {
+					res.add(new SelectSource(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), conn.getSchema()));
+				}
+				return res;
 			}
 		}
 	}

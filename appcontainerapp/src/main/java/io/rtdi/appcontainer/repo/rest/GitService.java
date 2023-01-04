@@ -77,7 +77,7 @@ public class GitService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -140,7 +140,7 @@ public class GitService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -247,7 +247,7 @@ public class GitService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown, e.g. file at path does not exist",
 		                    content = {
 		                            @Content(
@@ -303,7 +303,7 @@ public class GitService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown, e.g. file at path does not exist",
 		                    content = {
 		                            @Content(

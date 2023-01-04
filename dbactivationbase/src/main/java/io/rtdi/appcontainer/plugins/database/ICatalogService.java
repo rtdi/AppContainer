@@ -2,6 +2,7 @@ package io.rtdi.appcontainer.plugins.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public interface ICatalogService {
 
@@ -34,6 +35,6 @@ public interface ICatalogService {
 	String getProcedureDDL(Connection conn, String schema, String name) throws SQLException;
 	DatabaseObjectTree getDependencies(Connection conn, String schema, String name) throws SQLException;
 	DatabaseObjectTree getImpact(Connection conn, String schema, String name) throws SQLException;
-
+	List<SelectSource> getAllSelectSources(Connection conn) throws SQLException;
 	
 }

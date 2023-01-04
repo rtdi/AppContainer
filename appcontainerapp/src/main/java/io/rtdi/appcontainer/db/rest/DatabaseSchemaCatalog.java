@@ -15,6 +15,7 @@ import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
 import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
+import io.rtdi.appcontainer.plugins.database.SelectSource;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.DatabaseProvider;
@@ -67,7 +68,7 @@ public class DatabaseSchemaCatalog {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -122,7 +123,7 @@ public class DatabaseSchemaCatalog {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -185,7 +186,7 @@ public class DatabaseSchemaCatalog {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -264,7 +265,7 @@ public class DatabaseSchemaCatalog {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -297,6 +298,48 @@ public class DatabaseSchemaCatalog {
 				return Response.ok(tree).build();
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "JDBC getColumns() and getPrimaryKeys()", null);
+			}
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
+	}
+
+	@GET
+	@Path("catalog/sources")
+    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Get all tables, views, synonyms",
+			description = "Returns a list of all elements useable in the from clause and their actual target object",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "The list of tables, views and synonyms",
+	                    content = {
+	                            @Content(
+	                                    array = @ArraySchema(schema = @Schema(implementation = SelectSource.class))
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Information")
+    public Response getAllSources() {
+		try {
+			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
+			IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
+			try (Connection conn = dbprincipal.getConnection();) {
+				List<SelectSource> res = provider.getCatalogService().getAllSelectSources(conn);
+				return Response.ok(res).build();
+			} catch (SQLException e) {
+				throw AppContainerSQLException.cloneFrom(e, "select all view, tables, synonyms", null);
 			}
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);

@@ -1,10 +1,10 @@
-FROM rtdi/connectorrootapp:latest-tomcat10
+FROM rtdi/connectorrootapp
 
 LABEL maintainer="info@rtdi.io"
 
 ADD https://github.com/rtdi/AppContainerRealm/releases/latest/download/appcontainerrealm.jar ./lib
 ADD https://github.com/rtdi/hanaappserverrealm/releases/latest/download/hanarealm.jar ./lib
-ADD https://repo1.maven.org/maven2/com/sap/cloud/db/jdbc/ngdbc/2.7.15/ngdbc-2.7.15.jar ./lib
+ADD https://repo1.maven.org/maven2/com/sap/cloud/db/jdbc/ngdbc/2.15.8/ngdbc-2.15.8.jar ./lib
 ADD https://raw.githubusercontent.com/rtdi/AppContainer/master/docker/server-hana.xml conf/server.xml
 ADD https://github.com/rtdi/AppContainer/releases/latest/download/AppContainer.war ./webapps/
 
