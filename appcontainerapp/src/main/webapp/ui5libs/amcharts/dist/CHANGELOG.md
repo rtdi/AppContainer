@@ -5,6 +5,586 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 Please note, that this project, while following numbering syntax, it DOES NOT
 adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html) rules.
 
+## [5.2.45] - 2022-12-20
+
+### fixed
+- `ZigZag` indicator was always using 5% deviation even if user set a different value.
+- If data of a legend was updated, labels of a legend were not updated properly in all cases.
+- A tooltip for a `ColumnSeries`/`CandlestickSeries` was not being hidden if a cursor was used and mouse was moved away from the chart.
+
+
+## [5.2.44] - 2022-12-20
+
+### Fixed
+- If a `ForceDirected` node with `topDepth` set to `1` was clicked to hide children and then clicked again to reveal them, the clicked node was hidden. (since 5.2.42)
+- `ValueAxis` with `min` and `max` set could result in an empty chart. (since 5.2.43)
+
+
+## [5.2.43] - 2022-12-19
+
+### Added
+- An event `groupintervalchanged` added to `DateAxis`. Kicks in when data grouping is on, and current group interval changes, e.g. via zooming the chart.
+
+### Fixed
+- Setting `min` and `max` on a `DateAxis` which was not base axis of a series could result in a stack overflow error in some specific cases.
+- `PeriodSelector` was not always highlighting the period button when period was selected via `selectPeriod()` method.
+- `PeriodSelector` was not selecting proper start position on some platforms when data grouping was on and `selectPeriod()` was called immediately after initialization of the chart.
+
+
+## [5.2.42] - 2022-12-16
+
+### Added
+- `reverseGeodata` setting added to `MapPolygonSeries`. If set to `true`, will reverse direction of polygon corners in GeoJSON.
+- `linechanged` event added to MapLine.
+
+### Fixed
+- If a chart had multiple vertically stacked Y axes and `snapToSeries` was set, moving mouse to series in the bottom could cause chart cursor to disappear.
+- A legend label for a `ZigZag` indicator was showning "NaN" instead of its `depth` value.
+- Hierarchy series' `topDepth` setting was not working properly if set to `>1`.
+- If a `Sprite` was hidden, it hid it's tooltip even if the tooltip at the moment was used by other element. This caused some wrong behavior with Axis tooltips, as all axis elements share the same tooltip.
+- If a `MapLine` was changed and some `MapPoint` was assigned to this line, `MapPoint` was not always updating its position.
+- Map with `geoAlbersUsa` projection was not working if `GraticuleSeries` was added to it.
+- `MapLine` was showing tooltips in a wrong position (in case lines were not straight).
+- `PeriodSelector` was not properly zooming whe data grouping was enabled.
+
+
+## [5.2.41] - 2022-12-08
+
+### Fixed
+- Canvas left/top position was not set correctly (since 5.2.39).
+- `Root`'s setting `tooltipContainerBounds` was not positioning itself outside of the chart if there was space in the chart itself (since 5.2.39).
+
+
+## [5.2.40] - 2022-12-08
+
+### Fixed
+- `Root`'s setting `tooltipContainerBounds` was being ignored on an `XYChart` (since 5.2.39).
+- HTML content was clipped to chart's dimensions even if `tooltipContainerBounds` was used.
+
+
+## [5.2.39] - 2022-12-07
+
+### Added
+- `fillOpacity` setting added to `Label`.
+
+### Changed
+- The whole under-the-hood implementation of the `Root`'s setting `tooltipContainerBounds`. The change should be transparent, but please inform us if the functionality broke in some way.
+
+### Fixed
+- `GraticuleSeries` was not being redrawn if its `clipExtent` was being set after series was already rendered.
+- `idField` was not being respected in some cases in a `MapSeries`.
+- `MapPointSeries` was not setting map bounds properly if it did not contain any geometries (just points with lat/long).
+- `keepTargetHover` on a `Tooltip` was not working when `tooltipContainerBounds` was used in `Root`.
+
+
+## [5.2.38] - 2022-11-29
+
+### Added
+- `clipExtent` added to `GraticuleSeries`. If set to `true`, graticules will be drawn only within bounds of the polygons.
+
+### Fixed
+- `ZoomControl` position was wrong sice 5.2.36.
+
+
+## [5.2.37] - 2022-11-29
+
+### Fixed
+- `neutral` is now optional in `IHeatRule`.
+
+
+## [5.2.36] - 2022-11-29
+
+### Added
+- `affectsBounds` setting added to `MapSeries`. Previously only `MapPolygonSeries` affected chart bounds. Now you can tell `MapPointSeries` or `MapLineSeries` to affect map bounds. Or turn off bound checking for some `MapPolygonSeries`, e.g. for background/water.
+- `neutral` setting added to `IHeatRule`. If you set some value (color for example), it will be used for items that do not have any value.
+
+### Fixed
+- If the last slice of a percent (pie) series slice was hidden, `valueSum` was calculated incorrectly (was using last items value instead of 0).
+- `geoPoint()` method of `MapChart` was not working properly.
+- `keepTargetHover: true` was not working on all `Hierarchy` charts.
+- `ZoomControl` used to override its positional settings like `centerX`, `x`, etc.
+- Fix for occasional "Value is not of type 'long'" error.
+
+
+## [5.2.35] - 2022-11-24
+
+### Fixed
+- `exclude` and `include` were not working properly is set on a `MapLineSeries` or `MapPointSeries` (since last release only).
+
+
+## [5.2.34] - 2022-11-24
+
+### Added
+- `backgroundOpacity` setting added to `Exporting`.
+- `fixed` property added to `MapPointSeriesDataItem`. Allows sticking a point to screen coordinates, rather than to lat/long on the map.
+
+### Changed
+- Various containers in amCharts 5 div (HTML content, tooltips, alerts) will now have class names applied (`"am5-html-container"`, `"am5-reader-container"`, `"am5-focus-container"`, `"am5-tooltip-container"`) so that they can be targeted via CSS, e.g. `.am5-html-container { z-index: -1 }`.
+- amCharts will no longer fail if `StyleRule` is created with unparsable selector.
+
+### Fixed
+- Labels on `Sunburst` full circle slices were not being properly truncated/sized.
+- `startLocation` and `endLocation` was being ignored by `GaplessDateAxis`.
+- Dynamically-added heat rules (after series was already created) were not working.
+
+
+## [5.2.33] - 2022-11-18
+
+### Added
+- New pattern type `PathPattern`. Allows using SVG paths as patterns. [More info](https://www.amcharts.com/docs/v5/concepts/colors-gradients-and-patterns/patterns/).
+
+### Changed
+- Circular labels (`RadialLabel` with `textType: "circular"`) now have a limited support for `oversizedBehavior`. `"hide"` and `"truncate"` are now supported. The latter will not respect `breakWords` setting, though.
+
+### Fixed
+- Hovering, clicking, and unhovering a `PieSeries` slice would not reset its size properly.
+- `Label` background was not being sized properly when `fontWeight: bold` was set.
+- Dynamically setting `include` or `exclude` on a `MapPolygonSeries` was not updating it until data was re-validated.
+- Circular labels on a `Sunburst` diagram were not being positioned properly.
+
+
+## [5.2.32] - 2022-11-15
+
+### Added
+- New global property `am5.registry.version` added. Contains the version of the library.
+- `lineType` added to `IMapLineSeriesDataItem`. Allows setting `"straight"` or `"curved"` line type for each map line individually.
+
+### Fixed
+- `Label` was ignoring individually-set formatters when formatting number/date/duration values in its text.
+- Invoking `PeriodSelector` method `selectPeriod` will now properly highlight related button in selector.
+- setting wheelY and WheelX to "none" after the map chart was initialized did not remove wheel behavior.
+- Fixed flag bug with `A` and `a` commands in SVG paths.
+
+
+## [5.2.31] - 2022-10-18
+
+### Changed
+- The logic behind `"pro"` tag in `CandlestickSeries` has been updated to more commonly accepted standards. [More info](https://www.amcharts.com/docs/v5/charts/xy-chart/series/candlestick-series/#Professional_candlesticks).
+- "Pro Candlesticks" was renamed to "Hollow Candlesticks" in series type switcher in `StockChart`.
+
+### Fixed
+- Stacked axis bullets were being positioned not right on the axis but somewhat higher, depending on the number of bullets.
+- More ARIA errors fixed in `ExportingMenu`.
+- Using arrows to move focused draggable elements was acting unpredictably if mouse was being used, too.
+- Further improvements in cursor tooltip arrangement logic.
+
+
+## [5.2.30] - 2022-10-14
+
+### Added
+- `"click"` option added to `showTooltipOn` setting. If set, tooltip will appear when clicking/tapping the element, rather than on hover.
+- `ExportMenu` has two new private settings: `menuElement` and `listElement`. Holds actual DOM elements of the menu items.
+
+### Changed
+- Disposing `Exporting` object, will now dispose related `ExportingMenu`, if set.
+- `Legend`'s item containers will now have `role="checkbox"` set by default.
+- Setting `focusable: true` on `XYCursor`'s `lineX` and/or `lineY` will enable moving them with keyboard's arrow keys.
+- Better arrangement of tooltips on an `XYChart` with multiple tooltips on the same data point and an `XYCursor` (less chances tooltips going off-screen).
+
+### Fixed
+- In some situations chart was not resizing correctly.
+- If `sequencedAnimation` was set to `true` on a `LineSeries`, it was drawing line to 0 while animating series.
+- `ExportMenu` was using a non-existent "aria" attribute.
+- When `snapToSeries` was set on an `XYChart`, zooming to a selection with the cursor produced wrong zoom.
+- `XYChart` with `DurationAxis` could freeze the browser in certain configurations and chart sizes.
+- `LineSeries` used to draw a line to null values while series was animating (if `sequencedAnimation` was set to `true`).
+- Eliminating warnings about `getImageData()` on the new Chrome.
+
+
+## [5.2.29] - 2022-10-07
+
+### Added
+- Additional option for `Label`'s `oversizedBehavior` setting: `"wrap-no-break"`. If set, the labels will wrap to `maxWidth`, but will not brak words even if they do not fit.
+
+### Fixed
+- If timezone was set in a chart with a `DateAxis` with `baseInterval` set to `"day"`, axis could show wrong date and axis tooltip could snap to a wring date on a DLS switch.
+
+
+## [5.2.28] - 2022-10-06
+
+### Added
+- `stacked` setting added to `AxisBullet`. If set to `true` and multiple data items (axis ranges) were added to the same date/category, bullets will be stacked on top of each other.
+
+### Fixed
+- If a timezone was set and `baseInterval` was a `"month"`, tooltip could show incorrect date value on a month when DLS happened.
+- If a new slice was added to `PercentChart` after the initial data was set, the new slice was using first color from colorset instead of the next one.
+- Some sprites were not dispatching `boundschanged` event when their settings affecting the bounds were being changed.
+
+
+## [5.2.27] - 2022-10-04
+
+### Fixed
+- `"average"` value of grouped data items was not being calculated properly.
+- `WordCloud` was ignoring the `fill` value from label `templateField`.
+
+
+## [5.2.26] - 2022-09-27
+
+### Fixed
+- Version bump.
+
+
+## [5.2.25] - 2022-09-27
+
+### Fixed
+- Using `tooltipContainerBounds` could break layout for the whole document.
+
+
+## [5.2.24] - 2022-09-27
+
+### Added
+- `lineType` (`"curved"`, `"straight"`) added to `MapLineSeries`. `"curved"` (default) connects points using shortest distance, which will result in curved lines based on map projection. `"straight"` connects points using visually straight lines, and will not cross the -180/180 longitude.
+- `tooltipContainerBounds` added to `Root` settings. Allows defining margins around chart area for tooltips to go outside the chart itself.
+
+### Changed
+- If `tooltipLocation: 0` on a `DateAxis`, it will snap to the closest position now. Previously it snapped to the date over which mouse pointer was, this was not user-friendly in some setups. The same logic now applies to the `CategoryAxis` as well.
+
+### Fixed
+- WVAP indicator was showing ZigZag instead.
+- Zoom-out button sometimes used to appear while initial animation was playing. Note: if `sequencedAnimation == true`, it will appear anyway.
+- Fixed styles issue with date picker in `StockChart`.
+- The last bullet of a series could become hidden if `baseInterval` was set to `"month"` on a related `DateAxis`.
+
+
+## [5.2.23] - 2022-09-20
+
+### Fixed
+- On a chart with cursor and `tooltipText` set directly on series' columns, the tooltip was not being shown (since 5.2.19).
+- On a chart with X axis `endLocation: 0`, Y axis was not autozooming properly.
+
+
+## [5.2.22] - 2022-09-15
+
+### Added
+- ZigZag indicator added to `StockChart`.
+
+### Changed
+- `"%"` number formatting modifier will now consider locale when choosing whether percent sign goes before or after the number. At this moment only `tr_TR` (Turkish) locale is placing percent sign before number.
+- `StockChart` indicators, that were using black (`0x000000`) color as a default series color now use `alternativeBackground` color of a theme (they'll now be white if "Dark" theme is used).
+
+### Fixed
+- Stock toolbar dropdown items will now display proper `title` attribute.
+- HTML tooltips were flashing an unpositioned content briefly.
+- The `"Z"` date formatting option was not taking into account Root element's `timezone` setting.
+- If a timezone was set on a chart and data grouping was on, the grouping was not paying attention to the timezone.
+- If a timezone which was not using DST was set on a chart, and user was in a timezone which used DST, the axis labels were shifted by 1 hour in some setups.
+- `GaplessDateAxis` was not working properly with a timezone set.
+- `DateAxis` fills that should have been visible were hidden in some cases.
+- `StockChart` was incorrectly switching to percent mode when last of the compared series was removed.
+- `"p"` number formatting modifier added. Works the same way as `"%"` except it treats numbers as absolute values and does not multiply them by 100.
+
+
+## [5.2.21] - 2022-09-08
+
+### Added
+- Trix, Median Price, and Typical Price indicators added to `StockChart`.
+- `valuePercent` was added to `Hierarchy` data items. Indicates percent value based on the value of its direct parent.
+
+### Fixed
+- Using relative height of the chart container within a fixed-width wrapper could cause flickering or scrollbars.
+- Period values in a `StockChart` indicators were shown with decimal values.
+- Fixed a typo in `StockChart` list controls.
+- `valuePercentTotal` was not working in `Hierarchy` data items.
+
+
+## [5.2.20] - 2022-09-05
+
+### Added
+- All indicator series will now have `"indicator"` theme tag set. Detect indicator series via `series.hasTag("indicator")`.
+- `autoZoom` added to `ValueAxis` (default: `true`). If set to `false`, the axis won't be auto-zoomed to a selection (this works only if the other axis is a `DateAxis` or a `CategoryAxis`). This setting will be ignored if both X and Y axes are a `ValueAxis`.
+- `StandardDeviation` indicator added.
+
+### Changed
+- Series edit modal on a `StockChart` would show incorrect controls if the main chart series was a `LineSeries`.
+
+### Fixed
+- Initial sizing of HTML tooltips fixed (again).
+- Exporting a chart in a `<div>` with `height: auto` was not working properly.
+- If a point in a `LineSeries` was way out of bounds (million times further than the bounds of plot area), the line could disappear.
+- In some cases, if chart was using loadable fonts, it could go into non-stop flickering mode.
+- `StockChart` with drawing mode disabled could start drawing new objects if clicked on points of an old drawing.
+- `PointedRectangle`, mostly used by a `Tooltip` was drawn incorrectly if its stem size was bigger than height.
+- Removing a `QuadrantLineSeries` drawing from a `StockChart` resulted an error.
+- It was impossible to delete `Fibonacci` or `FibonacciTimezone` drawings one by one after switching to another drawing tool.
+
+
+## [5.2.19] - 2022-08-26
+
+### Added
+- `geoPoint()` method added to `MapChart`. Returns a geoPoint of the current the center of the map viewport.
+- `pancancelled` event added to `XYChart`. It will kick in if pointer is pressed down and released without moving. `panended` event will still kick in.
+- `originalEvent` added to `panstarted`, `panended`, and `pancancelled` events.
+
+### Fixed
+- Tooltips were not working properly on an `XYChart` if they were placed in a separate root element.
+- If an `XYChart` with a `CategoryAxis` had series with missing values, zooming to the part of a series with no data caused value axis not to zoom according to the selection.
+- HTML-based tooltips were leaving a visible (albeit transparent) DOM element after tooltip was hidden.
+- Clear and erase buttons were not clearing/erasing all the drawings of StockChart properly.
+
+
+## [5.2.18] - 2022-08-24
+
+### Added
+- `disabled` key support added to `DropdownList` item interface.
+
+### Fixed
+- Removed leftover debug code in `IndicatorControl`.
+- `selected` event in `IndicatorControl` was not firing.
+- Adding an adapter on Y-axis' labels could cause flickers on the chart.
+- `maxWidth`/`maxHeight` of a `Container` was ignored when arranging objects by Horizontal or Vertical layout.
+- `maxWidth`/`maxHeight` of a `Container` was ignored when drawing background.
+
+
+## [5.2.17] - 2022-08-17
+
+### Added
+- `IndicatorControl` setting `indicators` now accepts objects. [More info](https://www.amcharts.com/docs/v5/tutorials/creating-custom-indicators-for-a-stock-chart/#Adding_to_toolbar).
+- `getArea()` method added to `MapChart`. Returns area of a `MapPolygon` in square pixels.
+
+
+## [5.2.16] - 2022-08-16
+
+### Changed
+- A clicked `PeriodSelector` button will now stay highlighted until other button is clicked, or chart is zoomed in any other way.
+- `SpriteResizer` class moved to main package. It's now accessible via `am5.SpriteResize`.
+
+### Fixed
+- Better initial sizing of HTML-content tooltips.
+- `MapChart` pan bounds were incorrect after size of a chart's div changed significantly.
+- If a panel with a volume series of `StockChart` or volume series itself was removed, adding indicators after this was resulting in an error.
+- On a chart with a `CategoryAxis` and series with non-consistent data, some data items might become invisible in some cases.
+- Removing a point from `MapPointSeries` was not affecting the `MapLineSeries` with lines that had this point in their `pointsToConnect` setting.
+- A `Label` rotated at `-90` angle was not being properly hidden as per `oversizedBehavior: "hide"`.
+- Opening a settings modal from `StockLegend` would cause chart to be panned/zoomed when modal was claused.
+
+
+## [5.2.15] - 2022-08-06
+
+### Added
+- Added `PicturePattern` that allows using external images as patterns. [More info](https://www.amcharts.com/docs/v5/concepts/colors-gradients-and-patterns/patterns/#Image_patterns).
+
+### Fixed
+- Fixing issue where chart scrollbar would break when zooming.
+- Fixing chart being too large and overflowing when zooming in ([Issue 471](https://github.com/amcharts/amcharts5/issues/471)).
+- `pan:"zoom"` was not working on left-side Y Axis.
+- Removing a panel from a `StockChart` was not removing indicator from charts `indicators` list.
+- Zooming chart with custom timezone was resulting in errors in some cases.
+
+
+## [5.2.14] - 2022-07-23
+
+### Added
+- New setting `keepTargetHover` added to `Tooltip` (default: `false`). If set to `true`, hovering the tooltip will be treated like hovering its target element itself.
+
+### Fixed
+- Removing `verticalScrollbar` from a `Container` was causing some issues.
+- Labels with HTML content and horizontal padding were not being sized/centered properly.
+- Date formatting code "EEEE" was producing weekday's short version ("Tue") instead of full one ("Tuesday").
+- `Scrollbar` was not working after it was zoomed and clicked on a background to change position, if no animated theme was used.
+- Paused animations will no longer obstruct chart export.
+
+
+## [5.2.13] - 2022-07-19
+
+### Fixed
+- Only HTML content will be shown on a `Label` with both `text` and `html` set.
+- HTML content will now respect `padding*` settings.
+- `"click"` event now works on an element that uses HTML content.
+- `snapToSeries` of `ChartCursor` was not working if target series had only one data item.
+- Labels of a `PieSeries` were being arranged incorrectly when pie was a semi-circle and `alignLabels` was set to `true`.
+- `ForcedDirected` and `Tree` charts were not working properly with `BreadcrumbBar` navigation.
+
+
+## [5.2.12] - 2022-07-18
+
+### Fixed
+- HTML content in tooltips was not being resized properly.
+
+
+## [5.2.11] - 2022-07-18
+
+### Added
+- A new setting `deactivateRoot` (default: `true`) added to `Modal`. Indicates if any interactivity on the underlying chart should be disabled when modal is open.
+- A new setting `html` added to `Container`. Set it to a string with HTML to be used as container's content. Will work on any element inheriting from `Container`, e.g. `Label`. [More info](https://www.amcharts.com/docs/v5/concepts/common-elements/html-content/).
+- A new setting `labelHTML` added to `Tooltip`. If set, will ne used as HTML content for the tooltip. [More info](https://www.amcharts.com/docs/v5/concepts/common-elements/html-content/).
+- A new setting `tooltipHTML` added to `Sprite`. If set, will ne used as HTML content for the tooltip when element is hovered. [More info](https://www.amcharts.com/docs/v5/concepts/common-elements/html-content/).
+- `wheelZoomPositionX` and `wheelZoomPositionY` added to `XYChart`. This value is not set by default, but you can use it to fix wheel zooming, to the end (if you set it to 1) or to the start (0) or middle (0.5). In `StockChart`, it is set to 1 by default, as this is common practice in financial charts.
+- "Volume-Weighted Average Price (VWAP)" indicator added to `StockChart`.
+
+### Changed
+- Setting `id` setting when creating an object will not register it in `am5.registry.entitiesById` immediatelly, without waiting for the next frame.
+
+### Fixed
+- `RadialGradient`'s `x` and `y` settings were being ignored.
+- Labels as bullets with `oversizedBehavior` set were not being displayed properly in some cases.
+- `DateAxis` with `startLocation = 0.5` and `endLocation = 0.5` and single value only was showing a really big date range.
+- Resizing `PieChart` to a very small size with a legend positioned on the left or right could cause some anomaly in layout.
+- Updating `CategoryAxis` data with less items than there was originally was causing old columns/bullets to be shown.
+- Setting `verticalScrollbar` on `Container` to `undefined` to remove a previously set scrollbar was not working.
+- On some rare cases, when all values of the series were the same or the difference was very small, ValueAxis could go into stackowerflow and hang the browser.
+
+## [5.2.10] - 2022-06-28
+
+### Added
+- `lineJoin` setting added to `Graphics` (default: `"miter"`). Possible values: `"miter"`, `"round"`, and `"bevel"`. [More info](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin).
+
+### Fixed
+- `GaplessDateAxis` with one data item was not showing date label at all.
+- Setting `colors` on a `ColorSet` will now properly reset all iterators, so that new color generation is consistent.
+- If `data.setAll()` was called on a `MapSeries` with `geoJSON` set previously, objects from geoJSON would disappear.
+- `PieSeries` was not keeping active slice pulled out when it was hidden and then shown up again.
+- PDF export was not taking page orientation into account when auto-fitting an image.
+
+
+## [5.2.9] - 2022-06-21
+
+### Added
+- New properties on `Root`: `tapToActivate` (default: `false`) - if enabled, requires to tap on chart pefore gesture-based functionality (zoom/pan) works, and `tapToActivateTimeout` (default: `3000`) - milliseconds of inactivity before chart becomes "inactive" for touch gestures. [More info](https://www.amcharts.com/docs/v5/getting-started/root-element/#Touch_related_options).
+
+### Changed
+- If there are no pan/zoom functionality set on charts, they should not prevent scrolling of the page by touch anymore.
+- Bullets will no longer knock off user-set `maxWidth` on their `sprite` element.
+
+### Fixed
+- `DateRangeSelector` was not updating its label correctly when dates were picked.
+- `LineSeries` with `templateField` and a lot of data items could cause chart to crash.
+
+
+## [5.2.8] - 2022-06-15
+
+### Added
+- Private (read-only) setting `tooltipPosition` added to `Axis`.
+- `"line-through"` label decoration added. Works both via `Label`'s `textDecoration` setting, and in-line, e.g. `This is [line-through]a crossed out text[/]`.
+- `autoScale` (default: `false`) setting added to `MapPointSeries`. If set to `true`, bullets will resize together with a map while zooming.
+- `PieSeries` and `FunnelSeries` now properly support bullets.
+
+### Fixed
+- Changing randius or innerRadius on a PieChart was not working.
+- Changing legendValueText or legendLabel text on PercentSeries was not working.
+- `exportfinished` event was not kicking in.
+- Exporting plugin will now try to finish any ongoing rendering before genrating export image.
+- Using mouse wheel on a non-chart element that is positioned over the chart works properly now.
+- If some non-chart element was rendered over `Scrollbar`, doublicking on a thumb area would still zoom it out.
+- Adding `click` event to an `XYChart` was causing it to pan a little when clicked.
+
+
+## [5.2.7] - 2022-06-07
+
+### Added
+- `minDistance` to `LineSeries` (default: 0). If set, it will skip line points closer than X pixels, resulting in a smoother, less cluttery line.
+- `isVisibleDeep()` method to `Sprite`. Check not only if `Sprite` itself is visible, but also its all ascendants.
+
+### Changed
+- TAB press should now skip over focusable elements of hidden series.
+
+### Fixed
+- Toggling `PieSeries` `alignLabels` after the chart was initialized was not working.
+- Fixing bug where the wheel event would sometimes not trigger.
+- When setting `stockSeries` with a new series on `StockChart` it was not inheriting `stockPositiveColor`/`stockNegativeColor` values.
+- Tweaked default `StockToolbar` CSS to act better on pages with larger font sizes.
+- DOM elements for focusable series items (columns, bullets, etc.) were being left behind when data for series was updated.
+- Exporting chart to image was not inheriting document styles properly.
+- If stock series increase/decrease colors were changed and then a series type was changed, new series used to reset colors and not use the ones user set.
+- Dynamically changing page-wide font-related CSS (e.g. via media queries) could cause visual anomalies on the chart, especially on axes.
+
+
+## [5.2.6] - 2022-05-25
+
+### Added
+- `nodePadding` added to `Pack`.
+- `maxTooltipDistanceBy` with possible values `"x"`, `"y"`, and `"xy"` added. Indicates how distance from mouse pointer to the tooltip point should be measured when comparing with `maxTooltipDistance`.
+
+### Fixed
+- Exporting chart image was creating leftover canvas elements in the body of the document.
+- Further improvements in `DateAxis` performance with grouping and timezone enabled.
+
+
+## [5.2.5] - 2022-05-19
+
+### Fixed
+- When timezone was set, grouping days into weeks could produce some unexpected results.
+- `GaplessDateAxis` first date of a month sometimes could go before the grid of a month.
+- Improved performance with data grouping enabled on `DateAxis`, especially when timezone was set. Please note that using timezones will still affect the performance significantly.
+
+
+## [5.2.4] - 2022-05-17
+
+### Added
+- `handleWheel()` method added to `XYChart`. Use it to mirror the same behavior as if the wheel was used on plot area.
+- `useDefaultCSS` (default: `true`) setting added to `DateRangeSelector`.
+- `inversed` added to `Tree` series. If set to `true`, will flip the direction of the tree.
+
+### Fixed
+- `StockToolbar` default CSS was using unnecessarily high `z-index` for its buttons.
+- `StockToolbar` datepicker's style was off in some cases.
+- `GaplessDateAxis` could display the same month name label two times in a row in some cases.
+
+
+## [5.2.3] - 2022-05-12
+
+### Changed
+- Upgraded versions of `pdfmake` and `xlsx` dependencies.
+- Reseting `x` and `y` of the `ForceDirectedSeries` data item will make the node be not ifxed anymore.
+- Tweaked styles of `StockToolbar` controls to work better with theme colors.
+
+### Fixed
+- Enclosing multi-word parameters in in-line styles were not working.
+- `DateAxis` was producing an error if series had no initial data and timezone was set on a root element.
+- Vertically-stacked Y-axes was incorrectly plotting related series with Y-axis set as base axis.
+
+
+## [5.2.2] - 2022-05-03
+
+### Fixed
+- Style issue with stroke style selection button in `StockChart` drawing mode.
+
+
+## [5.2.1] - 2022-05-03
+
+### Added
+- `centerMapOnZoomOut` setting added to `MapChart` (default: `true`). Means the map will center itself (or go to `homeGeoPoint` if set) when fully zoomed out.
+- `getGroupInterval(duration)` method added to `DateAxis`. Returns a time interval axis would group data to for a specified duration.
+- `getIntervalMax(interval)` and `getIntervalMin(interval)` methods added to `DateAxis`. These methods return `min` and `max` of a specified time interval.
+
+### Changed
+- Axis fills on a `StockChart` are now not visible by default.
+- All `Chart` elements now have `interactiveChildren: true` set by default, so that adding events on a chart does not automatically make all elements in it interactive.
+- Zooming out `MapChart` using mouse wheel will now auto-center the map by default. Set `centerMapOnZoomOut: false` to bring back old behavior.
+
+### Fixed
+- Changing `inside` and `opposite` of `AxisRendererX` or `AxisRendererY` after the axis was already initialized was not working properly.
+- `StockChart`'s' period selection buttons were not zooming to exact dates when data grouping of an X-axis was turned on.
+- `StockChart`'s' series type switcher was not switching series properly when data grouping was enabled.
+- `StockChart`'s' series type switcher was not switching series properly when comparing mode was on.
+- If a `StockChart` was in percent scale mode, adding an indicator which was not on a separate panel was resulting in the indicator using wrong scale.
+- Fixed week number calculation (again).
+- Fixed CSS of `StockToolbar` for FireFox.
+- Pinch-zoom of `MapChart` was ignoring `minZoomLevel` and `maxZoomLevel` settings.
+
+
+## [5.2.0] - 2022-04-29
+
+### Added
+- Initial (beta) version of `StockChart` added. Check [documentation](https://www.amcharts.com/docs/v5/charts/stock/) and [product info](https://www.amcharts.com/stock-chart/).
+
+### Fixed
+- Week numbers for "leap weeks" were not being formated properly.
+- Removing an axis range with a bullet was not removing the bullet itself.
+- If one of the series had less data than another and their date axis had data grouping enabled, data of a series with less values could be not grouped.
+- `ColumnSeries` was not coloring its legend marker initially if `useLastColorForLegendMarker` was `true`.
+- Hovering on `ExportingMenu` was permanently disabling chart interactivity.
+
+
+## [5.1.14] - 2022-04-22
+
+### Fixed
+- `ValueAxis` with a logarithmic scale was not showing some of the labels in some specific cases.
+- Moved `zoomOutButton` of `XYChart` to `topPlotContainer` to solve unwanted zoom when cursor's `snapToSeries` was set.
+- Initially-hidden series legend markers were not being dimmed out unless Animated theme was in use.
+- When whole series was out of selected scope, its last or first value (depending on seleciton) was still included when calculating min and max, causing chart not to adjust min/max values to a visible series scope.
+- `Annotator` was not disabling chart interactivite when activated in Firefox.
+
+
 ## [5.1.13] - 2022-04-15
 
 ### Added
@@ -14,7 +594,7 @@ adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html) rules.
 
 ### Fixed
 - If geoJSON contained multipolygons with just one polygon, hovering over polygon was resulting in a JS error.
-- `DateAxis` displayed wrong time when time was switching to DST, when a timezone was set on a `Root` element. 
+- `DateAxis` displayed wrong time when time was switching to DST, when a timezone was set on a `Root` element.
 
 
 ## [5.1.12] - 2022-04-07
@@ -100,7 +680,7 @@ adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html) rules.
 - Grouping to periods where `timeUnit` was `"day"` and `count > 1` was not working properly.
 - When tooltips of multiple series were pointing at the same point, series order was not being respected (FF only).
 - If a scrollbar was added before axes, scrolling series could result series to be out of sync with bullets.
-- Tweaked `nb_NO` locale to better correspond to Norwegian Bokmål date formats.
+- Tweaked `nb_NO` locale to better correspond to Norwegian Bokm? date formats.
 
 
 ## [5.1.6] - 2022-02-23

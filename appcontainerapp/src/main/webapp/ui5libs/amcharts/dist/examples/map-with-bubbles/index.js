@@ -1023,7 +1023,7 @@ bubbleSeries.data.setAll([
   },
   {
     id: "TR",
-    name: "Turkey",
+    name: "Türkiye",
     value: 73639596,
     circleTemplate: { fill: colors.getIndex(8) }
   },

@@ -1,16 +1,18 @@
 sap.ui.define([
 	'ui5libs/libs/model/mt/ct/ColumnTransformation'
 ], function(ColumnTransformation) {
-  return ColumnTransformation.extend("ui5libs.libs.model.mt.ct.FirstDayOfWeek", {
+  var c = ColumnTransformation.extend("ui5libs.libs.model.mt.ct.FirstDayOfWeek", {
 		metadata : {
 			properties: {
-				formatter : {type: "function"},
 				inputField : {type: "string"},
-				field : {type: "string"},
 			},
 		},
 		applyTransformation: function(oData) {
-			function firstMonday(ts) {
+			
+			oData[this.getField()] = ui5libs.libs.model.mt.ct.FirstDayOfWeek.firstMonday(oData[this.getInputField()]);
+		},
+	});
+	c.firstMonday = function(ts) {
 				var dateObject = new Date(ts);
 				var dayOfWeek = dateObject.getDay(),
 					firstDayOfWeek = new Date(dateObject),
@@ -20,8 +22,7 @@ sap.ui.define([
 				firstDayOfWeek.setHours(0,0,0,0)
 				
 				return firstDayOfWeek.getTime();
-			}
-			oData[this.getField()] = firstMonday(oData[this.getInputField()]);
-		},
-	});
+			};
+	
+	return c;
 });

@@ -5,13 +5,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.ICatalogService;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
+import io.rtdi.appcontainer.plugins.database.SelectSource;
 
 public class SnowflakeCatalogService implements ICatalogService {
 	
@@ -213,6 +216,23 @@ public class SnowflakeCatalogService implements ICatalogService {
 			try (PreparedStatement stmt = conn.prepareStatement("create temporary table " + identifier + " as select * from snowflake.account_usage.OBJECT_DEPENDENCIES;"); ) {
 				stmt.execute();
 			}
+		}
+	}
+
+	@Override
+	public List<SelectSource> getAllSelectSources(Connection conn) throws SQLException {
+		String sql = "select table_schema as schema_name, table_name as object_name, case when table_type = 'BASE TABLE' then 'TABLE' else table_type end as object_type\r\n"
+				+ "from information_schema.tables";
+		List<SelectSource> res = new ArrayList<>();
+		try (PreparedStatement stmt = conn.prepareStatement(sql);) {
+			try (ResultSet rs = stmt.executeQuery();) {
+				while (rs.next()) {
+					res.add(new SelectSource(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(1), rs.getString(2), rs.getString(3), conn.getSchema()));
+				}
+				return res;
+			}
+		} catch (SQLException e) {
+			throw AppContainerSQLException.cloneFrom(e, "Failed to search for the column in the Snowflake Information schema using the SQL \"" + sql + "\"", null);
 		}
 	}
 

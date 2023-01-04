@@ -103,7 +103,7 @@ function makeSeries(name, fieldName) {
   series.bullets.push(function () {
     return am5.Bullet.new(root, {
       sprite: am5.Label.new(root, {
-        text: "{valueYTotalPercent.formatNumber('#.#')}%",
+        text: "{valueYTotalPercent.formatNumber('#.#p')}",
         fill: root.interfaceColors.get("alternativeText"),
         centerY: am5.p50,
         centerX: am5.p50,

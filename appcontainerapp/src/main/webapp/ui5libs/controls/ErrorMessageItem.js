@@ -5,13 +5,9 @@ sap.ui.define([ "jquery.sap.global" ], function(jQuery) {
 				timestamp: "int",
 				message: "string",
 				exception: "string",
-				stacktrace: "string",
-				stacktracerootcause: "string",
 				hint: "string",
-				causingobject: "string",
 				sourcecodeline: "string",
-				errorhelp: "string",
-				threadname: "string"
+				sqlstatement: "string"
 			},
 			renderer: {}
 		},
@@ -27,32 +23,16 @@ sap.ui.define([ "jquery.sap.global" ], function(jQuery) {
 				}
 			}
 			if (oJSON) {
-				this.setException(oJSON.message);
+				this.setException(oJSON.type);
+				this.setSqlstatement(oJSON.sqlstatement);
 				this.setTimestamp(oJSON.timestamp);
 				this.setMessage(oJSON.message);
-				this.setStacktrace(oJSON.stacktrace);
-				this.setStacktracerootcause(oJSON.stacktracerootcause);
 				this.setHint(oJSON.hint);
-				this.setCausingobject(oJSON.causingobject);
 				this.setSourcecodeline(oJSON.sourceCodeLine);
-				this.setErrorhelp(oJSON.errorhelp);
-				this.setThreadname(oJSON.threadname);
 			} else {
 				this.setMessage("Error thrown but no detail information coming from the server");
 			}
 			return this;
-		},
-		setStacktrace : function(value) {
-			this.setProperty("stacktrace", value, true);
-		},
-		getStacktrace : function() {
-			return this.getProperty("stacktrace");
-		},
-		setStacktracerootcause : function(value) {
-			this.setProperty("stacktracerootcause", value, true);
-		},
-		getStacktracerootcause : function() {
-			return this.getProperty("stacktracerootcause");
 		},
 		setException : function(value) {
 			this.setProperty("exception", value, true);
@@ -63,10 +43,6 @@ sap.ui.define([ "jquery.sap.global" ], function(jQuery) {
 		setMessage : function(value) {
 			this.setProperty("message", value, true);
 			this.setDescription(value);
-		},
-		setThreadname : function(value) {
-			this.setProperty("threadname", value, true);
-			this.setSubtitle(value);
 		},
 		onShowErrorDetails : function(oEvent, oData) {
 			// this = is the Link control of a message item
@@ -93,8 +69,6 @@ sap.ui.define([ "jquery.sap.global" ], function(jQuery) {
 					 adjustLabelSpan: false,
 					 title: "Error",
 					 content: [
-						new sap.m.Label( { text: "Process" } ), 
-						new sap.m.Text( { text: oItem.getThreadname() } ),
 						new sap.m.Label( { text: "Exception type" } ), 
 						new sap.m.Text( { text: oItem.getException() } ),
 						new sap.m.Label( { text: "Time" } ), 
@@ -118,24 +92,8 @@ sap.ui.define([ "jquery.sap.global" ], function(jQuery) {
 						new sap.m.Text( { text: oItem.getMessage() } ),
 						new sap.m.Label( { text: "Hint" } ), 
 						new sap.m.Text( { text: oItem.getHint() } ),
-						new sap.m.Label( { text: "Help" } ), 
-						new sap.m.Text( { text: oItem.getErrorhelp() } )
-					] } ),
-
-					new sap.ui.layout.form.SimpleForm({
-					 width: "100%",
-					 layout: "ResponsiveGridLayout",
-					 columnsL: 1,
-					 columnsM: 1,
-					 labelSpanXL: 12,
-					 labelSpanL: 12,
-					 labelSpanM: 12,
-					 labelSpanS: 12,
-					 singleContainerFullSize: false,
-					 adjustLabelSpan: false,
-					 title: "Causing object",
-					 content: [
-						new sap.m.Text( { text: oItem.getCausingobject() } ),
+						new sap.m.Label( { text: "SQL statement" } ), 
+						new sap.m.Text( { text: oItem.getSqlstatement() } ),
 					] } ),
 
 					new sap.ui.layout.form.SimpleForm({
@@ -152,40 +110,8 @@ sap.ui.define([ "jquery.sap.global" ], function(jQuery) {
 					 title: "Source code line",
 					 content: [
 						new sap.m.Link( { href: oItem.getSourcecodeline(), text: "Show Source line", target: "_blank", visible: (!!oItem.getSourcecodeline()) } ),
-					] } ),
-					
-					new sap.ui.layout.form.SimpleForm({
-					 width: "100%",
-					 layout: "ResponsiveGridLayout",
-					 columnsL: 1,
-					 columnsM: 1,
-					 labelSpanXL: 12,
-					 labelSpanL: 12,
-					 labelSpanM: 12,
-					 labelSpanS: 12,
-					 singleContainerFullSize: false,
-					 adjustLabelSpan: false,
-					 title: "Root cause",
-					 content: [
-						new sap.m.Text( { text: oItem.getStacktracerootcause(), renderWhitespace: true, wrapping: false } )
-					] } ),
-
-					new sap.ui.layout.form.SimpleForm({
-					 width: "100%",
-					 layout: "ResponsiveGridLayout",
-					 columnsL: 1,
-					 columnsM: 1,
-					 labelSpanXL: 12,
-					 labelSpanL: 12,
-					 labelSpanM: 12,
-					 labelSpanS: 12,
-					 singleContainerFullSize: false,
-					 adjustLabelSpan: false,
-					 title: "Cause",
-					 content: [
-						new sap.m.Text( { text: oItem.getStacktrace(), renderWhitespace: true, wrapping: false } )
 					] } )
-
+					
 				],
 				endButton: new sap.m.Button({
 					text: "Close",

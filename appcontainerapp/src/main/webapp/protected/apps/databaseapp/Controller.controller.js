@@ -100,7 +100,7 @@ function(Controller, ui5ajax, errorfunctions) {
 				var oNode = oEvent.getParameter("rowContext");
 				if (oNode.getObject()["schemaname"]) {
 					var oTreeModel = this.getView().byId("idTree").getModel();
-					ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/catalog/schemas/" + oNode.getObject().schemaname))
+					ui5ajax.ajaxGet("/catalog/schemas/" + oNode.getObject().schemaname, "ui5rest")
 						.then(
 							data => {
 								var oChild = JSON.parse(data.text);

@@ -39,7 +39,7 @@ public class Session {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -74,7 +74,7 @@ public class Session {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(

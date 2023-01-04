@@ -69,7 +69,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -100,7 +100,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -152,7 +152,7 @@ public class RepoService {
 		                    }
 					),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -228,7 +228,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -259,7 +259,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -308,7 +308,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown, e.g. file exists already",
 		                    content = {
 		                            @Content(
@@ -356,7 +356,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown, e.g. path exists already",
 		                    content = {
 		                            @Content(
@@ -408,7 +408,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown, e.g. path does not exist",
 		                    content = {
 		                            @Content(
@@ -457,7 +457,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown, e.g. path exists already",
 		                    content = {
 		                            @Content(
@@ -511,7 +511,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown, e.g. path does not exist",
 		                    content = {
 		                            @Content(
@@ -569,7 +569,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(
@@ -616,7 +616,7 @@ public class RepoService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "Any exception thrown",
 		                    content = {
 		                            @Content(

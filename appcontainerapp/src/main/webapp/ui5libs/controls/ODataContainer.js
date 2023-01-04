@@ -36,14 +36,14 @@ sap.ui.define([
     			if (this.getSizeLimit()) {
     				oModel.setSizeLimit(this.getSizeLimit());
     			}
+				if (this.getAfterLoad()) {
+					this.getAfterLoad().call(this, oModel);
+				}
     			this.setModel(oModel);
     			return oModel;
     		} else {
     			return undefined;
     		}
 		},
-		reload : function() {
-			// Not supported, I believe
-		}
 	});
 });

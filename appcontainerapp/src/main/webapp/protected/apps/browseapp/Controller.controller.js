@@ -77,7 +77,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			var oContext = oControl.getBindingContext();
 			if (oContext && oContext.getObject()) {
 				this.getView().setBusy(true);
-				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/activationapp/activateall/" + oContext.getObject().path))
+				ui5ajax.ajaxGet("/activationapp/activateall/" + oContext.getObject().path, "ui5rest")
 					.then(
 						data => {
 							this.oDialog.getModel().setJSON(data.text);
@@ -87,7 +87,7 @@ function(Controller, ui5ajax, errorfunctions) {
 						}, 
 						error => {
 							thisControl.getView().setBusy(false);
-							if (error.code === 202) {
+							if (error.code === 400) {
 								errorfunctions.addError(this.getView(), error);
 							} else {
 								this.oDialog.getModel().setJSON(error.text);
@@ -162,7 +162,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameDirectory : function(oDataExchange) {
-			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mv/" + oDataExchange.currentpath), { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+			ui5ajax.postJsonObject("/repo/mv/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath}, "ui5rest")
 				.then(
 					data => {
 			    		var oView = thisControl.getView();
@@ -199,7 +199,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			var index = Number(sModelPath.substring(sModelPath.lastIndexOf('/')+1));
 			if (index !== NaN && index != -1 && oDirectory.path !== '.') {
 				var oFolders = oModel.getProperty(sFoldersPath);
-				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/rmdir/" + oDirectory.path))
+				ui5ajax.ajaxGet("/repo/rmdir/" + oDirectory.path, "ui5rest")
 					.then(
 						data => {
 							oFolders.splice(index, 1);
@@ -223,7 +223,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			var oControl = thisControl.getView().byId("idFiles");
 			var oModel = oControl.getModel();
 			var aFiles = oModel.getProperty("/files");
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/touch/" + oDataExchange.newpath))
+			ui5ajax.ajaxGet("/repo/touch/" + oDataExchange.newpath, "ui5rest")
 				.then(
 					data => {
 						oModel.setProperty("/files/" + aFiles.length, {"path": oDataExchange.newpath, "name": oDataExchange.newname } );
@@ -243,7 +243,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameFile : function(oDataExchange) {
-			ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mv/" + oDataExchange.currentpath), { "name": oDataExchange.newname, "path": oDataExchange.newpath})
+			ui5ajax.postJsonObject("/repo/mv/" + oDataExchange.currentpath, { "name": oDataExchange.newname, "path": oDataExchange.newpath}, "ui5rest")
 				.then(
 					data => {
 						var oFilesControl = thisControl.getView().byId("idFiles");
@@ -264,7 +264,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			var index = Number(sModelPath.substring(sModelPath.lastIndexOf("/")+1));
 			if (index !== NaN && index != -1) {
 				var oModelRmFile = new sap.ui.model.json.JSONModel();
-				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/rm/" + oFile.path))
+				ui5ajax.ajaxGet("/repo/rm/" + oFile.path, "ui5rest")
 					.then(
 						data => {
 							var aFiles = oModel.getProperty("/files");
@@ -288,7 +288,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			
 			if (oSourceRow.folders === undefined) {
 				// dropped a file
-				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mvfile/" + oSourceRow.path), { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name})
+				ui5ajax.postJsonObject("/repo/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name}, "ui5rest")
 					.then(
 						data => {
 				    		/*
@@ -311,7 +311,7 @@ function(Controller, ui5ajax, errorfunctions) {
 					);
 			} else {
 				// dropped a directory				
-				ui5ajax.postJsonObject(sap.ui.require.toUrl("ui5rest/repo/mvfile/" + oSourceRow.path), { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name })
+				ui5ajax.postJsonObject("/repo/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name }, "ui5rest")
 					.then(
 						data => {
 				    		/*
@@ -450,7 +450,7 @@ function(Controller, ui5ajax, errorfunctions) {
 								} else if (!oModel.getProperty("/password") && !oModel.getProperty("/token")) {
 									errorfunctions.uiError(that.getView(), "either password or token must be set");
 								}
-								ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest/git/gitconfig/" + sPath), oModel)
+								ui5ajax.postJsonModel("/git/gitconfig/" + sPath, oModel, "ui5rest")
 									.then(
 										data => {
 											that.oGitSettingDialog.close();
@@ -506,7 +506,7 @@ function(Controller, ui5ajax, errorfunctions) {
 						press: function () {
 							var oModel = that.oCommitDialog.getModel();
 							that.getView().setBusy(true);
-							ui5ajax.postJsonModel(sap.ui.require.toUrl("ui5rest/git/gitpush/" + sPath, oModel))
+							ui5ajax.postJsonModel("/git/gitpush/" + sPath, oModel, "ui5rest")
 								.then(
 									data => {
 										that.getView().setBusy(false);
@@ -540,7 +540,7 @@ function(Controller, ui5ajax, errorfunctions) {
 		onGitPull: function() {
 			var oFilesModel = this.getView().byId("idFiles").getModel();
 			var sPath = oFilesModel.getProperty("/path");
-			ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/git/gitpull/" + sPath))
+			ui5ajax.ajaxGet("/git/gitpull/" + sPath, "ui5rest")
 				.then(
 					data => {
 						errorfunctions.uiSuccess(thisControl.getView(), { message: 'Pull succeeded' } );
@@ -556,7 +556,7 @@ function(Controller, ui5ajax, errorfunctions) {
 				var oFilesModel = that.getView().byId("idFiles").getModel();
 				var sPath = oFilesModel.getProperty("/path");
 				var sSchema = oDialog.getContent()[1].getSelectedKey();
-				ui5ajax.ajaxGet(sap.ui.require.toUrl("ui5rest/repo/reveng/importall/" + sSchema + "/" + sPath))
+				ui5ajax.ajaxGet("/repo/reveng/importall/" + sSchema + "/" + sPath, "ui5rest")
 					.then(
 						data => {
 							errorfunctions.uiSuccess(thisControl.getView(), { message: 'Import-all succeeded' } );

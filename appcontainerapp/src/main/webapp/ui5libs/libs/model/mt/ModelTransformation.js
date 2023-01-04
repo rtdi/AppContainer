@@ -11,7 +11,7 @@ sap.ui.define([
 				totalsPropertyPath : {type: "string"},
 			},
 		},
-		setTransformedData: function(oModel) {
+		applyTransformation: function(oModel) {
 			var source = this.getRootPropertyPath();
 			var target = this.getTargetPropertyPath();
 			if (source && target) {

@@ -78,7 +78,7 @@ public class ActivationService extends RestService {
 	                    }
                     ),
 					@ApiResponse(
-							responseCode = "202", 
+							responseCode = "400", 
 							description = "If the activation failed",
 		                    content = {
 		                            @Content(

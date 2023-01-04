@@ -80,7 +80,7 @@ public class StoredProcedureService extends RestService {
 		                            )
 		                    }
 	                    ),
-						@ApiResponse(responseCode = "202", description = "Any exception thrown")
+						@ApiResponse(responseCode = "400", description = "Any exception thrown")
 			})
 	@Tag(name = "Information")
     @Produces(MediaType.APPLICATION_JSON)
@@ -127,7 +127,7 @@ public class StoredProcedureService extends RestService {
 	                            )
 	                    }
                     ),
-					@ApiResponse(responseCode = "202", description = "Any exception thrown")
+					@ApiResponse(responseCode = "400", description = "Any exception thrown")
             })
 	@Tag(name = "ReadDB")
 	@Tag(name = "WriteDB")
