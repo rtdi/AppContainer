@@ -193,7 +193,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
-			<artifactId>appcontainerrealm</artifactId>
+			<artifactId>dbrealmbase</artifactId>
 			<version>${appcontainerrealm}</version>
 			<scope>provided</scope>
 		</dependency>
