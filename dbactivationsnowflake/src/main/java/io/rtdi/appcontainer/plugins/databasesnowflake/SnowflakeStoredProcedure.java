@@ -13,7 +13,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.benmanes.caffeine.cache.Cache;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.JDBCDataTypeConversion;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.IStoredProcedure;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureMetadata;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureParameter;
@@ -40,7 +42,9 @@ public class SnowflakeStoredProcedure implements IStoredProcedure {
     		String procedurename,
     		JsonNode data,
     		Cache<String,
-    		ProcedureMetadata> cache) throws AppContainerSQLException {
+    		ProcedureMetadata> cache,
+    		IDatabaseProvider provider) throws AppContainerSQLException {
+    	JDBCDataTypeConversion conv = provider.getConversionClass();
 		String cachekey = schema + "." + procedurename;
 		ProcedureMetadata metadata = cache.getIfPresent(cachekey);
 		if (metadata == null) {
@@ -84,10 +88,10 @@ public class SnowflakeStoredProcedure implements IStoredProcedure {
 					String fieldname = iter.next();
 					ProcedureParameter p = metadata.getParameter(fieldname);
 					if (p == null) {
-						throw new AppContainerSQLException("The procedure does not have a parameter with the name \"" + fieldname
+						throw new AppContainerSQLException("The procedure does not exist or does not have a parameter with the name \"" + fieldname
 								+ "\"", "Provided input Json is invalid", null);
 					}
-					stmt.setString(p.getIndex(), data.get(fieldname).textValue());
+					stmt.setObject(p.getIndex(), conv.convertJsonNodeJDBC(data.get(fieldname), p.getJDBCDataType()));
 				}
 			}
 			/*
@@ -109,7 +113,8 @@ public class SnowflakeStoredProcedure implements IStoredProcedure {
 							ObjectNode rsnode = objectMapper.createObjectNode();
 							arraynode.add(rsnode);
 				    		for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-				    			rsnode.put(rs.getMetaData().getColumnName(i), rs.getString(i));
+				    			rsnode.set(rs.getMetaData().getColumnName(i),
+				    					conv.convertJDBCToJsonNode(rs.getObject(i), JDBCType.valueOf(rs.getMetaData().getColumnType(i))));
 				    		}
 				    	}
 			    		String outname = "OUT" + String.valueOf(rscount + 1);
@@ -135,7 +140,10 @@ public class SnowflakeStoredProcedure implements IStoredProcedure {
 				if (datatype != null) {
 					switch (datatype) {
 					default:
-						rootnode.put(outputparameter.getParametername(), stmt.getString(outputparameter.getIndex()));
+						rootnode.set(outputparameter.getParametername(),
+								conv.convertJDBCToJsonNode(
+										stmt.getObject(outputparameter.getIndex()),
+										outputparameter.getJDBCDataType()));
 					}
 				}
 			}

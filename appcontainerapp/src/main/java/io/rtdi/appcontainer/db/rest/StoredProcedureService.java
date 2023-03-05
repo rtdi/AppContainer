@@ -14,9 +14,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
 import io.rtdi.appcontainer.db.rest.entity.StoredProcedure;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.IStoredProcedure;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureMetadata;
@@ -164,7 +164,7 @@ public class StoredProcedureService extends RestService {
 				IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 				IStoredProcedure procedureservice = provider.getProcedureService();
 				tickRest();
-				return Response.ok(procedureservice.callProcedure(conn, schema, procedurename, data, cache)).build();
+				return Response.ok(procedureservice.callProcedure(conn, schema, procedurename, data, cache, provider)).build();
 			}
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);

@@ -2,10 +2,10 @@ package io.rtdi.appcontainer.plugins.databasehana;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +17,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.benmanes.caffeine.cache.Cache;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.JDBCDataTypeConversion;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.IStoredProcedure;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureMetadata;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureParameter;
@@ -25,6 +27,7 @@ import io.rtdi.appcontainer.plugins.database.entity.ProcedureParameterInOutType;
 
 public class HanaStoredProcedure implements IStoredProcedure {
 	
+	private static JDBCDataTypeConversion conv = new JDBCDataTypeConversion();
 
 
 	/**
@@ -54,45 +57,30 @@ public class HanaStoredProcedure implements IStoredProcedure {
 	 * @throws AppContainerSQLException 
 	 * 
 	 */
+	@Override
     public ObjectNode callProcedure(
     		Connection conn,
     		String schema,
     		String procedurename,
     		JsonNode data,
     		Cache<String,
-    		ProcedureMetadata> cache) throws AppContainerSQLException {
+    		ProcedureMetadata> cache, IDatabaseProvider provider) throws AppContainerSQLException {
 		String cachekey = schema + "." + procedurename;
 		ProcedureMetadata metadata = cache.getIfPresent(cachekey);
 		if (metadata == null) {
 			metadata = new HanaProcedureMetadata();
 			// Output parameters
-			String paramsql = "select position, parameter_name, data_type_name, parameter_type from procedure_parameters " + 
-					"where schema_name = ? and procedure_name = ?" + 
-					"order by position";
-			try (PreparedStatement stmt = conn.prepareStatement(paramsql);) {
-				stmt.setString(1, schema);
-				stmt.setString(2, procedurename);
-				try (ResultSet rs = stmt.executeQuery(); ) {
-					while (rs.next()) {
-						ProcedureParameterInOutType t = null;
-						switch (rs.getString(4)) {
-						case "OUT": t = ProcedureParameterInOutType.OUT; break;
-						case "IN": t = ProcedureParameterInOutType.IN; break;
-						case "INOUT": t = ProcedureParameterInOutType.INOUT; break;
-						}
-						String datatype = rs.getString(3);
-						ProcedureParameter param = null;
-						if (datatype.equals("TABLE_TYPE")) {
-							param = new TableParameterMetadata(rs.getInt(1), rs.getString(2), datatype, t);
-						} else {
-							param = new ProcedureParameter(rs.getInt(1), rs.getString(2), null, datatype, t);
-						}
-						metadata.addParameter(param);
-					}
+			try (ResultSet rs = conn.getMetaData().getProcedureColumns(null, schema, procedurename, null); ) {
+				while (rs.next()) {
+					short inouttype = rs.getShort(5);
+					JDBCType dt = JDBCType.valueOf(rs.getInt(6));
+					ProcedureParameterInOutType io = ProcedureParameterInOutType.value(inouttype);
+					ProcedureParameter p = new ProcedureParameter(rs.getInt(18), rs.getString(4), dt, rs.getString(7), io);
+					metadata.addParameter(p);
 				}
 				cache.put(cachekey, metadata);
 			} catch (SQLException e) {
-				throw AppContainerSQLException.cloneFrom(e, paramsql, "Executed SQL statement threw an error");
+				throw AppContainerSQLException.cloneFrom(e, null, "reading stored procedure metadata threw an error");
 			}
 		}
 		
@@ -154,7 +142,7 @@ public class HanaStoredProcedure implements IStoredProcedure {
 					if (data.get(fieldname).getNodeType() == JsonNodeType.ARRAY) {
 						// nothing to do, a table with the data has been created already
 					} else {
-						stmt.setString(counter++, data.get(fieldname).textValue());
+						stmt.setObject(counter++, conv.convertJsonNodeJDBC(data.get(fieldname), metadata.getParameter(fieldname).getJDBCDataType() ));
 					}
 				}
 			}
@@ -171,7 +159,7 @@ public class HanaStoredProcedure implements IStoredProcedure {
 						tableout.add(outputparameter);
 						break;
 					default:
-						stmt.registerOutParameter(counter++, Types.NVARCHAR);
+						stmt.registerOutParameter(counter++, outputparameter.getJDBCDataType().getVendorTypeNumber());
 					}
 				}
 			}
@@ -191,7 +179,10 @@ public class HanaStoredProcedure implements IStoredProcedure {
 							ObjectNode rsnode = objectMapper.createObjectNode();
 							arraynode.add(rsnode);
 				    		for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-				    			rsnode.put(rs.getMetaData().getColumnName(i), rs.getString(i));
+				    			rsnode.set(rs.getMetaData().getColumnName(i),
+				    					conv.convertJDBCToJsonNode(
+				    							rs.getObject(i),
+				    							JDBCType.valueOf(rs.getMetaData().getColumnType(i))));
 				    		}
 				    	}
 				    	String outname = null;
@@ -221,7 +212,10 @@ public class HanaStoredProcedure implements IStoredProcedure {
 						// ignore
 						break;
 					default:
-						rootnode.put(outputparameter.getParametername(), stmt.getString(outputparameter.getParametername()));
+						rootnode.set(outputparameter.getParametername(),
+								conv.convertJDBCToJsonNode(
+										stmt.getObject(outputparameter.getParametername()),
+										outputparameter.getJDBCDataType()));
 					}
 				}
 			}
@@ -231,7 +225,8 @@ public class HanaStoredProcedure implements IStoredProcedure {
 		}
 	}
 
-	private static String create_temporary_table(Connection conn, String schema, String procedurename, String fieldname, ArrayNode data, TableParameterMetadata tablemetadata) throws AppContainerSQLException {
+	private static String create_temporary_table(Connection conn, String schema, String procedurename,
+			String fieldname, ArrayNode data, TableParameterMetadata tablemetadata) throws AppContainerSQLException {
 		String tablename = "#" + fieldname;
 		try (PreparedStatement stmt = conn.prepareStatement("drop table \"" + tablename + "\""); ) {
 			stmt.execute();
@@ -294,7 +289,7 @@ public class HanaStoredProcedure implements IStoredProcedure {
 				if (row.getNodeType() == JsonNodeType.OBJECT) {
 					for (int i=0; i < tablemetadata.getColumnIndex().size(); i++) {
 						JsonNode n = row.get(tablemetadata.getColumnIndex().get(i));
-						stmt.setString(i+1, (n==null?null:n.asText()));
+						stmt.setObject(i+1, (n==null?null:conv.convertJsonNodeJDBC(n, JDBCType.valueOf(stmt.getMetaData().getColumnType(i+1)))));
 					}
 					stmt.addBatch();
 				}

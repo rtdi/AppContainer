@@ -2,7 +2,7 @@ package io.rtdi.appcontainer.rest.entity;
 
 import java.net.HttpURLConnection;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.ws.rs.core.Response;
 

@@ -1,6 +1,6 @@
 package io.rtdi.appcontainer.plugins.databasehana;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 
 public class HanaDataTypes {
 

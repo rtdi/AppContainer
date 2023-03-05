@@ -5,15 +5,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.rtdi.appcontainer.JDBCDataTypeConversion;
+import io.rtdi.appcontainer.dbactivationbase.JDBCDataTypeConversion;
 
 
 public class TableRow {
-	List<Object> rowdata = new ArrayList<>();
+	private List<Object> rowdata = new ArrayList<>();
 
 	public TableRow(ResultSet rs, TableValue container) throws SQLException {
+		JDBCDataTypeConversion conv = container.getDatabaseProvider().getConversionClass();
 		for (int i = 0; i < container.columns.size(); i++) {
-			Object o = JDBCDataTypeConversion.convert(rs.getObject(i+1), container.columns.get(i).getColumnType());
+			Object o = conv.convertJDBCtoJava(rs.getObject(i+1), container.columns.get(i).getColumnType());
 			rowdata.add(o);
 		}
 	}

@@ -7,7 +7,7 @@ public class DatabaseObjectTree {
 	private String schema;
 	private String name;
 	private String identifier;
-	private String type;
+	private ObjectType type;
 	private String editorurl;
 	private List<DatabaseObjectTree> children;
 	
@@ -17,7 +17,7 @@ public class DatabaseObjectTree {
 	 * @param name
 	 * @param type
 	 */
-	public DatabaseObjectTree(String schema, String name, String type) {
+	public DatabaseObjectTree(String schema, String name, ObjectType type) {
 		this.schema = schema;
 		this.name = name;
 		this.type = type;
@@ -30,7 +30,7 @@ public class DatabaseObjectTree {
 	 * @param identifier
 	 * @param type
 	 */
-	public DatabaseObjectTree(String identifier, String type) {
+	public DatabaseObjectTree(String identifier, ObjectType type) {
 		this.type = type;
 		this.identifier = identifier;
 	}
@@ -46,11 +46,11 @@ public class DatabaseObjectTree {
 		this.identifier = identifier;
 	}
 
-	public String getType() {
+	public ObjectType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(ObjectType type) {
 		this.type = type;
 	}
 

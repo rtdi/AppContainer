@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
+
 public class SQLSingleValueSelect {
 
-	public static Object execute(String sqltext, Object[] parameters, Connection conn) throws SQLException {
+	public static Object execute(String sqltext, Object[] parameters, Connection conn, IDatabaseProvider provider) throws SQLException {
 		try (PreparedStatement stmt = conn.prepareStatement(sqltext);) {
 			int index = 1;
 			for (Object param : parameters) {

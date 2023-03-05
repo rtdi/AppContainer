@@ -100,16 +100,17 @@
          Either JSSE or OpenSSL style configuration may be used. OpenSSL style
          configuration is used below.
     -->
-    <Connector port="8443" protocol="org.apache.coyote.http11.Http11AprProtocol"
-               maxThreads="150" SSLEnabled="true" >
-        <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
-        <SSLHostConfig>
-            <Certificate certificateKeyFile="conf/security/ssl/localhost-rsa-key.pem"
-                         certificateFile="conf/security/ssl/localhost-rsa-cert.pem"
-						 certificateKeyPassword="changeit"
-                         type="RSA" />
-        </SSLHostConfig>
-    </Connector>
+	<Connector port="8443"
+		protocol="org.apache.coyote.http11.Http11NioProtocol"
+		maxThreads="150" SSLEnabled="true">
+		<UpgradeProtocol
+			className="org.apache.coyote.http2.Http2Protocol" />
+		<SSLHostConfig>
+			<Certificate
+				certificateKeystoreFile="/usr/local/tomcat/conf/security/ssl/.certs"
+				certificateKeystorePassword="changeit" type="RSA" />
+		</SSLHostConfig>
+	</Connector>
     <!-- Define an AJP 1.3 Connector on port 8009 -->
     <!--
     <Connector protocol="AJP/1.3"

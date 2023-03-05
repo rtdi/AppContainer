@@ -2,10 +2,10 @@ package io.rtdi.appcontainer.repo.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-
+import java.nio.file.StandardCopyOption;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -601,7 +601,7 @@ public class RepoService {
 	@POST
 	@Path("file/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_XML})
 	@Operation(
 			summary = "Save data into a file",
 			description = "Takes the posted payload and updates an existing file",
@@ -637,10 +637,10 @@ public class RepoService {
  	    		description = "payload of the file",
  	    		example = "This is a free form text"
  	    		)
-    		String content) {
+    		InputStream content) {
 		try {
 			java.nio.file.Path targetpath = getEffectivePath(request, path);
-			Files.writeString(targetpath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			Files.copy(content, targetpath, StandardCopyOption.REPLACE_EXISTING);
 			return SuccessMessage.createResponseOK();
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);

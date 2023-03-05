@@ -46,13 +46,19 @@ public class Util {
 	}
 	
 	public static String getSchema(String schemaname, HttpServletRequest req) throws URISyntaxException {
-		if (schemaname.equals(".") || schemaname.equals("currentuser")) {
+		if (schemaname.equals(".") || schemaname.equalsIgnoreCase("currentuser")) {
 			Principal p = req.getUserPrincipal();
 			if (p instanceof IDatabaseLoginPrincipal) {
 				IDatabaseLoginPrincipal apppricipal = (IDatabaseLoginPrincipal) p;
 				schemaname = apppricipal.getDBUser();
 			}
-		} else if (schemaname.equals("appschema")) {
+		} else if (schemaname.equalsIgnoreCase("currentschema")) {
+			Principal p = req.getUserPrincipal();
+			if (p instanceof IDatabaseLoginPrincipal) {
+				IDatabaseLoginPrincipal apppricipal = (IDatabaseLoginPrincipal) p;
+				schemaname = apppricipal.getSchema();
+			}
+		} else if (schemaname.equalsIgnoreCase("appschema")) {
 			String referrerschema = getAppSchemaFromReferrer(req);
 			if (referrerschema != null) {
 				schemaname = referrerschema;

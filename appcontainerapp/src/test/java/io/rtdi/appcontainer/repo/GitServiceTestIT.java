@@ -11,15 +11,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.rtdi.appcontainer.repo.rest.entity.GitCommit;
 import io.rtdi.appcontainer.repo.rest.entity.GitConfig;
 import io.rtdi.appcontainer.util.RepoRestCalls;
+import io.rtdi.appcontainer.util.RestClient;
 
 public class GitServiceTestIT {
-	private final static String GITHUB_TOKEN = "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"; // "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";
+	private final static String GITHUB_TOKEN = "";
 	
 	private static RepoRestCalls c;
 
+	private static RestClient client;
+
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		c = new RepoRestCalls();
+		String username = System.getenv("snowflake_jdbcuser");
+		String credential = System.getenv("snowflake_jdbccredential");
+		client = new RestClient(username, credential, "http://localhost:8080/appcontainerapp");
+		c = new RepoRestCalls(client);
 		
     	if (c.exists("/testgitservice")) {
     		c.rmdir("/testgitservice");
@@ -37,7 +43,7 @@ public class GitServiceTestIT {
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
 		c.rmdir("/testgitservice");
-		c.close();
+		client.close();
 	}
 	
 	private GitConfig getGitConfig() {

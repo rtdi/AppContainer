@@ -14,8 +14,8 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
@@ -140,9 +140,9 @@ public class DatabaseRecordLookup extends RestService {
 				try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
 					ObjectMapper objectMapper = new ObjectMapper();
 					ObjectNode rootnode = objectMapper.createObjectNode();
+					DateFormat timeformatter = new SimpleDateFormat("HH:mm:ss");
+					DateTimeFormatter timestampformatter = DateTimeFormatter.ISO_INSTANT;
 					try (ResultSet rs = stmt.executeQuery(); ) {
-						DateFormat timeformatter = new SimpleDateFormat("HH:mm:ss");
-						DateTimeFormatter timestampformatter = DateTimeFormatter.ISO_INSTANT;
 						if (rs.next()) {
 				    		for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
 				    			DatabaseQuery.setRestObject(rs, i, rootnode, timeformatter, timestampformatter);

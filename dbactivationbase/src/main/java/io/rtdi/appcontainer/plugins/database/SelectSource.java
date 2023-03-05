@@ -3,15 +3,15 @@ package io.rtdi.appcontainer.plugins.database;
 public class SelectSource {
 	private String schemaname;
 	private String objectname;
-	private String objecttype;
+	private ObjectType objecttype;
 	private String targetschemaname;
 	private String targetobjectname;
-	private String targetobjecttype;
+	private ObjectType targetobjecttype;
 	private String qualifiershort;
 	private String qualifier;
 	
-	public SelectSource(String schemaname, String objectname, String objecttype, String targetschemaname,
-			String targetobjectname, String targetobjecttype, String ownschema) {
+	public SelectSource(String schemaname, String objectname, ObjectType objecttype, String targetschemaname,
+			String targetobjectname, ObjectType targetobjecttype, String ownschema) {
 		super();
 		this.schemaname = schemaname;
 		this.objectname = objectname;
@@ -19,8 +19,8 @@ public class SelectSource {
 		this.targetschemaname = targetschemaname;
 		this.targetobjectname = targetobjectname;
 		this.targetobjecttype = targetobjecttype;
-		if ("PUBLIC".equals(schemaname) && "SYNONYM".equals(objecttype)) {
-			// A public synonym does not get the schema qualifier public.synonymname, just synonymname is enough
+		if ("PUBLIC".equals(schemaname) && objecttype == ObjectType.SYNONYM) {
+			// A public synonym does not get the schema qualifier public.synonymname, just synonym name is enough
 			this.qualifier = objectname;
 			this.qualifiershort = objectname;
 		} else {
@@ -39,7 +39,7 @@ public class SelectSource {
 	public String getObjectname() {
 		return objectname;
 	}
-	public String getObjecttype() {
+	public ObjectType getObjecttype() {
 		return objecttype;
 	}
 	public String getTargetschemaname() {
@@ -48,7 +48,7 @@ public class SelectSource {
 	public String getTargetobjectname() {
 		return targetobjectname;
 	}
-	public String getTargetobjecttype() {
+	public ObjectType getTargetobjecttype() {
 		return targetobjecttype;
 	}
 

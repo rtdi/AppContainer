@@ -12,8 +12,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
 import io.rtdi.appcontainer.repo.CreateCSV;
@@ -185,7 +185,8 @@ public class DatabaseReverseEngineer {
 			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
 			java.nio.file.Path targetpath = RepoService.getEffectivePath(request, path);
 			try (Connection conn = dbprincipal.getConnection();) {
-				int rowcount = CreateCSV.createCSV(conn, sql, targetpath);
+				IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
+				int rowcount = CreateCSV.createCSV(conn, sql, targetpath, provider);
 				return SuccessMessage.createResponseOK(String.format("Data imported, %d rows", rowcount));
 			}
 		} catch (Exception e) {

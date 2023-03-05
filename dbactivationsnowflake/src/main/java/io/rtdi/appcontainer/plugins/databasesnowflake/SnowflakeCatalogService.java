@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.ICatalogService;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
@@ -113,7 +113,7 @@ public class SnowflakeCatalogService implements ICatalogService {
 				+ "      referenced_object_id = prior referencing_object_id\r\n"
 				+ "order by level";
 		String database = conn.getCatalog();
-		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, "TABLE");
+		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, ObjectType.valueOfOrNull("TABLE"));
 		Map<Integer, DatabaseObjectTree> index = new HashMap<>();
 		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
 			stmt.setString(1, name);
@@ -130,10 +130,10 @@ public class SnowflakeCatalogService implements ICatalogService {
 					}
 					DatabaseObjectTree child;
 					if (rs.getString(1).equals(database)) {
-						child = new DatabaseObjectTree(rs.getString(2), rs.getString(3), rs.getString(5));
+						child = new DatabaseObjectTree(rs.getString(2), rs.getString(3), ObjectType.valueOfOrNull(rs.getString(5)));
 					} else {
 						String identifier = '"' + rs.getString(1) + "\".\"" + rs.getString(2) + "\".\"" + rs.getString(3) + '"';
-						child = new DatabaseObjectTree(identifier, rs.getString(5));
+						child = new DatabaseObjectTree(identifier, ObjectType.valueOfOrNull(rs.getString(5)));
 					}
 					referencing.addChild(child);
 					index.put(rs.getInt(4), child);
@@ -155,7 +155,7 @@ public class SnowflakeCatalogService implements ICatalogService {
 				+ "      referencing_object_id = prior referenced_object_id"
 				+ "order by level";
 		String database = conn.getCatalog();
-		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, "TABLE");
+		DatabaseObjectTree tree = new DatabaseObjectTree(schema, name, ObjectType.valueOfOrNull("TABLE"));
 		Map<Integer, DatabaseObjectTree> index = new HashMap<>();
 		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
 			stmt.setString(1, name);
@@ -172,10 +172,10 @@ public class SnowflakeCatalogService implements ICatalogService {
 					}
 					DatabaseObjectTree child;
 					if (rs.getString(6).equals(database)) {
-						child = new DatabaseObjectTree(rs.getString(7), rs.getString(8), rs.getString(10));
+						child = new DatabaseObjectTree(rs.getString(7), rs.getString(8), ObjectType.valueOfOrNull(rs.getString(10)));
 					} else {
 						String identifier = '"' + rs.getString(6) + "\".\"" + rs.getString(7) + "\".\"" + rs.getString(8) + '"';
-						child = new DatabaseObjectTree(identifier, rs.getString(10));
+						child = new DatabaseObjectTree(identifier, ObjectType.valueOfOrNull(rs.getString(10)));
 					}
 					referencing.addChild(child);
 					index.put(rs.getInt(9), child);
@@ -227,7 +227,7 @@ public class SnowflakeCatalogService implements ICatalogService {
 		try (PreparedStatement stmt = conn.prepareStatement(sql);) {
 			try (ResultSet rs = stmt.executeQuery();) {
 				while (rs.next()) {
-					res.add(new SelectSource(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(1), rs.getString(2), rs.getString(3), conn.getSchema()));
+					res.add(new SelectSource(rs.getString(1), rs.getString(2), ObjectType.valueOfOrNull(rs.getString(3)), rs.getString(1), rs.getString(2), ObjectType.valueOfOrNull(rs.getString(3)), conn.getSchema()));
 				}
 				return res;
 			}

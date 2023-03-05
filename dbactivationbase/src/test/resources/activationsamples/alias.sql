@@ -1,0 +1,1 @@
+alter table ${schema1}.TABLE_EXISTS add column (NO_SUCH_COLUMN decimal(5,4));

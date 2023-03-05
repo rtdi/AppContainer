@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,16 +41,16 @@ import com.univocity.parsers.conversions.ObjectConversion;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
-import io.rtdi.appcontainer.DatabaseObjectIdentifier;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.DatabaseObjectIdentifier;
 import io.rtdi.appcontainer.plugins.database.IActivationService;
-import io.rtdi.appcontainer.plugins.database.ICatalogService;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 
-public class CSVImport implements IActivationService {
+public abstract class CSVImport implements IActivationService {
 
 	@Override
 	public ActivationResult activate(File file, Connection conn, GlobalSchemaMapping gm, SQLVariables variables,
-			ICatalogService catalogservice) throws IOException, SQLException {
+			IDatabaseProvider provider) throws IOException, SQLException {
 		ActivationResult result = new ActivationResult(file.toPath(), "CSV file parser");
 		String name = file.getName();
 		int pos = name.lastIndexOf('.');
@@ -75,7 +76,7 @@ public class CSVImport implements IActivationService {
 		} else {
 			conn.commit();
 			result.setActivationSuccess(ActivationSuccess.SUCCESS);
-	    	result.addResult(file.toPath(), "CSV data loaded", null, ActivationSuccess.SUCCESS);
+	    	result.addResult("CSV data loaded", null, ActivationSuccess.SUCCESS);
 		}
 		return result;
 	}
@@ -83,16 +84,14 @@ public class CSVImport implements IActivationService {
 	public static class SQLRowProcessorErrorHandler implements RowProcessorErrorHandler {
 		private int warningcount = 0;
 		private ActivationResult result;
-		private Path path;
 		
 		public SQLRowProcessorErrorHandler(ActivationResult result, Path path) {
 			this.result = result;
-			this.path = path;
 		}
 		
 		@Override
 	    public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
-	    	result.addResult(path, error.getMessage(), null, ActivationSuccess.FAILED);
+	    	result.addResult(error.getMessage(), null, ActivationSuccess.FAILED);
 	    	warningcount++;
 	    	if (warningcount > 20) {
 	    		context.stop();
@@ -113,22 +112,10 @@ public class CSVImport implements IActivationService {
 	 * @param tablename
 	 * @param columnlist
 	 * @param paramlist
+	 * @param databaseMetaData 
 	 * @return a valid SQL or null
 	 */
-	public StringBuilder getUpsertStatement(String owner, String tablename, StringBuilder columnlist, StringBuilder paramlist) {
-		StringBuilder sqlupsert = new StringBuilder();
-		sqlupsert.append("upsert ")
-			.append("\"")
-			.append(owner)
-			.append("\".\"")
-			.append(tablename)
-			.append("\" (")
-			.append(columnlist)
-			.append(") values (")
-			.append(paramlist)
-			.append(") with primary key");
-		return sqlupsert;
-	}
+	public abstract StringBuilder getUpsertStatement(String owner, String tablename, StringBuilder columnlist, StringBuilder paramlist, DatabaseMetaData databaseMetaData);
 	
 	public boolean supportsBigInt() {
 		return true;
@@ -402,7 +389,7 @@ public class CSVImport implements IActivationService {
 					.append(sqlupdateprojection)
 					.append(" where ")
 					.append(sqlwhere);
-				sqlupsert = getUpsertStatement(owner, tablename, columnlist, paramlist);
+				sqlupsert = getUpsertStatement(owner, tablename, columnlist, paramlist, conn.getMetaData());
 				insert = conn.prepareStatement(sqlinsert.toString());
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom("Failed creating the insert statement for this table", e, sqlinsert.toString(), "Are the CSV file headers correct?");

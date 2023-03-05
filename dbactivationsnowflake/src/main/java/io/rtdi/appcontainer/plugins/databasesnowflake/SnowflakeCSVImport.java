@@ -1,11 +1,13 @@
 package io.rtdi.appcontainer.plugins.databasesnowflake;
 
 import java.nio.ByteBuffer;
+import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -14,7 +16,8 @@ import io.rtdi.appcontainer.plugins.activation.CSVImport;
 
 public class SnowflakeCSVImport extends CSVImport {
 
-	public StringBuilder getUpsertStatement(String owner, String tablename, StringBuilder columnlist, StringBuilder paramlist) {
+	@Override
+	public StringBuilder getUpsertStatement(String owner, String tablename, StringBuilder columnlist, StringBuilder paramlist, DatabaseMetaData databaseMetaData) {
 		/*
 		 * Snowflake supports a merge statement but not for individual records. Better to use the fallback of delete-insert.
 		 */
@@ -35,6 +38,10 @@ public class SnowflakeCSVImport extends CSVImport {
 		if (value instanceof ZonedDateTime) {
 			ZonedDateTime dt = (ZonedDateTime) value;
 			Timestamp ts = Timestamp.from(dt.toInstant());
+			stmt.setTimestamp(pos, ts);
+		} else if (value instanceof Instant) {
+			Instant dt = (Instant) value;
+			Timestamp ts = Timestamp.from(dt);
 			stmt.setTimestamp(pos, ts);
 		} else if (value instanceof LocalTime) {
 			Time t = Time.valueOf((LocalTime) value);

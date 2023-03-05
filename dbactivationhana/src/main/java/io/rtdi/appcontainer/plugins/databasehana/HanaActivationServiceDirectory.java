@@ -2,6 +2,7 @@ package io.rtdi.appcontainer.plugins.databasehana;
 
 import java.nio.file.Path;
 
+import io.rtdi.appcontainer.plugins.activation.SQLParser;
 import io.rtdi.appcontainer.plugins.database.ActivationServiceDirectory;
 
 public class HanaActivationServiceDirectory extends ActivationServiceDirectory {
@@ -12,7 +13,7 @@ public class HanaActivationServiceDirectory extends ActivationServiceDirectory {
 
 	@Override
 	protected void addServices() {
-		addService(".sql", new HanaSQLParser());
+		addService(".sql", new SQLParser());
 		addService(".csv", new HanaCSVImport());
 	}
 	

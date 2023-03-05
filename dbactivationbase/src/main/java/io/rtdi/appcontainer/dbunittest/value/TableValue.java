@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 
 import org.graalvm.polyglot.HostAccess;
 
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
+
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -19,8 +21,10 @@ public class TableValue {
 	List<ColumnMetadata> columns = new ArrayList<>();
 	Map<String, ColumnMetadata> columnnameindex = new HashMap<>();
 	Set<TableRow> data = new HashSet<>();
+	private IDatabaseProvider provider;
 
-	public TableValue(ResultSet rs) throws SQLException {
+	public TableValue(ResultSet rs, IDatabaseProvider provider) throws SQLException {
+		this.provider = provider;
 		if (rs.next()) {
 			setMetadata(rs);
 			addRow(rs);
@@ -255,5 +259,9 @@ public class TableValue {
 	public void addColumn(ColumnMetadata c) {
 		columns.add(c);
 		columnnameindex.put(c.getColumnName(), c);
+	}
+
+	public IDatabaseProvider getDatabaseProvider() {
+		return provider;
 	}
 }
