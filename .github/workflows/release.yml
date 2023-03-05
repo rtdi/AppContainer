@@ -17,10 +17,10 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-    - name: Set up JDK 12
+    - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: 12
+        java-version: 17
         distribution: 'adopt'
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
@@ -32,13 +32,6 @@ jobs:
         echo "MVN_PROJECT_VERSION=$MVN_PROJECT_VERSION" >> $GITHUB_ENV
         mvn -DskipTests=true --no-transfer-progress -s $GITHUB_WORKSPACE/settings.xml clean package
         
-#    - name: Build the Docker image
-#      run: docker build . --file docker/Dockerfile --tag rtdi/appcontainer:latest
-#    - name: Login to DockerHub Registry
-#      run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-#    - name: Push the latest Docker image
-#      run: docker push rtdi/appcontainer:latest
-      
     - name: Create Release
       id: create_release
       uses: actions/create-release@master
