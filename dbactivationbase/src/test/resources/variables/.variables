@@ -1,0 +1,5 @@
+{
+  "variables": {
+	"var1" : "decimal(5,4)"
+  }
+}

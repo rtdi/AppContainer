@@ -12,6 +12,6 @@ import io.rtdi.appcontainer.plugins.activation.SQLVariables;
 public interface IActivationService {
 	
 	ActivationResult activate(File file, Connection conn, GlobalSchemaMapping gm,
-			SQLVariables variables, ICatalogService catalogservice) throws IOException, SQLException;
+			SQLVariables variables, IDatabaseProvider provider) throws IOException, SQLException;
 
 }

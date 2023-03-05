@@ -17,7 +17,7 @@ import io.rtdi.appcontainer.plugins.activation.ActivationSuccess;
 import io.rtdi.appcontainer.plugins.activation.GlobalSchemaMapping;
 import io.rtdi.appcontainer.plugins.activation.SQLVariables;
 import io.rtdi.appcontainer.plugins.database.IActivationService;
-import io.rtdi.appcontainer.plugins.database.ICatalogService;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 
 public class JavaScriptExecutor implements IActivationService {
 
@@ -29,22 +29,29 @@ public class JavaScriptExecutor implements IActivationService {
 
 	@Override
 	public ActivationResult activate(File file, Connection conn, GlobalSchemaMapping gm, SQLVariables variables,
-			ICatalogService catalogservice) throws IOException, SQLException {
+			IDatabaseProvider provider) throws IOException, SQLException {
 		String code = Files.readString(file.toPath());
-		ByteArrayOutputStream log = new ByteArrayOutputStream();
-		ActivationResult result = new ActivationResult(file.toPath(), "Executing test");
-		FileSystem fs = FileSystem.newDefaultFileSystem();
-		
-		try (Context context = Context.newBuilder("js").logHandler(log).fileSystem(fs).allowIO(true).build(); ) {
-			Commands commands = new Commands(conn, rootpath);
-			context.getBindings("js").putMember("db", commands);
-            context.eval("js", code);
-            String loginfo = new String(log.toByteArray());
-            result.addResult(null, loginfo, loginfo, ActivationSuccess.SUCCESS);
-            return result;
-        } catch (PolyglotException | IllegalStateException e) {
-        	result.addResult(file.toPath(), e.getMessage(), new String(log.toByteArray()), ActivationSuccess.FAILED);
-        	return result;
-        }
+		try (ByteArrayOutputStream log = new ByteArrayOutputStream();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ByteArrayOutputStream err = new ByteArrayOutputStream();) {
+			ActivationResult result = new ActivationResult(file.toPath(), "Executing test");
+			FileSystem fs = new RestrictedFileSystem(rootpath);
+			
+			try (Context context = Context.newBuilder("js").logHandler(log).out(out).err(err).fileSystem(fs).allowIO(true).build(); ) {
+				Commands commands = new Commands(conn, rootpath, provider);
+				context.getBindings("js").putMember("db", commands);
+	            context.eval("js", code);
+	            @SuppressWarnings("unused")
+				String loginfo = new String(log.toByteArray());
+	            String stdout = new String(out.toByteArray());
+	            String stderr = new String(err.toByteArray());
+	            boolean success = stderr.length() == 0;
+	            result.addResult(stdout, stderr, (success?ActivationSuccess.SUCCESS:ActivationSuccess.FAILED));
+	            return result;
+	        } catch (PolyglotException | IllegalStateException e) {
+	        	result.addResult(e.getMessage(), new String(log.toByteArray()), ActivationSuccess.FAILED);
+	        	return result;
+	        }
+		}
 	}
 }

@@ -99,7 +99,8 @@ public class ActivationService extends RestService {
 		try {
 			java.nio.file.Path targetpath = RepoService.getEffectivePath(request, path);
 			java.nio.file.Path upath = RepoDirectory.getRepoUserDir(request);
-			GlobalSchemaMapping gm = GlobalSchemaMapping.read(upath);
+			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
+			GlobalSchemaMapping gm = GlobalSchemaMapping.read(upath, dbprincipal.getSchema(), dbprincipal.getDBUser());
 			SQLVariables variables = SQLVariables.read(upath);
 			tickRepo();
 			return Response.ok(activate(targetpath, targetpath, gm, variables)).build();
@@ -128,7 +129,7 @@ public class ActivationService extends RestService {
 			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
 			IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 			ActivationServiceDirectory service = provider.getActivationServices(upath);
-			return service.activate(targetpath.toFile(), dbprincipal, gm, parentvariables, provider.getCatalogService());
+			return service.activate(targetpath.toFile(), dbprincipal, gm, parentvariables, provider);
 		} else if (targetpath.toFile().isDirectory()) {
 			/*
 			 * Take the parent variables and add the current directory .variables file - in case such file exists

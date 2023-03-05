@@ -9,7 +9,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.validation.constraints.NotNull;
 
 public class DatabaseProvider {
-	public static final String DATABASE_PROVIDER = "io.rtdi.appcontainer.databaseprovider";
+	public static final String DATABASE_PROVIDER = "io.rtdi.appcontainer.dbactivationbase.databaseprovider";
 
 	/**
 	 * Find the database provider for database specific code with the same jdbc driver name.

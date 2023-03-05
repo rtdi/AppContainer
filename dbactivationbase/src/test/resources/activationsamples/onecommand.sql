@@ -1,0 +1,1 @@
+ALTER SESSION SET X = 1;

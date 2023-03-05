@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.rtdi.appcontainer.AppContainerSQLException;
+import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.ICatalogService;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
@@ -142,17 +142,17 @@ public class HanaCatalogService implements ICatalogService {
 					if (index.size() == 0) {
 						index.put(rs.getString(10), tree);
 						referencing = tree;
-						tree.setType(rs.getString(4));
+						tree.setType(ObjectType.valueOfOrNull(rs.getString(4)));
 						database = rs.getString(1);
 					} else {
 						referencing = index.get(rs.getString(10));
 					}
 					DatabaseObjectTree child;
 					if (rs.getString(5).equals(database)) {
-						child = new DatabaseObjectTree(rs.getString(6), rs.getString(7), rs.getString(8));
+						child = new DatabaseObjectTree(rs.getString(6), rs.getString(7), ObjectType.valueOfOrNull(rs.getString(8)));
 					} else {
 						String identifier = '"' + rs.getString(5) + "\".\"" + rs.getString(6) + "\".\"" + rs.getString(7) + '"';
-						child = new DatabaseObjectTree(identifier, rs.getString(8));
+						child = new DatabaseObjectTree(identifier, ObjectType.valueOfOrNull(rs.getString(8)));
 					}
 					referencing.addChild(child);
 					index.put(rs.getString(11), child);
@@ -188,7 +188,7 @@ public class HanaCatalogService implements ICatalogService {
 				while (rs.next()) {
 					if (index.size() == 0) {
 						index.put(rs.getString(11), tree);
-						tree.setType(rs.getString(8));
+						tree.setType(ObjectType.valueOfOrNull(rs.getString(8)));
 						referencing = tree;
 						database = rs.getString(5);
 					} else {
@@ -196,10 +196,10 @@ public class HanaCatalogService implements ICatalogService {
 					}
 					DatabaseObjectTree child;
 					if (rs.getString(1).equals(database)) {
-						child = new DatabaseObjectTree(rs.getString(2), rs.getString(3), rs.getString(4));
+						child = new DatabaseObjectTree(rs.getString(2), rs.getString(3), ObjectType.valueOfOrNull(rs.getString(4)));
 					} else {
 						String identifier = '"' + rs.getString(1) + "\".\"" + rs.getString(2) + "\".\"" + rs.getString(3) + '"';
-						child = new DatabaseObjectTree(identifier, rs.getString(4));
+						child = new DatabaseObjectTree(identifier, ObjectType.valueOfOrNull(rs.getString(4)));
 					}
 					referencing.addChild(child);
 					index.put(rs.getString(10), child);
@@ -226,7 +226,9 @@ public class HanaCatalogService implements ICatalogService {
 		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
 			try (ResultSet rs = stmt.executeQuery(); ) {
 				while (rs.next()) {
-					res.add(new SelectSource(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), conn.getSchema()));
+					res.add(new SelectSource(rs.getString(1), rs.getString(2), ObjectType.valueOfOrNull(rs.getString(3)),
+							rs.getString(4), rs.getString(5), ObjectType.valueOfOrNull(rs.getString(6)),
+							conn.getSchema()));
 				}
 				return res;
 			}

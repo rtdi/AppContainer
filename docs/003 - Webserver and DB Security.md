@@ -67,5 +67,5 @@ To enable that a [autologin](../appcontainerapp/src/main/java/io/rtdi/appcontain
 
 The logout servlet invalidates the Tomcat session and redirects to the home page.
 
-
+For rest and OData services there is another endpoint `/restlogin` available. It is a `GET` and expects two query parameters: `username` and `password`. If the login was successful a tomcat session is created.
 

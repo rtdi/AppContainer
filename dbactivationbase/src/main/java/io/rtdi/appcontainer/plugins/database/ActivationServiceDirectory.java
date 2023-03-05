@@ -34,14 +34,14 @@ public abstract class ActivationServiceDirectory {
 	}
 
 	public ActivationResult activate(File file, IDatabaseLoginPrincipal dbprincipal, GlobalSchemaMapping gm, SQLVariables variables,
-			ICatalogService catalogservice) throws IOException, SQLException {
+			IDatabaseProvider provider) throws IOException, SQLException {
 		String name = file.getName();
 		for (String key : services.keySet()) {
 			if (name.endsWith(key)) {
 				IActivationService service = services.get(key);
 				if (service != null) {
 					try (Connection conn = dbprincipal.getConnection();) {
-						return service.activate(file, conn, gm, variables, catalogservice);
+						return service.activate(file, conn, gm, variables, provider);
 					}
 				}
 			}

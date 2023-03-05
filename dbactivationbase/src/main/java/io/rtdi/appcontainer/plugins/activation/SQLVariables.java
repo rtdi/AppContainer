@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SQLVariables {
@@ -83,6 +84,7 @@ public class SQLVariables {
 		variables.put(variablename, value);
 	}
 
+	@JsonIgnore
 	public String getValue(String variable) throws SQLException {
 		if (variables == null) {
 			throw new SQLException("No variables are defined but the variable \"" + variable + "\" is requested");

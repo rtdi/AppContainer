@@ -7,7 +7,9 @@ import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
 import io.rtdi.appcontainer.odata.JDBCoDataServiceForSchema;
 import io.rtdi.appcontainer.odata.ODataIdentifier;
 import io.rtdi.appcontainer.rest.RestService;
+import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
+import io.rtdi.appcontainer.utils.Util;
 import jakarta.servlet.ServletException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -39,7 +41,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		@QueryParam("$format")
     		String format
 			) {
-		return super.getODataEntitySets(schemaraw, nameraw, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntitySets(schema, name, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -54,7 +63,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
 			@QueryParam("$format")
     		String format
 			) {
-		return super.getODataMetadata(schemaraw, nameraw, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataMetadata(schema, name, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -82,7 +98,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		String format
 			) {
 		counter.tickOData();
-		return super.getODataEntitySet(schemaraw, nameraw, select, filter, order, top, skip, skiptoken, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntitySet(schema, name, select, filter, order, top, skip, skiptoken, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -102,7 +125,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		String format
 			) {
 		counter.tickOData();
-		return super.getODataEntityRow(schemaraw, nameraw, keys, select, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntityRow(schema, name, keys, select, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -118,7 +148,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		String filter,
     		@QueryParam("$format")
     		String format) {
-		return super.getODataEntitySetCount(schemaraw, nameraw, filter, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntitySetCount(schema, name, filter, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -131,7 +168,13 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		@QueryParam("$format")
     		String format
 			) {
-		return super.getODataEntitySetsForSchema(schemaraw, format);
+		try {
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntitySetsForSchema(schema, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -144,7 +187,13 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
 			@QueryParam("$format")
     		String format
 			) {
-		return super.getODataMetadataForSchema(schemaraw, format);
+		try {
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataMetadataForSchema(schema, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -171,7 +220,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		@QueryParam("$format")
     		String format
 			) {
-		return super.getODataEntitySetForSchema(schemaraw, nameraw, select, filter, order, top, skip, skiptoken, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntitySetForSchema(schema, name, select, filter, order, top, skip, skiptoken, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -190,7 +246,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		@QueryParam("$format")
     		String format
 			) {
-		return super.getODataEntityRowForSchema(schemaraw, nameraw, keys, select, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntityRowForSchema(schema, name, keys, select, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 	@Override
@@ -206,7 +269,14 @@ public class JDBCoDataServiceFacade extends JDBCoDataServiceForSchema {
     		String filter,
     		@QueryParam("$format")
     		String format) {
-		return super.getODataEntitySetCountForSchema(schemaraw, nameraw, filter, format);
+		try {
+			String name = Util.decodeURIfull(nameraw);
+			String schema = Util.decodeURIfull(schemaraw);
+			schema = Util.getSchema(schema, request);
+			return super.getODataEntitySetCountForSchema(schema, name, filter, format);
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
 	}
 
 }

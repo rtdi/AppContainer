@@ -6,6 +6,22 @@
 		<version>${revision}</version>
 	</parent>
 	<artifactId>dbactivationbase</artifactId>
+	<build>
+		<plugins>
+			<plugin>
+			    <groupId>org.antlr</groupId>
+			    <artifactId>antlr4-maven-plugin</artifactId>
+			    <version>4.11.1</version>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>antlr4</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
@@ -34,9 +50,9 @@
 		</dependency>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
-			<artifactId>appcontainerrealm</artifactId>
-			<version>${appcontainer}</version>
-			<scope>provided</scope>
+			<artifactId>dbrealmbase</artifactId>
+			<version>${appcontainerrealm}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
@@ -47,6 +63,29 @@
 		  <groupId>com.fasterxml.jackson.module</groupId>
 		  <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
 		  <version>2.14.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.antlr</groupId>
+		    <artifactId>antlr4-runtime</artifactId>
+		    <version>4.11.1</version>
 		</dependency>
 	</dependencies>
 </project>

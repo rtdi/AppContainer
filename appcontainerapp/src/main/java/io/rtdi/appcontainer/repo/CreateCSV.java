@@ -13,11 +13,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-import io.rtdi.appcontainer.JDBCDataTypeConversion;
+import io.rtdi.appcontainer.dbactivationbase.JDBCDataTypeConversion;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 
 public class CreateCSV {
 	
-	public static int createCSV(Connection conn, String sql, Path targetpath) throws IOException, SQLException {
+	public static int createCSV(Connection conn, String sql, Path targetpath, IDatabaseProvider provider) throws IOException, SQLException {
+		JDBCDataTypeConversion conv = provider.getConversionClass();
 		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
 			try (ResultSet rs = stmt.executeQuery(); ) {
 				// Writer header with column name and JDBCType
@@ -40,7 +42,7 @@ public class CreateCSV {
 							if (i != 0) {
 								out.write(',');
 							}
-							out.write(JDBCDataTypeConversion.format(rs.getObject(i+1), columndatatypes[i]));
+							out.write(conv.convertJDBCToCSV(rs.getObject(i+1), columndatatypes[i]));
 							rowcount++;
 						}
 						out.write("\r\n");

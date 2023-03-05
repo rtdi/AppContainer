@@ -21,10 +21,7 @@ public class Folder {
 	protected String name = null;
 	protected String path = null;
 	protected boolean gitRoot = false;
-
-	private Folder() {
-		super();
-	}
+	protected int filecount = 0;
 
 	public Folder(@NotNull File rootdir) throws IOException {
 		this(rootdir, null);
@@ -33,43 +30,35 @@ public class Folder {
 	/**
 	 * Calls the {@link #Folder(File, String)} but adds the directory itself has the root node of the structure.
 	 * 
-	 * @param dir
-	 * @param relativepath
-	 * @return
+	 * @param dir is supposed to be the developer's directory
+	 * @param relativepath if null it lists all directories within the developer directory
+	 * @return a single folder for the requested directory and a child structure with all the child folders 
 	 * @throws IOException
 	 */
 	public static Folder getFolder(@NotNull File dir, String relativepath) throws IOException {
-		Folder f = new Folder();
-		f.addFolder(new Folder(dir, relativepath));
-		return f;
+		return new Folder(dir, relativepath);
 	}
 	
-	private void addFolder(Folder folder) {
-		if (folders == null) {
-			folders = new ArrayList<>();
-		}
-		folders.add(folder);
-	}
-
 	public Folder(@NotNull File dir, String relativepath) throws IOException {
 		if (!dir.exists()) {
 			throw new IOException("The requested directory \"" + dir.getAbsolutePath() + "\" does not exist");
 		} else if (!dir.isDirectory()) {
 			throw new IOException("The requested path \"" + dir.getAbsolutePath() + "\" exists but is not a directory");
 		}
+		name = dir.getName();
 		if (relativepath == null) {
-			name = dir.getName();
 			path = "";
 		} else {
-			name = dir.getName();
 			path = relativepath;
 		}
+		File[] files = dir.listFiles(FileUtil.PLAINFILEFILTER);
+		filecount = files.length;
 		File gitdir = new File(dir, Constants.DOT_GIT);
 		gitRoot = gitdir.exists();
-		File[] files = dir.listFiles(FileUtil.DIRECTORYFILTER);
-		if (files != null && files.length > 0) {
+		File[] dirs = dir.listFiles(FileUtil.DIRECTORYFILTER);
+		if (dirs != null && dirs.length > 0) {
 			folders = new ArrayList<>();
-			for (File f : files) {
+			for (File f : dirs) {
 				String p;
 				if (path == null || path.length() == 0) {
 					p = f.getName();
@@ -84,11 +73,17 @@ public class Folder {
 	public List<Folder> getFolders() {
 		return folders;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public String getPath() {
 		return path;
+	}
+
+	public int getFilecount() {
+		return filecount;
 	}
 
 }

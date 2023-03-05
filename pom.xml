@@ -31,7 +31,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<revision>0.10.16</revision>
 		<tomcatversion>10.0.13</tomcatversion>
-		<appcontainer>0.9.5</appcontainer>
+		<appcontainerrealm>0.9.10</appcontainerrealm>
 		<log4j.version>2.19.0</log4j.version>
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
 	</properties>
@@ -40,6 +40,9 @@
 	<module>dbactivationbase</module>
 	<module>dbactivationsnowflake</module>
 	<module>dbactivationhana</module>
+	<module>dbactivationsqlserver</module>
+	<module>dbactivationmysql</module>
+	<module>dbactivationpostgresql</module>
 	</modules>
 	<repositories>
 		<repository>

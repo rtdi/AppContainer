@@ -24,10 +24,11 @@ import io.rtdi.appcontainer.plugins.activation.CSVImport.UnivocityDateFormatter;
 import io.rtdi.appcontainer.plugins.activation.CSVImport.UnivocityDateTimeFormatter;
 import io.rtdi.appcontainer.plugins.activation.CSVImport.UnivocityInstantFormatter;
 import io.rtdi.appcontainer.plugins.activation.CSVImport.UnivocityTimeFormatter;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 
 public class ReadCSV {
 
-	public static TableValue execute(String filepathstring, Path basedir, Connection conn) throws SQLException {
+	public static TableValue execute(String filepathstring, Path basedir, Connection conn, IDatabaseProvider provider) throws SQLException {
 		Path p = basedir.resolve(filepathstring);
 		File file = p.toFile();
 		CsvParserSettings settings = new CsvParserSettings();

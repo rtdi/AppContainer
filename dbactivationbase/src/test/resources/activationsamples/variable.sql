@@ -1,0 +1,1 @@
+alter table TABLE_EXISTS add column (NO_SUCH_COLUMN &var1);

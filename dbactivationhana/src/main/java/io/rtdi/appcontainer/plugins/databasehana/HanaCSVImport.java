@@ -1,6 +1,7 @@
 package io.rtdi.appcontainer.plugins.databasehana;
 
 import java.nio.ByteBuffer;
+import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -14,7 +15,8 @@ import io.rtdi.appcontainer.plugins.activation.CSVImport;
 
 public class HanaCSVImport extends CSVImport {
 
-	public StringBuilder getUpsertStatement(String owner, String tablename, StringBuilder columnlist, StringBuilder paramlist) {
+	@Override
+	public StringBuilder getUpsertStatement(String owner, String tablename, StringBuilder columnlist, StringBuilder paramlist, DatabaseMetaData databaseMetaData) {
 		StringBuilder sqlinsert = new StringBuilder();
 		sqlinsert.append("upsert ")
 			.append("\"")

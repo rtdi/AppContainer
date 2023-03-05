@@ -17,7 +17,7 @@ public class Ignore implements IActivationService {
 
 	@Override
 	public ActivationResult activate(File file, Connection conn, GlobalSchemaMapping gm, SQLVariables variables,
-			ICatalogService catalogservice) throws IOException, SQLException {
+			IDatabaseProvider provider) throws IOException, SQLException {
 		return null;
 	}
 

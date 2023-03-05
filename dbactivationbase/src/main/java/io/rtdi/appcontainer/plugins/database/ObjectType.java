@@ -6,6 +6,14 @@ public enum ObjectType {
 	PROCEDURE,
 	SEQUENCE,
 	SYNONYM,
-	FUNCTION
+	FUNCTION;
+	
+	public static ObjectType valueOfOrNull(String type) {
+		try {
+			return ObjectType.valueOf(type);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 }

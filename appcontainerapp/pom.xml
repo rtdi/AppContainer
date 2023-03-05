@@ -17,6 +17,7 @@
 	<properties>
 		<jersey>3.1.0</jersey>
 		<swagger>2.2.7</swagger>
+		<tomcatversion>10.0.13</tomcatversion>
 	</properties>
 	<repositories>
 		<repository>
@@ -64,7 +65,7 @@
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
 			<artifactId>JDBCoData</artifactId>
-			<version>0.1.7</version>
+			<version>0.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -75,6 +76,11 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-nop</artifactId>
+		    <version>2.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -152,12 +158,6 @@
 		</dependency>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
-			<artifactId>appcontainerrealm</artifactId>
-			<version>${appcontainer}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.rtdi.appcontainer</groupId>
 			<artifactId>dbactivationbase</artifactId>
 			<version>${revision}</version>
 		</dependency>
@@ -172,9 +172,96 @@
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>dbactivationsqlserver</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>dbactivationmysql</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>dbactivationpostgresql</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>6.4.0.202211300538-r</version>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>appcontainerrealm</artifactId>
+			<version>${appcontainerrealm}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>snowflakerealm</artifactId>
+			<scope>test</scope>
+			<version>${appcontainerrealm}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.snowflake</groupId>
+			<artifactId>snowflake-jdbc</artifactId>
+			<version>3.13.26</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>hanarealm</artifactId>
+			<version>${appcontainerrealm}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.cloud.db.jdbc</groupId>
+			<artifactId>ngdbc</artifactId>
+			<version>2.15.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>sqlserverrealm</artifactId>
+			<scope>test</scope>
+			<version>${appcontainerrealm}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>11.2.2.jre17</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>mysqlrealm</artifactId>
+			<scope>test</scope>
+			<version>${appcontainerrealm}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>8.0.31</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>postgresqlrealm</artifactId>
+			<scope>test</scope>
+			<version>${appcontainerrealm}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.tomcat.embed</groupId>
+		    <artifactId>tomcat-embed-core</artifactId>
+		    <version>${tomcatversion}</version>
+		    <scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

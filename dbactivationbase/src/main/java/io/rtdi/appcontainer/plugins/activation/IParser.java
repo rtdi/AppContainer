@@ -8,4 +8,6 @@ public interface IParser {
 
 	StringBuilder read(StringBuilder sb, Reader reader, SQLParserContext ctx, ActivationResult result) throws IOException, ActivationException, SQLException;
 
+	String getText();
+
 }
