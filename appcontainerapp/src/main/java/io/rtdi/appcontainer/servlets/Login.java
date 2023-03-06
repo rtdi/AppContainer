@@ -55,7 +55,7 @@ public class Login extends HttpServlet {
 		out.println("<!DOCTYPE html>");
 		out.println("<html style=\"height: 100%;\">");
 		out.println("<head>");
-		out.println("<meta charset=\"ISO-8859-1\">");
+		out.println("<meta charset=\"UTF-8\">");
 		out.println("<title>Login</title>");
 		out.println("<script src=\"" + ui5url + "\"");
 		out.println("	id=\"sap-ui-bootstrap\""); 
@@ -101,13 +101,13 @@ public class Login extends HttpServlet {
 		out.println("<body class='sapUiBody' style=\"height: 100%;\" >");
 		out.println("<form action=\"j_security_check\" method=\"post\">");
 		out.println("    <div id=\"content\">");
-		out.println("        <div>UI5 seems not to be loaded, showing a basic login dialog instead</div>");
+		out.println("        <div id=\"htmllogin\"><div>UI5 seems not to be loaded, showing a basic login dialog instead</div>");
 		out.println("        <label for=\"j_username\"><b>Username</b></label>");
 		out.println("        <input type=\"text\" placeholder=\"Enter Username\" name=\"j_username\" required>");
 		out.println("        <label for=\"j_password\"><b>Password</b></label>");
 		out.println("        <input type=\"password\" placeholder=\"Enter Password\" name=\"j_password\" required>");
 		out.println("        <button type=\"submit\">Login</button>");
-		out.println("    </div>");
+		out.println("    </div></div>");
 		out.println("</form>");
 		out.println("</body>");
 		out.println("</html>");
