@@ -39,15 +39,19 @@ In particular these are:
 
 Attention: A better docker run command is explained in the [Installation](https://github.com/rtdi/AppContainer/blob/master/docs/000%20-%20Installation%20details.md) document.
 
-On any computer capable of running software-containers (aka Docker Images) the image can be downloaded from docker hub
+On any computer or cloud infrastructure capable of running software-containers (aka Docker Images) the image can be downloaded from docker hub
 
     docker pull rtdi/appcontainer:latest-hana
     docker pull rtdi/appcontainer:latest-snowflake
+    docker pull rtdi/appcontainer:latest-sqlserver
+    docker pull rtdi/appcontainer:latest-mysql
+    docker pull rtdi/appcontainer:latest-postgresql
 
 Then the image is started via docker run. Only one parameter must be set, the environment variable JDBCURL. For Hana this consists of the hostname (in this example hana.rtdi.io) and the port number (39015 because the instance number is 90 - pattern is 3<instanceNo>15) and the MDC database name (here HXE). For Snowflake see the [Snowflake JDBC documentation](https://docs.snowflake.com/en/user-guide/jdbc-configure.html#jdbc-driver-connection-string).
 
-Examples:
+### Examples
 
+(Connection strings are not pointing to any actual databases):
 
 Hana:
 
@@ -60,6 +64,24 @@ Snowflake:
     docker run -d -p 80:8080 \
       -e JDBCURL="jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE" \
       rtdi/appcontainer:latest-snowflake
+
+SQLServer/Azure SQL DB:
+
+    docker run -d -p 80:8080 \
+      -e JDBCURL="jdbc:sqlserver://rtdi.database.windows.net:1433;database=rtdi;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;" \
+      rtdi/appcontainer:latest-sqlserver
+
+MySQL:
+
+    docker run -d -p 80:8080 \
+      -e JDBCURL="jdbc:mysql://database-1.abcd.eu-central-1.rds.amazonaws.com:3306/DATA" \
+      rtdi/appcontainer:latest-mysql
+
+PostgreSQL:
+
+    docker run -d -p 80:8080 \
+      -e JDBCURL="jdbc:postgresql://database-1.abcd.eu-central-1.rds.amazonaws.com:5432/" \
+      rtdi/appcontainer:latest-postgresql
 
 From then on the application can be opened with at the URL http://&lt;dockerhostname&gt;/AppContainer/ with a list of applications
 
