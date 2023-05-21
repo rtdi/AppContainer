@@ -127,6 +127,49 @@ public class RepoService {
 	}
 
 	@GET
+	@Path("listall/{path:.*}")
+    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "All files and directories of the user relative to the current path",
+			description = "Returns a files and directories of the currently logged in user starting at {path}",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "The list of directories and files",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(implementation = FileData.class)
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "Repository")
+    public Response listAll(
+   		 @PathParam("path") 
+   		 @Parameter(
+   	    		description = "Path for which to list the files or empty",
+   	    		example = "dir1"
+   	    		)
+   		 String path) {
+		try {
+			java.nio.file.Path targetpath = getEffectivePath(request, path);
+			DirectoryContent files = DirectoryContent.getCompleteDirectoryContent(targetpath.toFile(), path); 
+			return Response.ok(files).build();
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
+	}
+
+	@GET
 	@Path("exists/{path:.*}")
     @Produces(MediaType.APPLICATION_JSON)
 	@Operation(

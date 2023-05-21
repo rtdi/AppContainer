@@ -35,6 +35,6 @@ public interface ICatalogService {
 	String getProcedureDDL(Connection conn, String schema, String name) throws SQLException;
 	DatabaseObjectTree getDependencies(Connection conn, String schema, String name) throws SQLException;
 	DatabaseObjectTree getImpact(Connection conn, String schema, String name) throws SQLException;
-	List<SelectSource> getAllSelectSources(Connection conn) throws SQLException;
+	List<SelectSource> getAllSelectSources(Connection conn, boolean showinternal) throws SQLException;
 	
 }

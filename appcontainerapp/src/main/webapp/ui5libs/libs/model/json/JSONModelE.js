@@ -218,5 +218,19 @@ sap.ui.define([
 				throw "The sPath argument is not a string (" + typeof sPath + ")";
 			}
 		},
+		getLastArrayProperty : function(sPath) {
+			var lastindex = this.getArrayPropertyLength(sPath) - 1;
+			if (lastindex >= 0) {
+				return this.getProperty(sPath + "/" + lastindex);
+			} else {
+				return undefined;
+			} 
+		},
+		enforceEmptyLastArrayProperty : function(sPath, fieldname, obj) {
+			var lastItem = this.getLastArrayProperty(sPath);
+			if (!lastItem || !!lastItem[fieldname]) {
+				this.addArrayProperty(sPath, obj);
+			}
+		}
 	});
 });

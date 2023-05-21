@@ -13,36 +13,7 @@ import io.rtdi.appcontainer.plugins.activation.ActivationResult;
 import io.rtdi.appcontainer.plugins.activation.ActivationSuccess;
 import io.rtdi.appcontainer.plugins.activation.SQLParserContext;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.AliasContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.BeginendContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.BeginstartContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.BlockcommentContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.BquotedContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.CommandblockContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.DeclarestartContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.DirectiveContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.DirectiveconditionContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.DirectiveendContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.DquotedContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.ExtraContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.ForendContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.ForstartContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.IdentifierContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.IfendContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.IfstartContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.LinecommentContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.LoopendContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.LoopstartContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.ParamclauseendContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.ParamclausestartContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.ScriptContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.SemiContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.SquotedContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.StatementContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.TextContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.VariableContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.WhileendContext;
-import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.WhilestartContext;
+import io.rtdi.appcontainer.plugins.databasesqlserver.activation.antlr.SqlscriptsParser.*;
 
 public class SqlScriptsAntlrListener extends SqlscriptsBaseListener {
 	
@@ -317,6 +288,20 @@ public class SqlScriptsAntlrListener extends SqlscriptsBaseListener {
 		if (!result.isSkip()) {
 			text.append(str);
 		}
+	}
+
+	@Override
+	public void enterCasestart(CasestartContext ctx) {
+		addText(ctx);
+	}
+
+	@Override
+	public void enterCaseend(CaseendContext ctx) {
+		addText(ctx);
+	}
+
+	@Override
+	public void enterInlinestatement(InlinestatementContext ctx) {
 	}
 
 }

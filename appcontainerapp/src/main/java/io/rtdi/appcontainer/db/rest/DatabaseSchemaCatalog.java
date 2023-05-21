@@ -331,12 +331,36 @@ public class DatabaseSchemaCatalog {
 					)
             })
 	@Tag(name = "Information")
-    public Response getAllSources() {
+    public Response getAllSources(
+    		@QueryParam("internal")
+   		 	@Parameter(
+ 	    		description = "if present, all internal objects are shown as well, e.g. from SYS",
+ 	    		example = "true"
+ 	    		)
+    		String internal) {
 		try {
 			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
 			IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 			try (Connection conn = dbprincipal.getConnection();) {
-				List<SelectSource> res = provider.getCatalogService().getAllSelectSources(conn);
+				boolean showinternal = false;
+				if (internal != null && internal.equalsIgnoreCase("true")) {
+					showinternal = true;
+				}
+				List<SelectSource> res = provider.getCatalogService().getAllSelectSources(conn, showinternal);
+				/*
+				 * Short qualifiers might not be unique, e.g. there might be a public synonym TABLES and the user creates a new table called TABLES.
+				 * In that case the shortqualifier must be the qualifier.
+				 */
+				Map<String, SelectSource> shortqualifiers = new HashMap<>();
+				for (SelectSource item : res) {
+					SelectSource previousitem = shortqualifiers.get(item.getQualifiershort());
+					if (previousitem != null) {
+						item.setQualifiershort(item.getQualifier());
+						previousitem.setQualifiershort(previousitem.getQualifier());
+					} else {
+						shortqualifiers.put(item.getQualifiershort(), item);
+					}
+				}
 				return Response.ok(res).build();
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "select all view, tables, synonyms", null);

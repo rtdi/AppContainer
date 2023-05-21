@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +22,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.db.rest.entity.SQLText;
+import io.rtdi.appcontainer.db.rest.entity.sql.SqlStatement;
 import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
+import io.rtdi.appcontainer.utils.DatabaseProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,7 +38,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -45,6 +52,8 @@ import jakarta.ws.rs.core.Response;
 @Path("/")
 public class DatabaseQuery extends RestService {
 	protected final Logger log = LogManager.getLogger(this.getClass().getName());
+    final Pattern selectpattern = Pattern.compile("\\s*(select|with)\\s*.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+ 
 
 	@Context
     private Configuration configuration;
@@ -94,10 +103,11 @@ public class DatabaseQuery extends RestService {
 			try (Connection conn = dbprincipal.getConnection();) {
 				if (query == null) {
 					throw new AppContainerSQLException("No parameter $select= provided", query, null);
-				} else if (query.toUpperCase().startsWith("SELECT ")) {
+				} else if (selectpattern.matcher(query).matches()) {
 					try (PreparedStatement stmt = conn.prepareStatement(query);) {
 						ObjectMapper objectMapper = new ObjectMapper();
 						ObjectNode root = objectMapper.createObjectNode();
+						root.put("sql", query);
 						ArrayNode rows = objectMapper.createArrayNode();
 						root.set("rows", rows);
 						DateFormat timeformatter = new SimpleDateFormat("HH:mm:ss");
@@ -138,6 +148,84 @@ public class DatabaseQuery extends RestService {
 					throw new AppContainerSQLException("The provided query parameter does not start with the text \"select\"", query, null);
 				}
 			}
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
+	}
+
+	@POST
+	@Path("query")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Execute a select statement provided as Json from the SQLApp and return the data as Json",
+			description = "It executes the provided Json from the SQLApp and returns the data",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "A json object representing the resultset",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(type = "object")
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "ReadDB")
+    public Response queryJson(SqlStatement query) {
+		try {
+			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
+			IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
+			String sql = provider.createSql(query);
+			return query(sql.trim());
+		} catch (Exception e) {
+			return ErrorMessage.createResponse(e);
+		}
+	}
+
+	@POST
+	@Path("translate")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Convert a select statement provided as Json from the SQLApp and return the SQL text",
+			description = "It converts the provided Json from the SQLApp into a SQL text",
+			responses = {
+					@ApiResponse(
+	                    responseCode = "200",
+	                    description = "A json object representing the resultset",
+	                    content = {
+	                            @Content(
+	                                    schema = @Schema(type = "object")
+	                            )
+	                    }
+                    ),
+					@ApiResponse(
+							responseCode = "400", 
+							description = "Any exception thrown",
+		                    content = {
+		                            @Content(
+		                                    schema = @Schema(implementation = ErrorMessage.class)
+		                            )
+		                    }
+					)
+            })
+	@Tag(name = "ReadDB")
+    public Response querytranslateJson(SqlStatement query) {
+		try {
+			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
+			IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
+			String sql = provider.createSql(query);
+			return Response.ok(new SQLText(sql)).build();
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}

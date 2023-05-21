@@ -18,11 +18,7 @@ sap.ui.define([
 	   			var aCustomData = oControl.getCustomData();
 	   			if (aCustomData) {
 	   				for( var oCustomdata of aCustomData) {
-	   					if (oCustomdata instanceof ui5libs.controls.ODataContainer) {
-	   						var name = oCustomdata.getModelName();
-			   				var oModel = oCustomdata.createNewModel();
-							oControl.setModel(oModel, name, oCustomdata);
-						} else if (oCustomdata instanceof ui5libs.controls.JsonContainer) {
+	   					if (oCustomdata instanceof ui5libs.controls.ModelContainer) {
 	   						var name = oCustomdata.getModelName();
 			   				var oModel = oCustomdata.createNewModel();
 							oControl.setModel(oModel, name, oCustomdata);

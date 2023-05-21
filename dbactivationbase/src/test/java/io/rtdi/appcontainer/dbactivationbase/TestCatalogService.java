@@ -60,7 +60,7 @@ public class TestCatalogService implements ICatalogService {
 	}
 
 	@Override
-	public List<SelectSource> getAllSelectSources(Connection conn) throws SQLException {
+	public List<SelectSource> getAllSelectSources(Connection conn, boolean showinternal) throws SQLException {
 		return null;
 	}
 

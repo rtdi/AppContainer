@@ -1,0 +1,108 @@
+.sqlquery {
+	
+}
+
+.sqlkeyword {
+	margin-left: 5pt;
+	margin-right: 5pt;
+}
+
+.sqlkeywordorderby {
+	font-size: 10pt;
+}
+
+.sqlcollabsiblekeyword {
+	margin-left: 5pt;
+	margin-right: 5pt;
+}
+
+.sqlsubquery {
+	display: block;
+	border: solid black 1pt;
+	margin: 2pt;
+	padding: 2pt;
+}
+.sqlfrom {
+	display: block;
+	border: solid black 1pt;
+	margin: 2pt;
+	padding: 2pt;
+}
+.sqlwhere {
+	display: block;
+	border: solid black 1pt;
+	margin: 2pt;
+	padding: 2pt;
+}
+
+.sqlsubqueryunit {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	align-content: flex-start;
+	justify-content: center;
+}
+
+.sqlprojection {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-left: 10pt;
+}
+
+.sqltable {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	margin-left: 10pt;
+}
+
+.sqljoinconditionunit {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-left: 10pt;
+}
+
+.sqljoinedtable {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-left: 10pt;
+}
+
+.sqljoincondition {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+}
+
+.sqlfromunit {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	margin-left: 10pt;
+}
+
+.sqlwhereunit {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-left: 10pt;
+}
+
+.sqllimit {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-left: 10pt;
+}
+

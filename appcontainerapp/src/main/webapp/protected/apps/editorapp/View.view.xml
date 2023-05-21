@@ -16,6 +16,7 @@
 					<Text id="headertext" />
 					<ToolbarSpacer />
 					<Button icon="sap-icon://save" tooltip="Save" press=".onSave"/>
+					<Button icon="sap-icon://open-folder" tooltip="Load" press=".onLoad"/>
 					<Button icon="sap-icon://activate" tooltip="Activate" press=".onActivate" />
 				</Toolbar>
 			</customHeader>

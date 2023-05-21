@@ -49,8 +49,20 @@ The result is that Java can execute scripts written in the Javascript language a
 This solves multiple problems:
 
 1. The script syntax is not yet another invention specific to this appcontainer but a standardized language - ECMAScript. It is simple enough to learn for such simple test cases and also very popular.
-2. Additional commands are made available to the script, in particular the `db` object. The command `db.query('select * from INFORMATION_SCHEMA.TABLES')` returns a [TableValue](https://git.sbg.ac.at/s1080660/bachelor/-/blob/main/dbactivationbase/src/main/java/io/rtdi/appcontainer/dbunittest/value/TableValue.java) object that represents a result set. This allows interaction with the database in a secure and easy to use way.
+2. Additional commands are made available to the script, in particular the `db` object. The command `db.query('select * from INFORMATION_SCHEMA.TABLES')` returns a [TableValue](https://github.com/rtdi/AppContainer/blob/master/dbactivationbase/src/main/java/io/rtdi/appcontainer/dbunittest/value/TableValue.java) object that represents a result set. This allows interaction with the database in a secure and easy to use way.
 3. With the GraalVM ScriptEngine the security settings can be controller selectively. Which classes and methods of the host are accessible - almost none. What directories, if at all, are accessible. see [Security Guide](https://www.graalvm.org/22.0/security-guide/) of GraalVM.
 4. Implementation of the basic functionality of any script like assigning variable values, calling functions, ... is all available out of the box.
 
-In essence, using JavaScript embedded inside the Tomcat JVM, combines the advantages of Option 3 and Option 2b. The additional test functionality for databases is implemented in the Java host and the scripting benefits from the power of JavaScript. 
+In essence, using JavaScript embedded inside the Tomcat JVM, combines the advantages of Option 3 and Option 2b. The additional test functionality for databases is implemented in the Java host and the scripting benefits from the power of JavaScript.
+
+The way to write test is by either writing to the stderr via `console.err()` for negative test or writing a line starting with `Assertion failed` to the stdout, usually via `console.assert(condition, message);`
+
+
+### Example
+
+Simple test if all records are loaded
+
+    console.assert(db.queryValue('select count(*) as cnt from users') == 30, "USERS table must have 30 records");
+    console.assert(db.queryValue('select count(*) as cnt from projects') == 5, "PROJECTS table must have 5 records");
+    console.assert(db.queryValue('select count(*) as cnt from tasks') == 1000, "TASKS table must have 1000 records");
+    console.log("All tests executed");

@@ -8,6 +8,34 @@
 			"icon": "sap-icon://sap-box"
 		},
 		{
+			"name": "SQL Query Editor",
+			"description": "Create select statements with help",
+			"tooltip": null,
+			"href": "protected/apps/sqlapp",
+			"image": "./public/media/SQLEditor.png"
+		},
+		{
+			"name": "SQL Text Editor",
+			"description": "Freeform SQL text editor",
+			"tooltip": null,
+			"href": "protected/apps/sqltextapp",
+			"image": "./public/media/SQLTextEditor.png"
+		},
+		{
+			"name": "SQL Notebook",
+			"description": "Jupyter like Notebook",
+			"tooltip": null,
+			"href": "protected/apps/sqlnotebook",
+			"image": "./public/media/SQLNotebook.png"
+		},
+		{
+			"name": "Database Explorer",
+			"description": "Walk through the database objects",
+			"tooltip": null,
+			"href": "protected/apps/databaseapp",
+			"image": "./public/media/DatabaseApp.png"
+		},
+		{
 			"name": "Swagger",
 			"description": "Swagger Definitions of all APIs",
 			"tooltip": null,

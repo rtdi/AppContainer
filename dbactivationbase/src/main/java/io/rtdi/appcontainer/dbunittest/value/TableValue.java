@@ -25,7 +25,7 @@ public class TableValue {
 
 	public TableValue(ResultSet rs, IDatabaseProvider provider) throws SQLException {
 		this.provider = provider;
-		if (rs.next()) {
+		if (rs.next()) { // fetch the first row so we have metadata
 			setMetadata(rs);
 			addRow(rs);
 			while (rs.next()) {

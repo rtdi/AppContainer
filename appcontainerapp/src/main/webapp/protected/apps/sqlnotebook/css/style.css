@@ -1,0 +1,12 @@
+
+.notebookcell {
+	margin-left: 5pt;
+	margin-right: 5pt;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	border: 1pt solid black;
+	min-height: 100%;
+	/* resize: both;
+	 overflow: auto; */
+}

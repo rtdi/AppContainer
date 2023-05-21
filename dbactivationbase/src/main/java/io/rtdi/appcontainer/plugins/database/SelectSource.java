@@ -19,12 +19,11 @@ public class SelectSource {
 		this.targetschemaname = targetschemaname;
 		this.targetobjectname = targetobjectname;
 		this.targetobjecttype = targetobjecttype;
+		this.qualifier = schemaname + "." + objectname;
 		if ("PUBLIC".equals(schemaname) && objecttype == ObjectType.SYNONYM) {
 			// A public synonym does not get the schema qualifier public.synonymname, just synonym name is enough
-			this.qualifier = objectname;
 			this.qualifiershort = objectname;
 		} else {
-			this.qualifier = schemaname + "." + objectname;
 			if (ownschema != null && ownschema.equals(schemaname)) { 
 				this.qualifiershort = objectname;
 			} else {
@@ -58,6 +57,10 @@ public class SelectSource {
 
 	public String getQualifier() {
 		return qualifier;
+	}
+
+	public void setQualifiershort(String text) {
+		this.qualifiershort = text;
 	}
 
 }

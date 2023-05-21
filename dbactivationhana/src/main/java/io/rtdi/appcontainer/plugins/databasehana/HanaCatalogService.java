@@ -210,19 +210,36 @@ public class HanaCatalogService implements ICatalogService {
 	}
 
 	@Override
-	public List<SelectSource> getAllSelectSources(Connection conn) throws SQLException {
+	public List<SelectSource> getAllSelectSources(Connection conn, boolean showinternal) throws SQLException {
 		List<SelectSource> res = new ArrayList<>();
+		String filter;
+		String filtersynonymtarget;
+		if (showinternal) {
+			filter = "";
+			filtersynonymtarget = "";
+		} else {
+			filter = " AND schema_name NOT in ('SYS', '_SYS_TASK', '_SYS_STATISTICS', 'UIS', '_SYS_BI', \r\n"
+					+ "'SAP_XS_LM_PE', 'SAP_XS_LM', '_SYS_TELEMETRY', '_SYS_DI', 'HANA_XS_BASE', '_SYS_RT', '_SYS_REPO', '_SYS_AFL', '_SYS_EPM', '_SYS_XS', 'SYS_XS_SBSS',\r\n"
+					+ "'_SYS_AUDIT', '_SYS_SQL_ANALYZER', '_SYS_PLAN_STABILITY', '_SYS_WORKLOAD_REPLAY', '_SYS_SECURITY', 'SAP_REST_API', '_SYS_DATA_ANONYMIZATION', 'SAP_XS_USAGE')\r\n";
+			filtersynonymtarget = "AND object_schema NOT IN ('_SYS_TASK', '_SYS_STATISTICS', 'UIS', '_SYS_BI', \r\n"
+					+ "'SAP_XS_LM_PE', 'SAP_XS_LM', '_SYS_TELEMETRY', '_SYS_DI', 'HANA_XS_BASE', '_SYS_RT', '_SYS_REPO', '_SYS_AFL', '_SYS_EPM', '_SYS_XS', 'SYS_XS_SBSS',\r\n"
+					+ "'_SYS_AUDIT', '_SYS_SQL_ANALYZER', '_SYS_PLAN_STABILITY', '_SYS_WORKLOAD_REPLAY', '_SYS_SECURITY', 'SAP_REST_API', '_SYS_DATA_ANONYMIZATION', 'SAP_XS_USAGE', 'SAP_HANA_IM_DP')\r\n";
+		}
 		String sql = "SELECT schema_name, synonym_name AS object_name, 'SYNONYM' AS object_type, "
 				+ "object_schema AS target_schema, object_name AS target_object_name, object_type as target_object_type "
 				+ "FROM synonyms WHERE is_valid = 'TRUE'\r\n"
+				+ filter
+				+ filtersynonymtarget
 				+ "UNION all\r\n"
 				+ "SELECT schema_name, view_name AS object_name, 'VIEW' AS object_type, "
 				+ "schema_name AS target_schema, view_name AS target_object_name, 'VIEW' as target_object_type "
 				+ "FROM views WHERE is_valid = 'TRUE'\r\n"
+				+ filter
 				+ "UNION ALL \r\n"
 				+ "SELECT schema_name, table_name AS object_name, 'TABLE' AS object_type, "
 				+ "schema_name AS target_schema, table_name AS target_object_name, 'TABLE' as target_object_type "
-				+ "FROM tables WHERE is_temporary = 'FALSE'";
+				+ "FROM tables WHERE is_temporary = 'FALSE'"
+				+ filter;
 		try (PreparedStatement stmt = conn.prepareStatement(sql); ) {
 			try (ResultSet rs = stmt.executeQuery(); ) {
 				while (rs.next()) {
