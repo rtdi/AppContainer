@@ -15,6 +15,7 @@ DECLARE: 'DECLARE' ;
 BEGIN: 'BEGIN' ;
 END: 'END' ;
 IF: 'IF' ;
+CASE: 'CASE' ;
 FOR: 'FOR' ;
 WHILE: 'WHILE' ;
 LOOP: 'LOOP' ;
@@ -27,7 +28,7 @@ BQ: '`' ;
 DOT: '.' ;
 COMMA: ',' ;
 DD: '$$' ;
-WORD: ([A-Z_0-9!#$%&/+:<>=?*@{}] 
+WORD: ([A-Z_0-9!#$%&/+:<>=?*@{}|] 
   | ']' | '[' | '-' | [\u0080-\uFFFF])+ ;
 
 ESC: '\\' . ;
@@ -95,6 +96,16 @@ ifstart:
 ifend:
   END WS+ IF ;
 
+caseblock:
+  casestart inlinestatement* caseend ;
+
+casestart:
+  CASE (NL | WS)+;
+
+caseend:
+  END WS* ;
+
+
 forblock:
   forstart statement* forend ;
 
@@ -152,6 +163,7 @@ command:
   | paramclause
   | beginblock
   | ifblock
+  | caseblock
   | forblock
   | whileblock
   | loopblock
@@ -169,12 +181,19 @@ command:
 commandblock:
   (text | command)* semi extra? ;
 
-// A statement is either a command terminated
+// A statement is semicolon terminated
 statement : 
   linecomment (NL statement?)*
   | blockcomment
   | extra
   | commandblock;
+
+// An inline statement is part of the SQL and not terminated with semi colon, e.g. "case when 1=1 then 5 end into :v1"
+inlinestatement : 
+  linecomment (NL statement?)*
+  | blockcomment
+  | extra
+  | command;
 
 paramclause:
   paramclausestart param_list paramclauseend ;

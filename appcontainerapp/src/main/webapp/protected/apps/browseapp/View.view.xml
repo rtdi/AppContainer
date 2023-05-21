@@ -30,6 +30,7 @@
 		                    <OverflowToolbar>
 		                        <Title id="title" text="Directory for user"/>
 								<ToolbarSpacer />
+								<Button icon="sap-icon://add-folder" tooltip="Add sub folder" press="onAddRootdirectory" />
 		                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
 		                    </OverflowToolbar>
 		                </t:extension>
@@ -85,13 +86,12 @@
 									enabled="{= ${/git} }" />
 								<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull"  
 									enabled="{= ${/git} }"/>
-								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote"  
-									enabled="{= !!${/path} }"/>
+								<Button icon="sap-icon://settings" tooltip="Configure git remote" press="onGitRemote" />
 								<ToolbarSpacer />
-								<Button icon="sap-icon://factory" tooltip="Import" press="onImportSchema" />
+								<Button icon="sap-icon://factory" tooltip="Import" press="onImportSchema" enabled="{= !!${/path} }" />
 								<ToolbarSpacer />
 								<Button icon="sap-icon://add" tooltip="Add new file" press="onAddFile" />
-		                        <Button icon="sap-icon://refresh" tooltip="Refresh file list" press="onFilesRefresh"/>
+		                        <Button icon="sap-icon://refresh" tooltip="Refresh file list" press="onFilesRefresh" />
 		                    </OverflowToolbar>
 		                </t:extension>
 						<t:dragDropConfig>

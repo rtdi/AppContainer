@@ -28,6 +28,9 @@ sap.ui.define([
 		},
 		getValue : function() {
 			return this;
+		},
+		clearData(data) {
+			this.getModel().setData();
 		}
 	});
 });

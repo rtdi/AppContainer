@@ -233,6 +233,42 @@ public class SqlscriptsBaseListener implements SqlscriptsListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCaseblock(SqlscriptsParser.CaseblockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCaseblock(SqlscriptsParser.CaseblockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCasestart(SqlscriptsParser.CasestartContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCasestart(SqlscriptsParser.CasestartContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCaseend(SqlscriptsParser.CaseendContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCaseend(SqlscriptsParser.CaseendContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterForblock(SqlscriptsParser.ForblockContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -420,6 +456,18 @@ public class SqlscriptsBaseListener implements SqlscriptsListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStatement(SqlscriptsParser.StatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInlinestatement(SqlscriptsParser.InlinestatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInlinestatement(SqlscriptsParser.InlinestatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

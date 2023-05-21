@@ -220,7 +220,7 @@ public class MysqlCatalogService implements ICatalogService {
 	}
 
 	@Override
-	public List<SelectSource> getAllSelectSources(Connection conn) throws SQLException {
+	public List<SelectSource> getAllSelectSources(Connection conn, boolean showinternal) throws SQLException {
 		String sql = "select table_schema as schema_name, table_name as object_name, case when table_type = 'BASE TABLE' then 'TABLE' else table_type end as object_type\r\n"
 				+ "from information_schema.tables";
 		List<SelectSource> res = new ArrayList<>();

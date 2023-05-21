@@ -188,6 +188,36 @@ public interface SqlscriptsListener extends ParseTreeListener {
 	 */
 	void exitIfend(SqlscriptsParser.IfendContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SqlscriptsParser#caseblock}.
+	 * @param ctx the parse tree
+	 */
+	void enterCaseblock(SqlscriptsParser.CaseblockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SqlscriptsParser#caseblock}.
+	 * @param ctx the parse tree
+	 */
+	void exitCaseblock(SqlscriptsParser.CaseblockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SqlscriptsParser#casestart}.
+	 * @param ctx the parse tree
+	 */
+	void enterCasestart(SqlscriptsParser.CasestartContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SqlscriptsParser#casestart}.
+	 * @param ctx the parse tree
+	 */
+	void exitCasestart(SqlscriptsParser.CasestartContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SqlscriptsParser#caseend}.
+	 * @param ctx the parse tree
+	 */
+	void enterCaseend(SqlscriptsParser.CaseendContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SqlscriptsParser#caseend}.
+	 * @param ctx the parse tree
+	 */
+	void exitCaseend(SqlscriptsParser.CaseendContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SqlscriptsParser#forblock}.
 	 * @param ctx the parse tree
 	 */
@@ -347,6 +377,16 @@ public interface SqlscriptsListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStatement(SqlscriptsParser.StatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SqlscriptsParser#inlinestatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterInlinestatement(SqlscriptsParser.InlinestatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SqlscriptsParser#inlinestatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitInlinestatement(SqlscriptsParser.InlinestatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SqlscriptsParser#paramclause}.
 	 * @param ctx the parse tree

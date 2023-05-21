@@ -18,6 +18,8 @@ import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsPars
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.BeginstartContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.BlockcommentContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.BquotedContext;
+import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.CaseendContext;
+import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.CasestartContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.CommandblockContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.DeclarestartContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.DirectiveContext;
@@ -30,6 +32,7 @@ import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsPars
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.IdentifierContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.IfendContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.IfstartContext;
+import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.InlinestatementContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.LinecommentContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.LoopendContext;
 import io.rtdi.appcontainer.plugins.databasehana.activation.antlr.SqlscriptsParser.LoopstartContext;
@@ -317,6 +320,20 @@ public class SqlScriptsAntlrListener extends SqlscriptsBaseListener {
 		if (!result.isSkip()) {
 			text.append(str);
 		}
+	}
+
+	@Override
+	public void enterCasestart(CasestartContext ctx) {
+		addText(ctx);
+	}
+
+	@Override
+	public void enterCaseend(CaseendContext ctx) {
+		addText(ctx);
+	}
+
+	@Override
+	public void enterInlinestatement(InlinestatementContext ctx) {
 	}
 
 }

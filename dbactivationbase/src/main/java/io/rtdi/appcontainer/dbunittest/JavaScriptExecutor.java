@@ -1,8 +1,11 @@
 package io.rtdi.appcontainer.dbunittest;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -43,10 +46,25 @@ public class JavaScriptExecutor implements IActivationService {
 	            context.eval("js", code);
 	            @SuppressWarnings("unused")
 				String loginfo = new String(log.toByteArray());
-	            String stdout = new String(out.toByteArray());
 	            String stderr = new String(err.toByteArray());
-	            boolean success = stderr.length() == 0;
-	            result.addResult(stdout, stderr, (success?ActivationSuccess.SUCCESS:ActivationSuccess.FAILED));
+	            /*
+	             * The script can write something to stderr or write the text "Assertion failed" to the stdout via console.assert().
+	             * All these are considered a FAILED.
+	             * Every other output line is returned as SUCCESS.
+	             */
+	            if (stderr.length() != 0 ) {
+		            result.addResult(stderr, "JavaScript wrote something into stderr", ActivationSuccess.FAILED);
+	            }
+	            try (BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray())));) {
+		            for (String line; (line = br.readLine()) != null; ) {
+			            // Example: Assertion failed: PROJECTS table does not have 30 records
+			            result.addResult(line, null, (line.startsWith("Assertion failed")?ActivationSuccess.FAILED:ActivationSuccess.SUCCESS));
+		            }
+	            }
+	            if (result.getChildren() == null || result.getChildren().size() == 0) {
+	            	// If neiter sdtout nor stderr has an output add a dummy success message
+		            result.addResult("No (error) messages produced", null, ActivationSuccess.SUCCESS);
+	            }
 	            return result;
 	        } catch (PolyglotException | IllegalStateException e) {
 	        	result.addResult(e.getMessage(), new String(log.toByteArray()), ActivationSuccess.FAILED);

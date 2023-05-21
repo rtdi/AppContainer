@@ -290,4 +290,18 @@ public class SqlScriptsAntlrListener extends SqlscriptsBaseListener {
 		}
 	}
 
+	@Override
+	public void enterCasestart(CasestartContext ctx) {
+		addText(ctx);
+	}
+
+	@Override
+	public void enterCaseend(CaseendContext ctx) {
+		addText(ctx);
+	}
+
+	@Override
+	public void enterInlinestatement(InlinestatementContext ctx) {
+	}
+
 }

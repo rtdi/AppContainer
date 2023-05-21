@@ -46,7 +46,7 @@ public class FileUtil {
 	
 		@Override
 		public boolean accept(File file) {
-			return file.isFile();
+			return file.isFile() && !file.getName().equals(".securestore");
 		}
 		
 	}

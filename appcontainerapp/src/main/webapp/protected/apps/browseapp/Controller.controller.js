@@ -2,8 +2,9 @@ sap.ui.define([
 	"ui5libs/controls/Controller",
 	"ui5libs/ui5ajax",
 	"ui5libs/errorfunctions",
+	"ui5libs/helperfunctions",
 	"ui5libs/controls/ActivationResultDialog"],
-function(Controller, ui5ajax, errorfunctions) {
+function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 	"use strict";
 	var thisControl;
 	return Controller.extend("io.rtdi.appcontainer.browseapp.Controller", {
@@ -12,17 +13,11 @@ function(Controller, ui5ajax, errorfunctions) {
 			thisControl = this;
 		},
 		formatterEditorLink: function(spath) {
-			if (!spath) {
-				return "";
-			} else if (spath.endsWith(".view.xml")) {
-				return "../editorapp/uieditorapp/index.html?filename=" + encodeURI(spath);
-			} else {
-				return "../editorapp/index.html?filename=" + encodeURI(spath);
-			}
+			return helperfunctions.getNativeEditorLink(spath);
 		},
 		formatterEnableEditor: function(spath) {
 			var seditorlink = this.formatterEditorLink(spath);
-			if (seditorlink && seditorlink.length > 0 && !seditorlink.startsWith("../editorapp/index.html")) {
+			if (!!seditorlink) {
 				return true;
 			} else {
 				return false;
@@ -57,9 +52,10 @@ function(Controller, ui5ajax, errorfunctions) {
 			if (oBrowseTreeModel) {
 				oBrowseTreeModel.reload();
 			}
-			var oFilesModel = this.getView().byId("idFiles").data("model");
-			if (oFilesModel) {
-				oFilesModel.reload();
+			var oModelContainer = this.getView().byId("idFiles").data("model");
+			if (oModelContainer) {
+				oModelContainer.setUrl(sap.ui.require.toUrl("ui5rest/repo/files"));
+				oModelContainer.reload();
 			}
 		},
 		onSelectDir : function(oEvent) {
@@ -119,6 +115,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			};
 			this.showRenameDialog(oDataExchange);
 		},
+
 		doCallAddSubDir : function(oDataExchange) {
 			var oModel = thisControl.getView().byId("idBrowseTree").getModel();
 			var aFiles = oModel.getProperty("/files");
@@ -134,7 +131,7 @@ function(Controller, ui5ajax, errorfunctions) {
 							oCurrentSubDirs.push(oEntry);
 						}
 						oModel.setProperty(sParentPath + "/folders", oCurrentSubDirs);
-						// There does not seem to be a better way then iterating over all
+						// There does not seem to be a better way other than iterating over all
 						var oTable = thisControl.getView().byId("idBrowseTree");
 						for (var i=0; i<oTable.getRows().length; i++) {
 							var oBinding = oTable.getRows()[i].getBindingContext();
@@ -143,6 +140,7 @@ function(Controller, ui5ajax, errorfunctions) {
 								var v = oModel.getProperty(sBindingPath);
 								if (sBindingPath === oDataExchange.parentpath) {
 					            	oTable.expand(i);
+					            	oTable.setSelectedIndex(oTable.getRows()[i].getIndex());
 					            }
 					        }
 				        }
@@ -152,13 +150,24 @@ function(Controller, ui5ajax, errorfunctions) {
 					}
 				);
 		},
+		onAddRootdirectory : function(oEvent) {
+			var oDataExchange = {
+				"currentname": "newproject",
+				"currentpath" : "newproject",
+				"callback" : this.doCallAddSubDir,
+				"create": true,
+				"parentpath" : ""
+			};
+			this.showRenameDialog(oDataExchange);
+		},
 		onRenameDirectory : function(oEvent) {
 			var oControl = oEvent.getSource();
 			var oContext = oControl.getBindingContext();
 			var sModelPath = oContext.getPath();
 			var oModel = oControl.getModel();
 			var oDir = oModel.getProperty(sModelPath);
-			var oDataExchange = { "currentname": oDir.name, "currentpath" : oDir.path, "callback" : this.doRenameDirectory, "modelpath" : sModelPath, create: false};
+			var oRow = oControl.getParent().getParent(); // control is inside a cell inside a row
+			var oDataExchange = { "currentname": oDir.name, "currentpath" : oDir.path, "callback" : this.doRenameDirectory, "modelpath" : sModelPath, create: false, row: oRow};
 			this.showRenameDialog(oDataExchange);
 		},
 		doRenameDirectory : function(oDataExchange) {
@@ -183,6 +192,9 @@ function(Controller, ui5ajax, errorfunctions) {
 							}
 						};
 						swappath(oDataExchange.modelpath, oModel, oDataExchange.currentpath.length, oDataExchange.newpath);
+						if (oDataExchange.row) {
+							oFilesControl.setSelectedIndex(oDataExchange.row.getIndex());
+						}
 					}, 
 					error => {
 						errorfunctions.addError(thisControl.getView(), error);
@@ -204,7 +216,9 @@ function(Controller, ui5ajax, errorfunctions) {
 						data => {
 							oFolders.splice(index, 1);
 							oModel.setProperty(sFoldersPath, oFolders);
-							thisControl.getView().byId("idFiles").getModel().setData(null); // empty model for files
+							var oModelContainer = thisControl.getView().byId("idFiles").data("model");
+							oModelContainer.setUrl(sap.ui.require.toUrl("ui5rest/repo/files"));
+							oModelContainer.reload();
 						}, 
 						error => {
 							errorfunctions.addError(thisControl.getView(), error);
@@ -288,7 +302,7 @@ function(Controller, ui5ajax, errorfunctions) {
 			
 			if (oSourceRow.folders === undefined) {
 				// dropped a file
-				ui5ajax.postJsonObject("/repo/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name}, "ui5rest")
+				ui5ajax.postJsonObject("/repo/mv/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name}, "ui5rest")
 					.then(
 						data => {
 				    		/*
@@ -311,7 +325,7 @@ function(Controller, ui5ajax, errorfunctions) {
 					);
 			} else {
 				// dropped a directory				
-				ui5ajax.postJsonObject("/repo/mvfile/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name }, "ui5rest")
+				ui5ajax.postJsonObject("/repo/mv/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name }, "ui5rest")
 					.then(
 						data => {
 				    		/*
@@ -429,9 +443,9 @@ function(Controller, ui5ajax, errorfunctions) {
 							new sap.m.Label({text: "Username (*)"}),
 							new sap.m.Input({id: "dialogusername", value: "{/username}"}),
 							new sap.m.Label({text: "Password"}),
-							new sap.m.Input({id: "dialogpassword", value: "{/password}"}),
+							new sap.m.Input({id: "dialogpassword", value: "{/password}", type: "Password"}),
 							new sap.m.Label({text: "Token"}),
-							new sap.m.Input({id: "dialogtoken", value: "{/token}"}),
+							new sap.m.Input({id: "dialogtoken", value: "{/token}", type: "Password"}),
 							new sap.m.Label({text: "email (*)"}),
 							new sap.m.Input({id: "email", value: "{/email}"}),
 							new sap.m.Text({text: "(*) Mandatory input"})
@@ -447,13 +461,12 @@ function(Controller, ui5ajax, errorfunctions) {
 									errorfunctions.uiError(that.getView(), "Username not set");
 								} else if (!oModel.getProperty("/email")) {
 									errorfunctions.uiError(that.getView(), "email not set");
-								} else if (!oModel.getProperty("/password") && !oModel.getProperty("/token")) {
-									errorfunctions.uiError(that.getView(), "either password or token must be set");
 								}
 								ui5ajax.postJsonModel("/git/gitconfig/" + sPath, oModel, "ui5rest")
 									.then(
 										data => {
 											that.oGitSettingDialog.close();
+											that.onDirectoryRefresh();
 										},
 										error => {
 											errorfunctions.addError(thisControl.getView(), error);

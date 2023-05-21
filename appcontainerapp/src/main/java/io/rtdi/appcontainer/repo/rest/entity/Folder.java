@@ -3,6 +3,7 @@ package io.rtdi.appcontainer.repo.rest.entity;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Constants;
@@ -45,27 +46,32 @@ public class Folder {
 		} else if (!dir.isDirectory()) {
 			throw new IOException("The requested path \"" + dir.getAbsolutePath() + "\" exists but is not a directory");
 		}
-		name = dir.getName();
 		if (relativepath == null) {
+			/*
+			 * When the actual root directory is queried, nest the data into one more level, because the lowest node is not rendered
+			 */
+			folders = Collections.singletonList(new Folder(dir, "."));
 			path = "";
+			name = "ROOT";
 		} else {
+			name = dir.getName();
 			path = relativepath;
-		}
-		File[] files = dir.listFiles(FileUtil.PLAINFILEFILTER);
-		filecount = files.length;
-		File gitdir = new File(dir, Constants.DOT_GIT);
-		gitRoot = gitdir.exists();
-		File[] dirs = dir.listFiles(FileUtil.DIRECTORYFILTER);
-		if (dirs != null && dirs.length > 0) {
-			folders = new ArrayList<>();
-			for (File f : dirs) {
-				String p;
-				if (path == null || path.length() == 0) {
-					p = f.getName();
-				} else {
-					p = path + "/" + f.getName();
+			File[] files = dir.listFiles(FileUtil.PLAINFILEFILTER);
+			filecount = files.length;
+			File gitdir = new File(dir, Constants.DOT_GIT);
+			gitRoot = gitdir.exists();
+			File[] dirs = dir.listFiles(FileUtil.DIRECTORYFILTER);
+			if (dirs != null && dirs.length > 0) {
+				folders = new ArrayList<>();
+				for (File f : dirs) {
+					String p;
+					if (path == null || path.length() == 0) {
+						p = f.getName();
+					} else {
+						p = path + "/" + f.getName();
+					}
+					folders.add(new Folder(f, p));
 				}
-				folders.add(new Folder(f, p));
 			}
 		}
 	}
