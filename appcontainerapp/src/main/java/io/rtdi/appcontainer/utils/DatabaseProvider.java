@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import jakarta.servlet.ServletContext;
 import jakarta.validation.constraints.NotNull;
 
 public class DatabaseProvider {
 	public static final String DATABASE_PROVIDER = "io.rtdi.appcontainer.dbactivationbase.databaseprovider";
+	private static final Logger log = LogManager.getLogger(DatabaseProvider.class);
 
 	/**
 	 * Find the database provider for database specific code with the same jdbc driver name.
@@ -26,10 +30,13 @@ public class DatabaseProvider {
 		if (ctx.getAttribute(DATABASE_PROVIDER) == null) {
 			ServiceLoader<IDatabaseProvider> services = ServiceLoader.load(IDatabaseProvider.class);
 			Iterator<IDatabaseProvider> iter = services.iterator();
+			log.info("Trying to find the AppContainer's specific DatabaseProvider from {}", jdbcdrivername);
 			while (iter.hasNext()) {
 				IDatabaseProvider candidate = iter.next();
+				log.info("Found candidate class {} handling the jdbc driver name {}", services.getClass().getSimpleName(), candidate.getJDBCDriverName());
 				if (candidate.getJDBCDriverName().equals(jdbcdrivername)) {
 					ctx.setAttribute(DATABASE_PROVIDER, candidate);
+					log.info("Take it!");
 					return candidate;
 				}
 			}

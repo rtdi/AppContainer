@@ -1,9 +1,10 @@
 sap.ui.define([
 	'sap/ui/core/Control',
+	"ui5libs/ui5ajax",
 	'ui5app/controls/JoinCondition',
 	'ui5app/libs/SharedFunctions',
 	'ui5libs/helperfunctions'
-], function(Control, JoinCondition, SharedFunctions, helperfunctions) {
+], function(Control, ui5ajax, JoinCondition, SharedFunctions, helperfunctions) {
 	/*
 	  A TableExpression is a tables with join clause
 	  
@@ -12,13 +13,6 @@ sap.ui.define([
 		metadata : {
 			properties : {
 				joinVisible: {type: "boolean" },
-				schemaname: {type: "string" },
-				objectname: {type: "string" },
-				objecttype: {type: "string" },
-				targetschemaname: {type: "string" },
-				targetobjectname: {type: "string" },
-				targetobjecttype: {type: "string" },
-				table: {type: "string" },
 			},
 			aggregations : {
 				_table : {
@@ -110,13 +104,16 @@ sap.ui.define([
 			return this.getParent().getTableSuggestion(qualifier);
 		},
 		addColumnSuggestions : function(text, model, rankfunction) {
-			var columnmodel = this.getModel("columns");
-			if (columnmodel) {
+			if (this.getTable()) {
+				// TableExpressions without a tablename can be ignored. These are extra lines and tables that have been deleted
+				var columnmodel = this.getModel();
 				var qualifier = this.getAlias();
 				if (!qualifier) {
-					qualifier = SharedFunctions.minimalQuotedStringOf(this.getObjectname(), undefined, undefined);
+					qualifier = SharedFunctions.minimalQuotedStringOf(this.getTable(), undefined, undefined);
 				}
-				for (var item of columnmodel.getProperty("/")) {
+				var oContext = this.getBindingContext();
+				var sPath = oContext.getPath();
+				for (var item of columnmodel.getProperty(sPath + "/columns")) {
 					var rank = rankfunction.call(this, text, item);
 					if (rank > 0) {
 						model.addArrayProperty("/", { qualifiershort: qualifier + "." + SharedFunctions.minimalQuotedStringOf(item.name, undefined, undefined), match: rank, name: item.name } );
@@ -157,29 +154,28 @@ sap.ui.define([
 							]
 					);
 				}
-				tableexpressioncontrol.refreshTable(selected);
+				tableexpressioncontrol.refreshTable(selected, sPath);
 			}
 		},
-		refreshTable : function(tablename) {
+		refreshTable : function(tablename, frompath) {
 			if (tablename) {
-				var columnmodel = this.getModel("columns");
-				if (!columnmodel) {
-					columnmodel = new sap.ui.model.json.JSONModel();
-					this.setModel(columnmodel, "columns");
-				}
+				var columnmodel = this.getModel();
 				var selectedrow = this.getTableSuggestion(tablename);
 				if (selectedrow) {
 					if (selectedrow.objecttype === "CTE") {
-						columnmodel.setData(this.getSubQueryColumns(selectedrow.qualifier))
+						columnmodel.setProperty("columns", this.getSubQueryColumns(selectedrow.qualifier))
 					} else {
-						this.setSchemaname(selectedrow.schemaname);
-						this.setObjectname(selectedrow.objectname);
-						this.setObjecttype(selectedrow.objecttype);
-						this.setTargetschemaname(selectedrow.targetschemaname);
-						this.setTargetobjectname(selectedrow.targetobjectname);
-						this.setTargetobjecttype(selectedrow.targetobjecttype);
-						columnmodel.loadData("../../rest/catalog/schemas/" + helperfunctions.encodeURIfull(selectedrow.targetschemaname) 
-								+ "/" + helperfunctions.encodeURIfull(selectedrow.targetobjectname) + "/columns");
+						ui5ajax.getJsonString("/catalog/schemas/"
+							+ helperfunctions.encodeURIfull(selectedrow.targetschemaname) + "/"
+							+ helperfunctions.encodeURIfull(selectedrow.targetobjectname) + "/columns", "ui5rest")
+							.then(
+								data => {
+									columnmodel.setProperty(frompath + "/columns", JSON.parse(data.text));
+								},
+								error => {
+									errorfunctions.uiError(view, error);
+								}
+							);
 					}
 				}
 			}

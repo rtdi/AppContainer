@@ -2,6 +2,7 @@ package io.rtdi.appcontainer.db.rest.entity.sql;
 
 import java.util.List;
 
+import io.rtdi.appcontainer.db.rest.entity.Column;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 
 /**
@@ -20,6 +21,7 @@ public class TableExpression extends PrettyPrint {
 	private String value;
 	private Boolean joinVisible; 
 	private List<JoinCondition> on;
+	private List<Column> columns;
 	private String alias;
 	
 	public String getJointype() {
@@ -90,5 +92,11 @@ public class TableExpression extends PrettyPrint {
 			}
 		}
 		return sb.toString();
+	}
+	public List<Column> getColumns() {
+		return columns;
+	}
+	public void setColumns(List<Column> columns) {
+		this.columns = columns;
 	}
 }
