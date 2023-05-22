@@ -28,9 +28,10 @@ public class DatabaseProvider {
 	 */
 	public synchronized static IDatabaseProvider getDatabaseProvider(@NotNull ServletContext ctx, String jdbcdrivername) throws IOException {
 		if (ctx.getAttribute(DATABASE_PROVIDER) == null) {
-			ServiceLoader<IDatabaseProvider> services = ServiceLoader.load(IDatabaseProvider.class);
+			ClassLoader classLoader = DatabaseProvider.class.getClassLoader();
+			ServiceLoader<IDatabaseProvider> services = ServiceLoader.load(IDatabaseProvider.class, classLoader);
 			Iterator<IDatabaseProvider> iter = services.iterator();
-			log.info("Trying to find the AppContainer's specific DatabaseProvider from {}", jdbcdrivername);
+			log.info("Trying to find the AppContainer's specific DatabaseProvider for {}", jdbcdrivername);
 			while (iter.hasNext()) {
 				IDatabaseProvider candidate = iter.next();
 				log.info("Found candidate class {} handling the jdbc driver name {}", services.getClass().getSimpleName(), candidate.getJDBCDriverName());
