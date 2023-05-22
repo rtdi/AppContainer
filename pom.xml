@@ -30,7 +30,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<revision>0.11.2</revision>
-		<tomcatversion>10.0.13</tomcatversion>
+		<tomcatversion>10.0.14</tomcatversion>
 		<appcontainerrealm>0.9.12</appcontainerrealm>
 		<log4j.version>2.19.0</log4j.version>
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
