@@ -62,7 +62,7 @@ Hana:
 Snowflake:
 
     docker run -d -p 80:8080 \
-      -e JDBCURL="jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE" \
+      -e JDBCURL="jdbc:snowflake://tn0815.eu-central-1.snowflakecomputing.com/?db=MYDATABASE&schema=public&JDBC_QUERY_RESULT_FORMAT=JSON" \
       rtdi/appcontainer:latest-snowflake
 
 SQLServer/Azure SQL DB:

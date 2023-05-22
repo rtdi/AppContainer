@@ -4,7 +4,7 @@ LABEL maintainer="info@rtdi.io"
 
 ADD https://github.com/rtdi/AppContainerRealm/releases/latest/download/dbrealmbase.jar ./lib
 ADD https://github.com/rtdi/AppContainerRealm/releases/latest/download/hanarealm.jar ./lib
-ADD https://repo1.maven.org/maven2/com/sap/cloud/db/jdbc/ngdbc/2.15.8/ngdbc-2.15.8.jar ./lib
+ADD https://repo1.maven.org/maven2/com/sap/cloud/db/jdbc/ngdbc/2.16.14/ngdbc-2.16.14.jar ./lib
 ADD https://raw.githubusercontent.com/rtdi/AppContainer/master/docker/server-hana.xml conf/server.xml
 ADD https://github.com/rtdi/AppContainer/releases/latest/download/AppContainer.war ./webapps/
 

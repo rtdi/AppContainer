@@ -29,9 +29,9 @@
 	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<revision>0.11.0</revision>
+		<revision>0.11.1</revision>
 		<tomcatversion>10.0.13</tomcatversion>
-		<appcontainerrealm>0.9.11</appcontainerrealm>
+		<appcontainerrealm>0.9.12</appcontainerrealm>
 		<log4j.version>2.19.0</log4j.version>
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
 	</properties>

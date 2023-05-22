@@ -24,7 +24,7 @@ sap.ui.define([
 			} else if (spath.endsWith(".nb.json")) {
 				return "../sqlnotebook/index.html?filename=" + encodeURI(spath);
 			} else {
-				return "../editorapp/index.html?filename=" + encodeURI(spath);
+				return "";
 			}
 		}
    	};   	

@@ -12,6 +12,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.db.rest.entity.Column;
+import io.rtdi.appcontainer.db.rest.entity.SchemaDefinition;
+import io.rtdi.appcontainer.db.rest.entity.SourceDetails;
 import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
@@ -367,114 +370,6 @@ public class DatabaseSchemaCatalog {
 			}
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
-		}
-	}
-
-	public static class SchemaDefinition {
-		private String schemaname;
-		
-		public SchemaDefinition(String schemaname) {
-			this.schemaname = schemaname;
-		}
-
-		public String getSchemaname() {
-			return schemaname;
-		}
-	
-		public String getName() {
-			return schemaname;
-		}
-	}
-	
-	public static class SourceDetails {
-		private String objectname;
-		private String objecttype;
-		private String comment;
-		private String schema;
-		
-		public SourceDetails(String schema, String objectname, String objecttype, String comment) {
-			this.objectname = objectname;
-			this.objecttype = objecttype;
-			this.comment = comment;
-			this.schema = schema;
-		}
-
-		public String getObjectname() {
-			return objectname;
-		}
-
-		public String getName() {
-			return objectname;
-		}
-
-		public String getObjecttype() {
-			return objecttype;
-		}
-
-		public String getComment() {
-			return comment;
-		}
-
-		public String getSchema() {
-			return schema;
-		}
-
-	}
-	
-	public static class Column {
-		private String name;
-		private String datatype;
-		private Boolean notnull;
-		private int position;
-		private Integer pkindex;
-		private String comment;
-		private Integer precision;
-		private Integer length;
-		
-		public Column(String name, String datatype, Integer length, Integer precision, Boolean notnull, int position, String comment) {
-			this.name = name;
-			this.datatype = datatype;
-			this.notnull = notnull;
-			this.position = position;
-			this.comment = comment;
-			this.length = length;
-			this.precision = precision;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getDatatype() {
-			return datatype;
-		}
-
-		public Boolean getNotnull() {
-			return notnull;
-		}
-
-		public int getPosition() {
-			return position;
-		}
-
-		public Integer getPkindex() {
-			return pkindex;
-		}
-		
-		public void setPkindex(Integer pos) {
-			this.pkindex = pos;
-		}
-
-		public String getComment() {
-			return comment;
-		}
-
-		public Integer getPrecision() {
-			return precision;
-		}
-
-		public Integer getLength() {
-			return length;
 		}
 	}
 
