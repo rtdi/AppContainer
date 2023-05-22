@@ -1,13 +1,16 @@
 package io.rtdi.appcontainer.utils;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.ServiceLoader;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
+import io.rtdi.appcontainer.plugins.databasehana.HanaProvider;
+import io.rtdi.appcontainer.plugins.databasemysql.MysqlProvider;
+import io.rtdi.appcontainer.plugins.databasepostgresql.PostgresqlProvider;
+import io.rtdi.appcontainer.plugins.databasesnowflake.SnowflakeProvider;
+import io.rtdi.appcontainer.plugins.databasesqlserver.SqlserverProvider;
 import jakarta.servlet.ServletContext;
 import jakarta.validation.constraints.NotNull;
 
@@ -28,8 +31,24 @@ public class DatabaseProvider {
 	 */
 	public synchronized static IDatabaseProvider getDatabaseProvider(@NotNull ServletContext ctx, String jdbcdrivername) throws IOException {
 		if (ctx.getAttribute(DATABASE_PROVIDER) == null) {
-			ClassLoader classLoader = DatabaseProvider.class.getClassLoader();
-			ServiceLoader<IDatabaseProvider> services = ServiceLoader.load(IDatabaseProvider.class, classLoader);
+			IDatabaseProvider provider = null;
+			switch (jdbcdrivername) {
+			case HanaProvider.JDBC_DRIVER: provider = new HanaProvider(); break;
+			case MysqlProvider.JDBC_DRIVER: provider = new MysqlProvider(); break;
+			case PostgresqlProvider.JDBC_DRIVER: provider = new PostgresqlProvider(); break;
+			case SnowflakeProvider.JDBC_DRIVER: provider = new SnowflakeProvider(); break;
+			case SqlserverProvider.JDBC_DRIVER: provider = new SqlserverProvider(); break;
+			}
+			if (provider != null) {
+				ctx.setAttribute(DATABASE_PROVIDER, provider);
+				log.info("Using provider {} for jdbc driver name {}", provider.getClass().getSimpleName(), jdbcdrivername);
+				return provider;
+			}
+			/*
+			 * The ServiceLoader work from within the development environment but not packaged inside a war and deployed in tomcat.
+			 * No services found then.
+			 */
+			/* ServiceLoader<IDatabaseProvider> services = ServiceLoader.load(IDatabaseProvider.class);
 			Iterator<IDatabaseProvider> iter = services.iterator();
 			log.info("Trying to find the AppContainer's specific DatabaseProvider for {}", jdbcdrivername);
 			while (iter.hasNext()) {
@@ -40,7 +59,7 @@ public class DatabaseProvider {
 					log.info("Take it!");
 					return candidate;
 				}
-			}
+			} */
 			// Should not be reached
 			throw new IOException("Cannot find a service loader for the database");
 		} else {
