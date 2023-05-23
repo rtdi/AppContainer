@@ -29,7 +29,7 @@
 	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<revision>0.11.4</revision>
+		<revision>0.11.5</revision>
 		<tomcatversion>10.0.14</tomcatversion>
 		<appcontainerrealm>0.9.12</appcontainerrealm>
 		<log4j.version>2.19.0</log4j.version>

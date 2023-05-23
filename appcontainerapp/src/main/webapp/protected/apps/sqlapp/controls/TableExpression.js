@@ -108,11 +108,12 @@ sap.ui.define([
 				// TableExpressions without a tablename can be ignored. These are extra lines and tables that have been deleted
 				var columnmodel = this.getModel();
 				var qualifier = this.getAlias();
-				if (!qualifier) {
-					qualifier = SharedFunctions.minimalQuotedStringOf(this.getTable(), undefined, undefined);
-				}
 				var oContext = this.getBindingContext();
 				var sPath = oContext.getPath();
+				if (!qualifier) {
+					var tabledetails = this.getModel().getProperty(sPath + "/metadata");
+					qualifier = SharedFunctions.minimalQuotedStringOf(tabledetails.objectname, undefined, undefined);
+				}
 				for (var item of columnmodel.getProperty(sPath + "/columns")) {
 					var rank = rankfunction.call(this, text, item);
 					if (rank > 0) {
@@ -171,6 +172,7 @@ sap.ui.define([
 							.then(
 								data => {
 									columnmodel.setProperty(frompath + "/columns", JSON.parse(data.text));
+									columnmodel.setProperty(frompath + "/metadata", Object.assign({}, selectedrow) );
 								},
 								error => {
 									errorfunctions.uiError(view, error);

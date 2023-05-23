@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Tomcat shows this page in case the login did not succeed.
@@ -24,6 +25,10 @@ public class LoginError extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
 		PrintWriter out = resp.getWriter();
 		String ui5url = "/openui5/resources/sap-ui-core.js";
 		

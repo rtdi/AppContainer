@@ -44,7 +44,11 @@ public class Projection extends PrettyPrint {
 	}
 	
 	public boolean isAggregation(IDatabaseProvider db) {
-		return db.isAggregationExpression(value);
+		if (db == null) {
+			return false;
+		} else {
+			return db.isAggregationExpression(value);
+		}
 	}
 	public String getOrder() {
 		return order;
