@@ -9,6 +9,10 @@ public class SelectSource {
 	private ObjectType targetobjecttype;
 	private String qualifiershort;
 	private String qualifier;
+	private Integer match;
+
+	public SelectSource() {
+	}
 	
 	public SelectSource(String schemaname, String objectname, ObjectType objecttype, String targetschemaname,
 			String targetobjectname, ObjectType targetobjecttype, String ownschema) {
@@ -61,6 +65,41 @@ public class SelectSource {
 
 	public void setQualifiershort(String text) {
 		this.qualifiershort = text;
+	}
+
+	public void setSchemaname(String schemaname) {
+		this.schemaname = schemaname;
+	}
+
+	public void setObjectname(String objectname) {
+		this.objectname = objectname;
+	}
+
+	public void setObjecttype(ObjectType objecttype) {
+		this.objecttype = objecttype;
+	}
+
+	public void setTargetschemaname(String targetschemaname) {
+		this.targetschemaname = targetschemaname;
+	}
+
+	public void setTargetobjectname(String targetobjectname) {
+		this.targetobjectname = targetobjectname;
+	}
+
+	public void setTargetobjecttype(ObjectType targetobjecttype) {
+		this.targetobjecttype = targetobjecttype;
+	}
+
+	public void setQualifier(String qualifier) {
+		this.qualifier = qualifier;
+	}
+
+	public Integer getMatch() {
+		return match;
+	}
+	public void setMatch(Integer match) {
+		this.match = match;
 	}
 
 }

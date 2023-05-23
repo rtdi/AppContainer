@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.rtdi.appcontainer.db.rest.entity.Column;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
+import io.rtdi.appcontainer.plugins.database.SelectSource;
 
 /**
  * <pre>
@@ -23,6 +24,7 @@ public class TableExpression extends PrettyPrint {
 	private List<JoinCondition> on;
 	private List<Column> columns;
 	private String alias;
+	private SelectSource metadata;
 	
 	public String getJointype() {
 		return jointype;
@@ -98,5 +100,11 @@ public class TableExpression extends PrettyPrint {
 	}
 	public void setColumns(List<Column> columns) {
 		this.columns = columns;
+	}
+	public SelectSource getMetadata() {
+		return metadata;
+	}
+	public void setMetadata(SelectSource metadata) {
+		this.metadata = metadata;
 	}
 }

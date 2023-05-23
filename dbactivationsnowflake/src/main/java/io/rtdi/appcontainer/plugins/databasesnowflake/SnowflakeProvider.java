@@ -91,7 +91,7 @@ public class SnowflakeProvider implements IDatabaseProvider {
 
 	@Override
 	public String createSql(SqlStatement sql) throws SQLException {
-		String sqltext = sql.toString();
+		String sqltext = sql.toString(0, this);
 		if (sql.getOffset() != null) {
 			sqltext += " OFFSET " + sql.getOffset();
 		}
