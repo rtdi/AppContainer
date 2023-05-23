@@ -36,6 +36,13 @@
 			"image": "./public/media/DatabaseApp.png"
 		},
 		{
+			"name": "UI5 AmCharts",
+			"description": "Utilize the fancy AmCharts with UI5",
+			"tooltip": null,
+			"href": "protected/apps/amcharts",
+			"image": "./public/media/AmChartsLogo.png"
+		},
+		{
 			"name": "Swagger",
 			"description": "Swagger Definitions of all APIs",
 			"tooltip": null,
