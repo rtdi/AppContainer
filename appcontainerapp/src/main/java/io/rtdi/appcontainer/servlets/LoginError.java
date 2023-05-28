@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,18 @@ public class LoginError extends HttpServlet {
 		if (session != null) {
 			session.invalidate();
 		}
+		Cookie[] cookies = req.getCookies();
+		if (cookies != null) {
+			/*
+			 * Delete all session cookies for a fresh start
+			 */
+	       for (int i = 0; i < cookies.length; i++) {
+				Cookie cookie = cookies[i];
+				cookie.setMaxAge(0);
+				resp.addCookie(cookie);
+	         }
+		}
+
 		PrintWriter out = resp.getWriter();
 		String ui5url = "/openui5/resources/sap-ui-core.js";
 		
@@ -51,13 +64,17 @@ public class LoginError extends HttpServlet {
 		out.println("        <App>");
 		out.println("            <Page title=\"Login Form\">");
 		out.println("				<content>");
-		out.println("					<Text text=\"login failed\" />");
+		out.println("					<VBox fitContainer=\"true\" justifyContent=\"Center\" alignItems=\"Center\" alignContent=\"Center\">");
+		out.println("						<items>");
+		out.println("							<Text text=\"login failed\" />");
+		out.println("						</items>");
+		out.println("					</VBox>");
 		out.println("				 </content>");
 		out.println("			 </Page>");
 		out.println("        </App>");
 		out.println("    </mvc:View> ");
 		out.println("</script>");
-		
+
 		out.println("  <script>");
 		out.println("sap.ui.controller(\"local.controller\", {");
 		out.println("  onLoginTap:function() {");

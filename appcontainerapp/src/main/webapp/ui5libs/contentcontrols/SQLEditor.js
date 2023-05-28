@@ -24,17 +24,16 @@ sap.ui.define([
 					selectionMode: "Single",
 					selectionBehavior: "RowOnly",
 					enableSelectAll: false,
-					// visibleRowCountMode: "Auto",
 					rowsUpdated: this._onTableDataResizeColumns
 				} );
 			table.setModel(new ui5libs.libs.model.json.JSONModelE());
-			this.setDataControl(table);
+			this.setDataControl(new sap.m.ScrollContainer( { content: table }));
 		},
 		getDataModel : function() {
 			/*
 			 * Used by the NBJsonContainer to find the previous control with a data type
 			 */
-			return this.getDataControl().getModel();
+			return this.getDataControl().getContent()[0].getModel();
 		},
 		setValue: function(text) {
 			this.setProperty("value", text);
@@ -49,10 +48,10 @@ sap.ui.define([
 		},
 		setTableVisibleRowCountMode : function(value) {
 			this.setProperty("tableVisibleRowCountMode", value);
-			this.getDataControl().setVisibleRowCountMode(value);
+			this.getDataControl().getContent()[0].setVisibleRowCountMode(value);
 		},
 		compile : function() {
-			var oTableData = this.getDataControl();
+			var oTableData = this.getDataControl().getContent()[0];
 			oTableData.removeAllColumns();
 			var datamodel = oTableData.getModel();
 			var sqltext = this.getEditorControl().getValue();

@@ -6,6 +6,7 @@ sap.ui.define([
 		metadata : {
 			properties : {
 				pageTitle: {type : 'string' },
+				helpUrl: {type : 'string' },
 			},
 			defaultAggregation: "content",
 			aggregations : {
@@ -24,6 +25,14 @@ sap.ui.define([
 		init : function() {
 			Control.prototype.init.call(this);
 			var oShellBar = new AppContainerShellBar( );
+			var helpbutton = new sap.m.OverflowToolbarButton( {
+				tooltip: "Help",
+				type: "Transparent",
+				text: "Help",
+				icon: "sap-icon://sys-help",
+				press: function(event) { this.onHelp(event) }.bind(this)
+			} );
+			oShellBar.addAdditionalContent(helpbutton);
 			this.setAggregation("_shellbar", oShellBar);
 		},
 		setPageTitle: function(sText) {
@@ -34,6 +43,11 @@ sap.ui.define([
 		},
 		getShellBar : function() {
 			return this.getAggregation("_shellbar");
+		},
+		onHelp : function(event) {
+			if (this.getHelpUrl()) {
+				window.open(this.getHelpUrl(), '_blank');
+			}
 		}
 	});
 });

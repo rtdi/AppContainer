@@ -6,6 +6,9 @@ sap.ui.define([
    		postJsonString : function (sUri, sJson, sNamespace) {
    			return this.ajaxSend(sUri, sJson, "application/json", "POST", sNamespace);
    		},
+   		postBinary : function (sUri, payload, sNamespace) {
+   			return this.ajaxSend(sUri, payload, "application/octet-stream", "POST", sNamespace);
+   		},
    		getJsonString : function (sUri, sNamespace) {
    			return this.ajaxGet(sUri, sNamespace);
    		},
