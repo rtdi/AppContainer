@@ -52,7 +52,11 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				editor = new ui5libs.contentcontrols.XMLFragmentEditor( { useSplitter: false, codeEditorHeight: "200pt" } );
 			}
 			if (editor) {
-				view.byId('notebookcells').addItem(new ui5app.controls.NotebookCell( { content: editor }));
+				var existingitems = view.byId('notebookcells').getItems();
+				if (existingitems && existingitems.length > 0 && existingitems[0] instanceof sap.m.Text) {
+					view.byId('notebookcells').removeItem(0);
+				}
+				view.byId('notebookcells').addItem(new ui5app.controls.NotebookCell( { content: editor, layoutData: new sap.m.FlexItemData({ maxWidth: "100%" }) }));
 			}
 		},
 		onSave : function () {

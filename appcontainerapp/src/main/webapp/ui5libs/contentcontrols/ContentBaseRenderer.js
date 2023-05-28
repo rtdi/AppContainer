@@ -14,7 +14,9 @@ sap.ui.define([],
 			oRm.renderControl(oControl.getAggregation("_splitter"));
 		} else {
 			oRm.renderControl(oControl.getEditorControl());
+			// oRm.write("<div style='width: 100%;'>");
 			oRm.renderControl(oControl.getDataControl());
+			// oRm.write("</div>");
 		}
 		oRm.close("div");
 	};

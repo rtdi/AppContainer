@@ -53,6 +53,12 @@ sap.ui.define([
 						}.bind(this)
 					}),
 					new sap.m.Button( {
+						icon: "sap-icon://delete",
+						press: function (event) {
+							this.onDelete(event);
+						}.bind(this)
+					}),
+					new sap.m.Button( {
 						icon: "sap-icon://collapse",
 						press: function (event) {
 							this.onCollapseExpand(event);
@@ -69,6 +75,14 @@ sap.ui.define([
 			} else {
 				button.setIcon("sap-icon://collapse");
 				this.getContent().setVisible(true);
+			}
+		},
+		onDelete : function(event) {
+			var cell = event.getSource().getParent().getParent();
+			var vbox = cell.getParent();
+			var index = vbox.indexOfItem(cell);
+			if (index >= 0) {
+				vbox.removeItem(index);
 			}
 		},
 		onMoveUp : function(event) {

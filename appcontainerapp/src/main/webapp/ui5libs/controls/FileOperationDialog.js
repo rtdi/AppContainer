@@ -30,28 +30,29 @@ sap.ui.define([
 					template: new sap.m.StandardListItem( { title: "{name}", icon: "{=${directory}?'sap-icon://folder-blank':'sap-icon://document-text'}" })
 				},
 				headerText: "All files in",
-				selectionChange: this.onSelectItem,
+				selectionChange: function(event) { this.onSelectItem(event) }.bind(this),
 				mode: "SingleSelectMaster",
 			});
 			this.addAggregation("content", files );
-			this.addAggregation("content", new sap.m.Input() );
-			var datamodel = new sap.ui.model.json.JSONModel();
-			this.setBeginButton( new sap.m.Button({
+			
+			var toolbar = new sap.m.Toolbar( { content: [
+				new sap.m.Input(),
+				new sap.m.Button({
 					type: sap.m.ButtonType.Emphasized,
 					text: "Okay",
 					enabled: true,
 					press: this.onOkay
-				})
-			);
-			this.addAggregation("content", new sap.m.Label( { labelFor: this.getAggregation("content")[1], text: "Filename" } ) );
-			files.setModel(datamodel);
-			this.setEndButton( new sap.m.Button({
+				}),
+				new sap.m.Button({
 						text: "Close",
 						press: function () {
 							this.close();
 						}.bind(this)
 					})
-			);
+			] });
+			this.setSubHeader(toolbar);
+			var datamodel = new sap.ui.model.json.JSONModel();
+			files.setModel(datamodel);
 			this.attachAfterClose(function () {
 					this.destroy();
 				}
@@ -59,7 +60,7 @@ sap.ui.define([
 		},
 		setOkayText: function(text) {
 			this.setProperty("okayText", text);
-			this.getBeginButton().setText(text);
+			this.getSubHeader().getContent()[1].setText(text);
 		},
 		setPath: function(text) {
 			this.setProperty("path", text);
@@ -69,7 +70,7 @@ sap.ui.define([
 				text = "";
 			}
 			var datamodel = this.getAggregation("content")[0].getModel();
-			ui5ajax.getJsonObject("../../rest/repo/listall/" + text)
+			ui5ajax.getJsonObject("repo/listall/" + text, "ui5rest")
 				.then(
 					data => {
 						var oData = JSON.parse(data.text);
@@ -100,20 +101,20 @@ sap.ui.define([
 						}
 					}
 					dialog.setPath(path);
-				} else {
-					dialog.getAggregation("content")[1].setValue(entry.name);
+				} else if (this.getSuffix() && entry.name.endsWith(this.getSuffix())) {
+					dialog.getSubHeader().getContent()[0].setValue(entry.name);
 				}
 			}
 		},
 		setFilename : function(text) {
-			this.getAggregation("content")[1].setValue(text);
+			this.getSubHeader().getContent()[0].setValue(text);
 		},
 		getFilename : function() {
-			return this.getAggregation("content")[1].getValue();
+			return this.getSubHeader().getContent()[0].getValue();
 		},
 		onOkay : function(event) {
 			var control = event.getSource();
-			var dialog = control.getParent();
+			var dialog = control.getParent().getParent();
 			var path = dialog.getPath() + "/" + dialog.getFilename();
 			dialog.fireEvent("okay", {
 				value: path

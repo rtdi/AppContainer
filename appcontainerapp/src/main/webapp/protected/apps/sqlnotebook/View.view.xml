@@ -19,7 +19,8 @@
 				</Toolbar>
 			</customHeader>
 			<content>
-				<VBox wrap="Wrap" id="notebookcells" >
+				<VBox wrap="Wrap" id="notebookcells" width="100%" >
+					<Text text="Add a new cell by using the  +  menu item" textAlign="Center" width="100%" />
 				</VBox>
 			</content>
 		</Page>

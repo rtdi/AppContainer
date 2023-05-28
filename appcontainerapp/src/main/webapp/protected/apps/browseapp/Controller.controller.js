@@ -24,10 +24,10 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 			}
 		},
 		formatterTextEditorLink: function(spath) {
-			if (!spath) {
-				return "";
-			} else {
+			if (helperfunctions.isTextFile(spath)) {
 				return "../editorapp/index.html?filename=" + encodeURI(spath);
+			} else {
+				return "";
 			}
 		},
 		formatterEnableRun: function(spath) {
@@ -292,86 +292,135 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 			}
 		},
 		onDropFile: function(oEvent) {
-			var oSourcePath = oEvent.getParameter("draggedControl").getBindingContext().getPath();
-			var oSourceModel = oEvent.getParameter("draggedControl").getModel();
-			var oSourceRow = oSourceModel.getProperty(oSourcePath);
-		
-			var oTargetPath = oEvent.getParameter("droppedControl").getBindingContext().getPath();
-			var oTargetModel = oEvent.getParameter("droppedControl").getModel();
-			var oTargetRow = oTargetModel.getProperty(oTargetPath);
-			
-			if (oSourceRow.folders === undefined) {
-				// dropped a file
-				ui5ajax.postJsonObject("/repo/mv/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name}, "ui5rest")
+			var draggedcontrol = oEvent.getParameter("draggedControl");
+			var droppedatcontrol = oEvent.getParameter("droppedControl");
+			var oTargetModel = droppedatcontrol.getModel();
+			if (draggedcontrol) {
+				var oSourcePath = draggedcontrol.getBindingContext().getPath();
+				var oSourceModel = draggedcontrol.getModel();
+				var oSourceRow = oSourceModel.getProperty(oSourcePath);
+				var oTargetPath = droppedatcontrol.getBindingContext().getPath();
+				var oTargetRow = oTargetModel.getProperty(oTargetPath);
+				if (oSourceRow.folders === undefined) {
+					// dropped a file
+					ui5ajax.postJsonObject("/repo/mv/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name}, "ui5rest")
+						.then(
+							data => {
+					    		/*
+					    		 * Update the file counters and remove the file from the source model
+					    		 */
+					    		var oView = sap.ui.getCore().byId("__xmlview0");
+								var oFilesControl = oView.byId("idFiles");
+								oTargetModel.setProperty(oTargetPath + "/filecount", oTargetRow.filecount + 1);
+								var oSourcePathParent = oSourcePath.substring(0, oSourcePath.lastIndexOf("/"));
+								var aFiles = oSourceModel.getProperty(oSourcePathParent);
+								var index = Number(oSourcePath.substring(oSourcePath.lastIndexOf("/")+1));
+								if (index !== NaN && index != -1) {
+									aFiles.splice(index, 1);
+									oSourceModel.setProperty(oSourcePathParent, aFiles);
+								}
+							}, 
+							error => {
+								errorfunctions.addError(thisControl.getView(), error);
+							}
+						);
+				} else {
+					// dropped a directory				
+					ui5ajax.postJsonObject("/repo/mv/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name }, "ui5rest")
+						.then(
+							data => {
+					    		/*
+					    		 * Within the model tree add the folder to the new position and remove it from the old.
+					    		 * Then walk through the entire subelements to update the path with the new root location.
+					    		 */
+					    		var oView = sap.ui.getCore().byId("__xmlview0");
+								var oModel = oView.getModel();
+								
+								function swappath(sModelPath, oModel, pathlength, newpath) {
+									var currentpath = oModel.getProperty(sModelPath + "/path");
+									var sSubFolderModelPath = sModelPath + "/folders";
+									var subfolders = oModel.getProperty(sSubFolderModelPath);
+									var sReplacedPath = newpath + currentpath.substring(pathlength);
+									oModel.setProperty(sModelPath + "/path", sReplacedPath);
+									if (subfolders != null) {
+										for (let i=0; i<subfolders.length; i++) {
+											swappath(sSubFolderModelPath + "/" + i, oModel, pathlength, newpath)
+										}
+									}
+								};
+								swappath(oSourcePath, oModel, oSourceRow.path.length, oTargetRow.path + "/" + oSourceRow.name);
+	
+								// add the folder to the new directory in the tree
+								var sFolderPath = oTargetPath + "/folders";
+								var aFolders = oTargetModel.getProperty(sFolderPath);
+								if (aFolders == null) {
+									aFolders = [ oSourceRow ];
+								} else {
+									aFolders.push(oSourceRow);
+								}
+								oTargetModel.setProperty(sFolderPath, aFolders);
+								
+								// remove the folder from the source tree
+								var oSourcePathParent = oSourcePath.substring(0, oSourcePath.lastIndexOf("/"));
+								var aSubFolders = oSourceModel.getProperty(oSourcePathParent);
+								var index = Number(oSourcePath.substring(oSourcePath.lastIndexOf("/")+1));
+								if (index !== NaN && index != -1) {
+									aSubFolders.splice(index, 1);
+									oSourceModel.setProperty(oSourcePathParent, aSubFolders);
+								}
+							}, 
+							error => {
+								errorfunctions.addError(this.getView(), error);
+							}
+						);
+				}
+			}
+		},
+		_saveFile: function(file, path) {
+			/*
+			 * A file was dropped onto a row in the directory tree
+			 */
+			var that = this;
+			var reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onloadend = () => {
+		    	var content = reader.result; // "data:image/png;base64,iVBORw0KGgoAAAAN..."
+		    	var pos = content.indexOf("base64,");
+		    	var binarydata = atob(content.substring(pos+7));
+				ui5ajax.postBinary("/repo/file/" + path, binarydata, "ui5rest")
 					.then(
 						data => {
-				    		/*
-				    		 * Update the file counters and remove the file from the source model
-				    		 */
-				    		var oView = sap.ui.getCore().byId("__xmlview0");
-							var oFilesControl = oView.byId("idFiles");
-							oTargetModel.setProperty(oTargetPath + "/filecount", oTargetRow.filecount + 1);
-							var oSourcePathParent = oSourcePath.substring(0, oSourcePath.lastIndexOf("/"));
-							var aFiles = oSourceModel.getProperty(oSourcePathParent);
-							var index = Number(oSourcePath.substring(oSourcePath.lastIndexOf("/")+1));
-							if (index !== NaN && index != -1) {
-								aFiles.splice(index, 1);
-								oSourceModel.setProperty(oSourcePathParent, aFiles);
-							}
-						}, 
+							that.onDirectoryRefresh();
+						},
 						error => {
 							errorfunctions.addError(thisControl.getView(), error);
 						}
 					);
-			} else {
-				// dropped a directory				
-				ui5ajax.postJsonObject("/repo/mv/" + oSourceRow.path, { "name": oSourceRow.name, "path": oTargetRow.path + "/" + oSourceRow.name }, "ui5rest")
-					.then(
-						data => {
-				    		/*
-				    		 * Within the model tree add the folder to the new position and remove it from the old.
-				    		 * Then walk through the entire subelements to update the path with the new root location.
-				    		 */
-				    		var oView = sap.ui.getCore().byId("__xmlview0");
-							var oModel = oView.getModel();
-							
-							function swappath(sModelPath, oModel, pathlength, newpath) {
-								var currentpath = oModel.getProperty(sModelPath + "/path");
-								var sSubFolderModelPath = sModelPath + "/folders";
-								var subfolders = oModel.getProperty(sSubFolderModelPath);
-								var sReplacedPath = newpath + currentpath.substring(pathlength);
-								oModel.setProperty(sModelPath + "/path", sReplacedPath);
-								if (subfolders != null) {
-									for (let i=0; i<subfolders.length; i++) {
-										swappath(sSubFolderModelPath + "/" + i, oModel, pathlength, newpath)
-									}
-								}
-							};
-							swappath(oSourcePath, oModel, oSourceRow.path.length, oTargetRow.path + "/" + oSourceRow.name);
-
-							// add the folder to the new directory in the tree
-							var sFolderPath = oTargetPath + "/folders";
-							var aFolders = oTargetModel.getProperty(sFolderPath);
-							if (aFolders == null) {
-								aFolders = [ oSourceRow ];
-							} else {
-								aFolders.push(oSourceRow);
-							}
-							oTargetModel.setProperty(sFolderPath, aFolders);
-							
-							// remove the folder from the source tree
-							var oSourcePathParent = oSourcePath.substring(0, oSourcePath.lastIndexOf("/"));
-							var aSubFolders = oSourceModel.getProperty(oSourcePathParent);
-							var index = Number(oSourcePath.substring(oSourcePath.lastIndexOf("/")+1));
-							if (index !== NaN && index != -1) {
-								aSubFolders.splice(index, 1);
-								oSourceModel.setProperty(oSourcePathParent, aSubFolders);
-							}
-						}, 
-						error => {
-							errorfunctions.addError(this.getView(), error);
-						}
-					);
+			}
+		},
+		onDropFileOnDirectory: function(oEvent) {
+			/*
+			 * A file was dropped onto a row in the directory tree
+			 */
+			var droppedatcontrol = oEvent.getParameter("droppedControl");
+			var modelpath = droppedatcontrol.getBindingContext().getPath(); // the target directory is the entry the files have been dropped on
+			var oTargetModel = droppedatcontrol.getModel();
+			var oTargetRow = oTargetModel.getProperty(modelpath);
+			var files = oEvent.getParameter("browserEvent").dataTransfer.files;
+			for (var file of files) {
+				this._saveFile(file, oTargetRow.path + "/" + file.name);
+			}
+		},
+		onDropFileAdd: function(oEvent) {
+			/*
+			 * A file was dropped in the empty space of the file list, and/replace a file with the same name
+			 */
+			var droppedatcontrol = oEvent.getParameter("droppedControl");
+			var oTargetModel = droppedatcontrol.getModel();
+			var path =  oTargetModel.getProperty("/path"); // The target directory is the directory of the file list model
+			var files = oEvent.getParameter("browserEvent").dataTransfer.files;
+			for (var file of files) {
+				this._saveFile(file, path + "/" + file.name);
 			}
 		},
 		showRenameDialog: function (oDataExchange) {

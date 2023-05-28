@@ -10,7 +10,8 @@
 	xmlns:dnd="sap.ui.core.dnd"
 	xmlns:ui5libs="ui5libs"
 	xmlns:core="sap.ui.core">
-	<ui5libs:controls.AppContainerPage pageTitle="Design time browser">
+	<ui5libs:controls.AppContainerPage pageTitle="Design time browser"
+		helpUrl="https://github.com/rtdi/AppContainer/blob/master/appcontainerapp/src/main/webapp/protected/apps/browseapp/docs/README.md">
 		<l:ResponsiveSplitter defaultPane="default" height="100%">
 			<l:layoutData>
 				<FlexItemData growFactor="1"/>
@@ -43,6 +44,10 @@
 								targetAggregation="rows"
 								dropPosition="On"
 								drop="onDropFile" />
+							<dnd:DropInfo
+								dropPosition="On"
+								targetAggregation="rows"
+								drop="onDropFileOnDirectory" />
 						</t:dragDropConfig>
 						<t:columns>
 							<t:Column width="60%">
@@ -98,6 +103,9 @@
 							<dnd:DragInfo
 								groupName="browsefiles"
 								sourceAggregation="rows" />
+							<dnd:DropInfo
+								dropPosition="On"
+								drop="onDropFileAdd" />
 						</t:dragDropConfig>
 						<t:columns>
 							<t:Column width="70%">
