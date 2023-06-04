@@ -12,6 +12,8 @@ sap.ui.define([
 				value: {type: "string" },
 				showCode: { type: "boolean", defaultValue : true },
 				useSplitter: { type: "boolean", defaultValue : true },
+				height: {type: "sap.ui.core.CSSSize", defaultValue: "100%" },
+				width: {type: "sap.ui.core.CSSSize", defaultValue: undefined },
 			},
 			aggregations : {
 				_splitter : {

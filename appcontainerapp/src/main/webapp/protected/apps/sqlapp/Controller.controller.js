@@ -4,6 +4,7 @@ sap.ui.define([
 	"ui5libs/errorfunctions",
 	"ui5libs/helperfunctions",
 	"ui5libs/controls/FileOperationDialog",
+	"ui5libs/controls/ResultSetTable",
 ],
 function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 	"use strict";
@@ -30,48 +31,40 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 					from: [{ value: "", joinVisible: false }]
 				}
 			});
-			view.byId("datatable").setModel(new sap.ui.model.json.JSONModel());
+			view.byId("datatablecontainer").setModel(new sap.ui.model.json.JSONModel());
 		    var queryString = window.location.search;
 		    var urlParams = new URLSearchParams(queryString);
 		    filepath = urlParams.get('filename');
 		    this.doLoad();
 		},
-		onTableDataRefresh : function(event) {
-			var oTableData = view.byId("datatable");
-			oTableData.unbindRows();
-			oTableData.removeAllColumns();
+		onCompile : function() {
+			var oTableData = view.byId("datatablecontainer");
+			oTableData.unbindAggregation("items");
 			var querymodel = view.byId("query").getModel();
 			var datamodel = oTableData.getModel();
 			var sqltext = view.byId("sqltext");
-			ui5ajax.postJsonObject("../../rest/query", querymodel.getData())
+			ui5ajax.postJsonObject("/query", querymodel.getData(), "ui5rest", view)
 				.then(
 					data => {
 						var oData = JSON.parse(data.text);
-						for (var oCol of oData.columns) {
-							var oColumn = new sap.ui.table.Column({
-								resizable: true,
-								autoResizable: true,
-								minWidth: 80,
-								label: [new sap.m.Label({ text: oCol.name })],
-								template: [new sap.m.Text({ text: "{ path: '" + oCol.name + "', targetType:'any'}", wrapping: false })]
-							});
-							oTableData.addColumn(oColumn);
-						}
-						oTableData.bindRows("/rows");
 						datamodel.setData(oData);
 						sqltext.setValue(oData.sql);
+						oTableData.bindAggregation("items", {
+							path: "/resultsets",
+							template: new ui5libs.controls.ResultSetTable({
+								selectionMode: "Single",
+								enableSelectAll: false,
+								selectionBehavior: "RowOnly",
+								visibleRowCountMode: "Auto",
+								layoutData: new sap.m.FlexItemData( {growFactor: 1} ),
+							})
+						});
 					},
 					error => {
 						var oData = JSON.parse(error.text);
 						sqltext.setValue(oData.message + "\n" + oData.sqlstatement.replace("\\r\\n", "\n"));
 					}
 				);
-		},
-		onTableDataResizeColumns : function(oEvent) {
-			var oTableData = view.byId("datatable");
-			for (var i=0; i<oTableData.getColumns().length; i++) {
-				oTableData.autoResizeColumn(i);
-			}
 		},
 		onSave : function () {
          	if (filepath) {
@@ -102,7 +95,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				window.document.title = "Query: " + filepath;
 				ui5ajax.postJsonString("/repo/file/" + filepath, sContent, "ui5rest")
 					.then(
-						data => {
+						() => {
 							errorfunctions.uiSuccess(view, { message: 'Saved' } );
 						},
 						error => {
@@ -113,7 +106,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				errorfunctions.uiError(view, "No file path specified");
 			}
 		},
-		onLoad : function(event) {
+		onLoad : function() {
 			var dialog = new ui5libs.controls.FileOperationDialog( {
 				okayText: "Load",
 				title: "Load query",
@@ -136,7 +129,6 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				view.byId("headertext").setText(filepath);
 				window.document.title = "Query: " + filepath;
 				var model = view.getModel();
-				var q = view.byId("query");
 				ui5ajax.getJsonString("/repo/file/" + filepath, "ui5rest")
 					.then(
 						data => {
@@ -150,7 +142,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				// errorfunctions.uiError(view, "No file path specified");
 			}
 		},
-		onFreeFormSQL : function(event) {
+		onFreeFormSQL : function() {
 			var sqltext = view.byId("sqltext");
 			var sql = sqltext.getValue();
 			sap.m.URLHelper.redirect("../sqltextapp/index.html?$select=" + helperfunctions.encodeURIfull(sql), true);

@@ -4,20 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.db.rest.entity.SQLResultSet;
 import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.rest.RestService;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.Util;
@@ -148,26 +143,10 @@ public class DatabaseRead extends RestService {
 				}
 	
 				try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
-					ObjectMapper objectMapper = new ObjectMapper();
-					ArrayNode rows = objectMapper.createArrayNode();
-					DateFormat timeformatter = new SimpleDateFormat("HH:mm:ss");
-					DateTimeFormatter timestampformatter = DateTimeFormatter.ISO_INSTANT;
-					int rowcount = 0;
 					try (ResultSet rs = stmt.executeQuery(); ) {
-						int columncount = rs.getMetaData().getColumnCount();
-						while (rs.next()) {
-				    		ObjectNode row = rows.objectNode();
-							for (int i = 1; i <= columncount; i++) {
-								DatabaseQuery.setRestObject(rs, i, row, timeformatter, timestampformatter);
-				    		}
-							rows.add(row);
-							rowcount++;
-							if (rowcount > 30000) {
-								throw new AppContainerSQLException("The query read more than 30k records, that is prevented as safety precaution", sql.toString(), null);
-							}
-						}
+						SQLResultSet resultset = new SQLResultSet(rs, sql.toString());
 						tickRest();
-						return Response.ok(rows).build();
+						return CustomSuccessMessage.createResponse(resultset);
 					}
 
 				} catch (SQLException e) {

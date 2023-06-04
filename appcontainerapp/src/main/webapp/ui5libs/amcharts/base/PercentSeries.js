@@ -13,7 +13,7 @@ sap.ui.define([
             properties: {
 				alignLabels: {type: "boolean" },
 				categoryField: {type: "string" },
-				colors: {type: "object" },
+				colors: {type: "ui5libs.amcharts.base.ColorSet" },
 				fillField: {type: "string" },
             },
 		},
@@ -21,7 +21,7 @@ sap.ui.define([
 			var oSettings = Series.prototype._buildSettings.apply(this);
 			this._addFromProperty(oSettings, "alignLabels");
 			this._addFromProperty(oSettings, "categoryField");
-			this._addFromProperty(oSettings, "colors");
+			this._addColorSetFromProperty(oSettings, "colors");
 			this._addFromProperty(oSettings, "fillField");
 			return oSettings;
 		},

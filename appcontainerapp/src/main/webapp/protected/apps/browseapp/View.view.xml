@@ -31,7 +31,6 @@
 		                    <OverflowToolbar>
 		                        <Title id="title" text="Directory for user"/>
 								<ToolbarSpacer />
-								<Button icon="sap-icon://add-folder" tooltip="Add sub folder" press="onAddRootdirectory" />
 		                        <Button icon="sap-icon://refresh" tooltip="Refresh the directory tree" press="onDirectoryRefresh"/>
 		                    </OverflowToolbar>
 		                </t:extension>
@@ -60,14 +59,14 @@
 								<Label text="Actions"/>
 								<t:template>
 									<HBox fitContainer="true" justifyContent="End" >
-										<core:Icon src="sap-icon://edit" tooltip="Rename folder" press="onRenameDirectory" class="sapUiTinyMargin" 
-											visible="{= ${path} !== '.' }" 
+										<Button icon="sap-icon://edit" tooltip="Rename folder" press="onRenameDirectory"
+											enabled="{= ${path} !== '.' }" 
 										/>
-										<core:Icon src="sap-icon://delete" tooltip="Delete folder" press="onDeleteDirectory" class="sapUiTinyMargin"
-											visible="{= ${path} !== '.' }" 
+										<Button icon="sap-icon://delete" tooltip="Delete folder" press="onDeleteDirectory"
+											enabled="{= ${path} !== '.' }" 
 										/>
-										<core:Icon src="sap-icon://add-folder" tooltip="Add sub folder" press="onAddSubdirectory" class="sapUiTinyMargin" />
-										<core:Icon src="sap-icon://activate" tooltip="Activate all" press="onActivateDirectory" class="sapUiTinyMargin" />
+										<Button icon="sap-icon://add-folder" tooltip="Add sub folder" press="onAddSubdirectory" />
+										<Button icon="sap-icon://activate" tooltip="Activate all" press="onActivateDirectory" />
 									</HBox>
 								</t:template>
 							</t:Column>
@@ -87,7 +86,7 @@
 		                <t:extension>
 		                    <OverflowToolbar>
 								<Title text="Files in folder: {/path}/" level="H2" />
-								<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush" 
+								<Button icon="sap-icon://upload-to-cloud" tooltip="git push" press="onGitPush"
 									enabled="{= ${/git} }" />
 								<Button icon="sap-icon://download-from-cloud" tooltip="git pull" press="onGitPull"  
 									enabled="{= ${/git} }"/>
@@ -130,8 +129,10 @@
 								<Label text="Actions"/>
 								<t:template>
 									<HBox fitContainer="true" justifyContent="End">
-										<core:Icon src="sap-icon://edit" tooltip="Rename file" press="onRenameFile" class="sapUiTinyMargin" />
-										<core:Icon src="sap-icon://delete" tooltip="Delete file" press="onDeleteFile" class="sapUiTinyMargin" />
+										<Button icon="sap-icon://edit" tooltip="Rename file" press="onRenameFile" />
+										<Button icon="sap-icon://delete" tooltip="Delete file" press="onDeleteFile" />
+										<Button icon="sap-icon://activate" tooltip="Activate File" press="onActivateFile" 
+											enabled="{ path: 'path', formatter: '.formatterEnableActivate' }" />
 									</HBox>
 								</t:template>
 							</t:Column>

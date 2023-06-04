@@ -4,19 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.db.rest.entity.SQLResultSet;
 import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.rest.RestService;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.Util;
@@ -138,18 +134,10 @@ public class DatabaseRecordLookup extends RestService {
 				}
 	
 				try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
-					ObjectMapper objectMapper = new ObjectMapper();
-					ObjectNode rootnode = objectMapper.createObjectNode();
-					DateFormat timeformatter = new SimpleDateFormat("HH:mm:ss");
-					DateTimeFormatter timestampformatter = DateTimeFormatter.ISO_INSTANT;
 					try (ResultSet rs = stmt.executeQuery(); ) {
-						if (rs.next()) {
-				    		for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-				    			DatabaseQuery.setRestObject(rs, i, rootnode, timeformatter, timestampformatter);
-				    		}
-						}
+						SQLResultSet rootnode = new SQLResultSet(rs, sql.toString());
 						tickRest();
-						return Response.ok(rootnode).build();
+						return CustomSuccessMessage.createResponse(rootnode);
 					}
 				} catch (SQLException e) {
 					throw AppContainerSQLException.cloneFrom(e, sql.toString(), null);

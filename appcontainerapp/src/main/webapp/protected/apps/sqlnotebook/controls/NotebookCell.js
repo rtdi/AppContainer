@@ -69,7 +69,13 @@ sap.ui.define([
 		},
 		onCollapseExpand : function(event) {
 			var button = event.getSource();
-			if (button.getIcon() === "sap-icon://collapse") {
+			var collapse = (button.getIcon() === "sap-icon://collapse");
+			this.setCollapse(collapse);
+		},
+		setCollapse : function(value) {
+			var menu = this.getAggregation("_menu").getContent();
+			var button = menu[menu.length-1];
+			if (value) {
 				button.setIcon("sap-icon://expand");
 				this.getContent().setVisible(false);
 			} else {
@@ -103,11 +109,14 @@ sap.ui.define([
 				vbox.insertItem(cell, index+1);
 			}
 		},
-		onCode : function(event) {
+		onCode : function() {
 			this.getContent().toggleShowCode();
 		},
+		showCode : function(value) {
+			this.getContent().setShowCode(value);
+		},
 		onCompile : function(event) {
-			this.getContent().compile();
+			this.getContent().compile(event);
 		},
 		setContent : function(control) {
 			this.setAggregation("content", control);

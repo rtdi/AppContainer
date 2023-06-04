@@ -22,6 +22,7 @@ import io.rtdi.appcontainer.repo.RepoDirectory;
 import io.rtdi.appcontainer.repo.rest.RepoService;
 import io.rtdi.appcontainer.repo.rest.entity.Folder;
 import io.rtdi.appcontainer.rest.RestService;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.DatabaseProvider;
@@ -103,7 +104,7 @@ public class ActivationService extends RestService {
 			GlobalSchemaMapping gm = GlobalSchemaMapping.read(upath, dbprincipal.getSchema(), dbprincipal.getDBUser());
 			SQLVariables variables = SQLVariables.read(upath);
 			tickRepo();
-			return Response.ok(activate(targetpath, targetpath, gm, variables)).build();
+			return CustomSuccessMessage.createResponse(activate(targetpath, targetpath, gm, variables));
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}

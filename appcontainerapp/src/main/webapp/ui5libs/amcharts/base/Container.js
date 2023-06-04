@@ -22,6 +22,14 @@ sap.ui.define([
 				subelements: {type: "ui5libs.amcharts.base.Container", multiple: true, singularName: "subelement"}	
 			},
 		},
+		prepareChart : function() {
+			for (var child of getChildren()) {
+				child.prepareChart();
+			}
+			for (var child of getSubelements()) {
+				child.prepareChart();
+			}
+		},
 		renderContainer : function() {
 			this.buildContainer();
 			this.buildSubComponents();

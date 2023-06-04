@@ -2,8 +2,9 @@ sap.ui.define([
 	"ui5libs/controls/Controller",
 	"ui5libs/ui5ajax",
 	"ui5libs/errorfunctions",
+	"ui5libs/helperfunctions",
 	"ui5libs/controls/ActivationResultDialog"],
-function(Controller, ui5ajax, errorfunctions) {
+function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 	"use strict";
 	return Controller.extend("io.rtdi.appcontainer.browseapp.Controller", {
 		init : function() {
@@ -20,7 +21,6 @@ function(Controller, ui5ajax, errorfunctions) {
 			var oChartControl = this.getView().byId("dependencychart");
 			var oDependencyModel = new sap.ui.model.json.JSONModel();
 			oChartControl.setModel(oDependencyModel);
-
 		},
 		iconFormatter : function(sObjectType) {
 			// "TABLE","VIEW", "SYSTEM TABLE", "ALIAS", "SYNONYM"
@@ -80,10 +80,10 @@ function(Controller, ui5ajax, errorfunctions) {
 				var sName = oSelected.getObject().objectname;
 				this._schemaname = sSchema;
 				this._objectname = sName;
-				oColumnModel.loadData(sap.ui.require.toUrl("ui5rest/catalog/schemas/" + sSchema + "/" + sName + "/columns"));
+				oColumnModel.loadData(sap.ui.require.toUrl("ui5rest/catalog/schemas/" + helperfunctions.encodeURIfull(sSchema) + "/" + helperfunctions.encodeURIfull(sName) + "/columns"));
 				
 				var oTableDataModel = new sap.ui.model.odata.v4.ODataModel({ 
-						"serviceUrl" : sap.ui.require.toUrl("ui5rest/odata/tables/" + sSchema + "/" + sName + "/"),  
+						"serviceUrl" : sap.ui.require.toUrl("ui5rest/odata/tables/" + helperfunctions.encodeURIfull(sSchema) + "/" + helperfunctions.encodeURIfull(sName) + "/"),  
 						"autoExpandSelect": true, 
 						"operationMode": "Server", 
 						"groupId": "$direct", 
@@ -92,7 +92,7 @@ function(Controller, ui5ajax, errorfunctions) {
 				oTableData.setModel(oTableDataModel);
 
 				var oChartControl = this.getView().byId("dependencychart");
-				oChartControl.getModel().loadData(sap.ui.require.toUrl("ui5rest/catalog/schemas/" + this._schemaname + "/" + this._objectname + "/dependencies"));
+				oChartControl.getModel().loadData("ui5rest/catalog/schemas/" + helperfunctions.encodeURIfull(this._schemaname) + "/" + helperfunctions.encodeURIfull(this._objectname) + "/dependencies");
 			}
 		},
 		onOpen : function(oEvent) {
@@ -100,7 +100,7 @@ function(Controller, ui5ajax, errorfunctions) {
 				var oNode = oEvent.getParameter("rowContext");
 				if (oNode.getObject()["schemaname"]) {
 					var oTreeModel = this.getView().byId("idTree").getModel();
-					ui5ajax.ajaxGet("/catalog/schemas/" + oNode.getObject().schemaname, "ui5rest")
+					ui5ajax.ajaxGet("/catalog/schemas/" + helperfunctions.encodeURIfull(oNode.getObject().schemaname), helperfunctions.encodeURIfull("ui5rest"), this.getView())
 						.then(
 							data => {
 								var oChild = JSON.parse(data.text);
@@ -115,6 +115,18 @@ function(Controller, ui5ajax, errorfunctions) {
 		},
 		onItemClose : function(oEvent) {
 			oEvent.preventDefault();
+		},
+		onFreeFormSQL : function() {
+			var sqltext = "select ";
+			var columns = this.getView().byId("idColumns").getModel().getProperty("/");
+			for (var i=0; i<columns.length; i++) {
+				if (i != 0) {
+					sqltext += ", ";
+				}
+				sqltext += helperfunctions.minimalQuotedStringOf(columns[i].name);
+			}
+			sqltext += "\nfrom " + helperfunctions.minimalQuotedStringOf(this._schemaname + "." + this._objectname, this._schemaname, this._objectname);
+			sap.m.URLHelper.redirect("../sqltextapp/index.html?$select=" + helperfunctions.encodeURIfull(sqltext), true);
 		},
 	});
 });

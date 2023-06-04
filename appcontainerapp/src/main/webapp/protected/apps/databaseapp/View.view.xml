@@ -160,6 +160,7 @@
 						                    <OverflowToolbar>
 												<ToolbarSpacer />
 						                        <Button icon="sap-icon://resize" tooltip="Auto-resize all columns" press=".onTableDataResizeColumns"/>
+												<Button icon="sap-icon://write-new-document" tooltip="Open in FreeForm SQL" press=".onFreeFormSQL"/>
 						                        <Button icon="sap-icon://refresh" tooltip="Refresh the table contents" press=".onTableDataRefresh"/>
 						                    </OverflowToolbar>
 						                </t:extension>

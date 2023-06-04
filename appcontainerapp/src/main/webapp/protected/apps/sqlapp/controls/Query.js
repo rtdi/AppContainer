@@ -47,7 +47,7 @@ sap.ui.define([
 					template: new ui5app.controls.WithEntry()
 				});
 			var otablemodel = new sap.ui.model.json.JSONModel();
-			otablemodel.attachRequestCompleted(function(event) { this.refreshAllColumnModels(event) }.bind(this) );
+			// otablemodel.attachRequestCompleted(function(event) { this.refreshAllColumnModels(event) }.bind(this) );
 			otablemodel.loadData("../../rest/catalog/sources");
 			this.setModel(otablemodel, "tables");
 			this.setModel(new ui5libs.libs.model.json.JSONModelE(), "tablesuggestions");
@@ -75,7 +75,7 @@ sap.ui.define([
 		},
 		getTableSuggestion : function(qualifier) {
 			var entries = this.getModel("tablesuggestions").getProperty("/");
-			if (entries) {
+			if (entries && Array.isArray(entries)) {
 				return entries.find(element => element.qualifiershort ===  qualifier || element.qualifier === qualifier);
 			}
 		},

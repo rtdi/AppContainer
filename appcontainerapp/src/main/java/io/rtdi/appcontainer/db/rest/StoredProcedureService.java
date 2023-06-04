@@ -21,6 +21,7 @@ import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.IStoredProcedure;
 import io.rtdi.appcontainer.plugins.database.entity.ProcedureMetadata;
 import io.rtdi.appcontainer.rest.RestService;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.DatabaseProvider;
@@ -93,7 +94,7 @@ public class StoredProcedureService extends RestService {
 					while (rs.next()) {
 						elements.add(new StoredProcedure(rs.getString(2), rs.getString(3)));
 					}
-					return Response.ok(elements).build();
+					return CustomSuccessMessage.createResponse(elements);
 				}
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "JDBC getProcedures()", null);
@@ -164,7 +165,7 @@ public class StoredProcedureService extends RestService {
 				IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 				IStoredProcedure procedureservice = provider.getProcedureService();
 				tickRest();
-				return Response.ok(procedureservice.callProcedure(conn, schema, procedurename, data, cache, provider)).build();
+				return CustomSuccessMessage.createResponse(procedureservice.callProcedure(conn, schema, procedurename, data, cache, provider));
 			}
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);

@@ -2,13 +2,12 @@ sap.ui.define([
 	"ui5libs/controls/Controller",
 	"ui5libs/ui5ajax",
 	"ui5libs/errorfunctions",
-	"ui5libs/helperfunctions",
 	"ui5libs/controls/FileOperationDialog"
 ],
-function(Controller, ui5ajax, errorfunctions, helperfunctions) {
+function(Controller, ui5ajax, errorfunctions) {
 	"use strict";
 	
-	var filesuffix = ".sql";
+	var filesuffix = ".sqlquery";
 	var view;
 	var filepath;
 
@@ -25,7 +24,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 			}
 		    this.doLoad();
 		},
-		onCompile : function(event) {
+		onCompile : function() {
          	var oEditorControl = view.byId("sql");
          	oEditorControl.compile();
          },
@@ -57,9 +56,9 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 			if (filepath) {
 				view.byId("headertext").setText(filepath);
 				window.document.title = "SQL: " + filepath;
-				ui5ajax.postJsonString("/repo/file/" + filepath, sContent, "ui5rest")
+				ui5ajax.postJsonString("/repo/file/" + filepath, sContent, "ui5rest", this.getView())
 					.then(
-						data => {
+						() => {
 							errorfunctions.uiSuccess(view, { message: 'Saved' } );
 						},
 						error => {
@@ -70,10 +69,10 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				errorfunctions.uiError(view, "No file path specified");
 			}
 		},
-		onLoad : function(event) {
+		onLoad : function() {
 			var dialog = new ui5libs.controls.FileOperationDialog( {
-				okayText: "Load",
-				title: "Load query",
+				okayText: "Open",
+				title: "Open query sql",
 				path: null, 
 				suffix: filesuffix, 
 				contentHeight: "40%",
@@ -93,7 +92,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				view.byId("headertext").setText(filepath);
 				window.document.title = "SQL: " + filepath;
          		var oEditorControl = view.byId("sql");
-				ui5ajax.getJsonString("/repo/file/" + filepath, "ui5rest")
+				ui5ajax.getJsonString("/repo/file/" + filepath, "ui5rest", this.getView())
 					.then(
 						data => {
 							oEditorControl.setValue(JSON.parse(data.text).content);

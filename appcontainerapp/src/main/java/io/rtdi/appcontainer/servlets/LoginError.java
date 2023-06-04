@@ -41,7 +41,12 @@ public class LoginError extends HttpServlet {
 				resp.addCookie(cookie);
 	         }
 		}
-
+		/* 
+		 * This should not cache the html page in case browser back is used
+		 */
+		resp.setHeader("Cache-control", "no-cache, no-store");
+		resp.setHeader("Pragma", "no-cache");
+		resp.setHeader("Expires", "0");
 		PrintWriter out = resp.getWriter();
 		String ui5url = "/openui5/resources/sap-ui-core.js";
 		

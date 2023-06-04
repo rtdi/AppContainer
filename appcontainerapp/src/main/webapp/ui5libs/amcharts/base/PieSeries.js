@@ -23,5 +23,11 @@ sap.ui.define([
 			library.logContainerNewInstance("am5percent.PieSeries.new", oSettings);
 			return am5percent.PieSeries.new(root, oSettings);
 		},
+		prepareChart : function() {
+			PercentSeries.prototype.prepareChart.call(this);
+			// PieCharts require the series angles to be the same as the chart angles to function properly
+			this.setEndAngle(this.getParent().getEndAngle());
+			this.setStartAngle(this.getParent().getStartAngle());
+		},
 	});
 });

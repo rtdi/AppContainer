@@ -63,7 +63,7 @@ sap.ui.define([
 				}
 			 }
 			if (filepath) {
-				ui5ajax.postJsonString("/repo/file/" + filepath, sContent, "ui5rest")
+				ui5ajax.postJsonString("/repo/file/" + filepath, sContent, "ui5rest", this.getView())
 					.then(
 						data => {
 							errorfunctions.uiSuccess(view, { message: 'Saved' } );
@@ -78,7 +78,7 @@ sap.ui.define([
 		},
 
 		onActivate: function () {
-			ui5ajax.ajaxGet("/activation/activate/" + filepath, "ui5rest")
+			ui5ajax.ajaxGet("/activation/activate/" + filepath, "ui5rest", this.getView())
 				.then(
 					data => {
 						this.oDialog.getModel().setJSON(data.text);
@@ -116,7 +116,7 @@ sap.ui.define([
 			}
 			if (filepath) {
 	         	var oEditorControl = view.byId("codeeditor");
-				ui5ajax.getJsonString("/repo/file/" + filepath, "ui5rest")
+				ui5ajax.getJsonString("/repo/file/" + filepath, "ui5rest", this.getView())
 					.then(
 						data => {
 							oEditorControl.setValue(JSON.parse(data.text).content);

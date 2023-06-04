@@ -23,6 +23,8 @@ sap.ui.define([
 				bullets: {type: "ui5libs.amcharts.base.Bullet", multiple: true},
 			},
 		},
+		prepareChart : function() {
+		},
 		_buildSettings : function() {
 			var oSettings = Component.prototype._buildSettings.apply(this);
 			this._addFromProperty(oSettings, "calculateAggregates");

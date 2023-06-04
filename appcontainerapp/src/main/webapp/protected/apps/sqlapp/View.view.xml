@@ -6,10 +6,14 @@
 	<ui5libs:controls.AppContainerPage
 		pageTitle="SQL">
 		<Panel height="100%">
+			<dependents>
+				<core:CommandExecution command="CompileCode" enabled="true" execute=".onCompile" />
+			</dependents>
 			<headerToolbar>
 				<OverflowToolbar style="Clear">
 					<Text id="headertext" />
 					<ToolbarSpacer />
+					<Button icon="sap-icon://media-play" tooltip="Execute" press=".onCompile"/>
 					<Button icon="sap-icon://save" tooltip="Save" press=".onSave"/>
 					<Button icon="sap-icon://open-folder" tooltip="Load" press=".onLoad"/>
 					<Button icon="sap-icon://write-new-document" tooltip="Open in FreeForm SQL" press=".onFreeFormSQL"/>
@@ -20,22 +24,11 @@
 					<ui5app:controls.Query id="query">
 					</ui5app:controls.Query>
 					<TextArea id="sqltext" width="100%" editable="false" growing="true" growingMaxLines="15" />
-					<t:Table id="datatable"
-						selectionMode="Single" selectionBehavior="RowOnly"
-						enableSelectAll="false" ariaLabelledBy="title"
-						rowSelectionChange="onSelectRow" visibleRowCountMode="Auto">
-						<t:layoutData>
+					<VBox id="datatablecontainer" >
+						<layoutData>
 							<FlexItemData growFactor="1"/>
-						</t:layoutData>
-						<t:extension>
-							<OverflowToolbar style="Clear">
-								<Title text="Data" />
-								<ToolbarSpacer />
-								<Button icon="sap-icon://resize" tooltip="Auto-resize all columns" press=".onTableDataResizeColumns"/>
-								<Button icon="sap-icon://media-play" tooltip="Execute" press="onTableDataRefresh" />
-							</OverflowToolbar>
-						</t:extension>
-					</t:Table>
+						</layoutData>
+					</VBox>
 				</VBox>
 			</content>
 		</Panel>

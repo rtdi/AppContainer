@@ -15,11 +15,11 @@
 					<ToolbarSpacer />
 					<Button icon="sap-icon://media-play" tooltip="Execute" press=".onCompile"/>
 					<Button icon="sap-icon://save" tooltip="Save" press=".onSave"/>
-					<Button icon="sap-icon://open-folder" tooltip="Load" press=".onLoad"/>
+					<Button icon="sap-icon://open-folder" tooltip="Open" press=".onLoad"/>
 				</Toolbar>
 			</customHeader>
 			<content>
-				<ui5libs:contentcontrols.SQLEditor id="sql" tableVisibleRowCountMode="Auto" useSplitter="true" >
+				<ui5libs:contentcontrols.SQLEditor id="sql" useSplitter="true" >
 				</ui5libs:contentcontrols.SQLEditor>
 			</content>
 		</Page>

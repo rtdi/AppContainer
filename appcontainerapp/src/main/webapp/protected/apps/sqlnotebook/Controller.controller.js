@@ -43,7 +43,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 			var item = event.getParameter("item");
 			var editor = undefined;
 			if (item.getText() === "SQL") {
-				editor = new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt" } );
+				editor = new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt", dataHeight: "200pt" } );
 			} else if (item.getText() === "HTML") {
 				editor = new ui5libs.contentcontrols.HTMLEditor( { useSplitter: false, codeEditorHeight: "200pt" } );
 			} else if (item.getText() === "MD") {
@@ -53,10 +53,33 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 			}
 			if (editor) {
 				var existingitems = view.byId('notebookcells').getItems();
+				/*
+				 * Initially there is a text control as item, must be removed when the first notebook cell is added.
+				 */
 				if (existingitems && existingitems.length > 0 && existingitems[0] instanceof sap.m.Text) {
 					view.byId('notebookcells').removeItem(0);
 				}
 				view.byId('notebookcells').addItem(new ui5app.controls.NotebookCell( { content: editor, layoutData: new sap.m.FlexItemData({ maxWidth: "100%" }) }));
+			}
+		},
+		onCode: function() {
+			var existingitems = view.byId('notebookcells').getItems();
+			if (existingitems) {
+				for(var cell of existingitems) {
+					if (cell instanceof ui5app.controls.NotebookCell) {
+						cell.showCode(false);
+					}
+				}
+			}
+		},
+		onCollapseAll: function() {
+			var existingitems = view.byId('notebookcells').getItems();
+			if (existingitems) {
+				for(var cell of existingitems) {
+					if (cell instanceof ui5app.controls.NotebookCell) {
+						cell.setCollapse(true);
+					}
+				}
 			}
 		},
 		onSave : function () {
@@ -142,7 +165,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 									});
 								} else if (item.type === "SQL") {
 									cell = new ui5app.controls.NotebookCell( {
-										content: new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt" } )
+										content: new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt", dataHeight: "200pt" } )
 									});
 								} else if (item.type === "XMLFragment") {
 									cell = new ui5app.controls.NotebookCell( {

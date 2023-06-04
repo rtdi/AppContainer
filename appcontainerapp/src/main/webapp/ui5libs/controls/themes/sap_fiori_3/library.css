@@ -1,0 +1,17 @@
+.ui5libsItalic {
+	font-style: italic;
+}
+
+.ui5libsBold {
+	font-weight: bold;
+}
+
+.ui5libsStrikeThrough {
+	text-decoration-style: solid;
+	text-decoration-line: line-through;
+}
+
+.ui5libsSpelling {
+	text-decoration-style: wavy;
+	text-decoration-line: underline;
+}

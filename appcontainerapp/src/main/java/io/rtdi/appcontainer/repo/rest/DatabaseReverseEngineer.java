@@ -17,6 +17,7 @@ import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.ObjectType;
 import io.rtdi.appcontainer.repo.CreateCSV;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.rest.entity.SuccessMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
@@ -90,7 +91,7 @@ public class DatabaseReverseEngineer {
 		try {
 			IDatabaseLoginPrincipal dbprincipal = DatabaseServlet.getPrincipal(request);
 			DBObjectTree tree = new DBObjectTree(schemaraw, servletContext, dbprincipal);
-			return Response.ok(tree).build();
+			return CustomSuccessMessage.createResponse(tree);
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -138,7 +139,7 @@ public class DatabaseReverseEngineer {
 			try (Connection conn = dbprincipal.getConnection();) {
 				IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 				importObjectsRecursive(tree, targetpath, provider, conn);
-				return Response.ok(tree).build();
+				return CustomSuccessMessage.createResponse(tree);
 			}
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
@@ -242,7 +243,7 @@ public class DatabaseReverseEngineer {
 				IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 				DBObjectTree tree = new DBObjectTree(schemaraw, servletContext, dbprincipal);
 				importObjectsRecursive(tree, targetpath, provider, conn);
-				return Response.ok(tree).build();
+				return CustomSuccessMessage.createResponse(tree);
 			}
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);

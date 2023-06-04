@@ -15,6 +15,7 @@ import io.rtdi.appcontainer.repo.rest.entity.DirectoryContent;
 import io.rtdi.appcontainer.repo.rest.entity.FileContent;
 import io.rtdi.appcontainer.repo.rest.entity.FileData;
 import io.rtdi.appcontainer.repo.rest.entity.Folder;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.rest.entity.SuccessMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -120,7 +121,7 @@ public class RepoService {
 		try {
 			java.nio.file.Path targetpath = getEffectivePath(request, path);
 			Folder directorytree = Folder.getFolder(targetpath.toFile(), path); 
-			return Response.ok(directorytree).build();
+			return CustomSuccessMessage.createResponse(directorytree);
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -163,7 +164,7 @@ public class RepoService {
 		try {
 			java.nio.file.Path targetpath = getEffectivePath(request, path);
 			DirectoryContent files = DirectoryContent.getCompleteDirectoryContent(targetpath.toFile(), path); 
-			return Response.ok(files).build();
+			return CustomSuccessMessage.createResponse(files);
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -328,7 +329,7 @@ public class RepoService {
 				throw new IOException("The file exists but is not a directory \"" + filedir.getAbsolutePath() + "\"");
 			}
 			DirectoryContent directorylist = new DirectoryContent(filedir, path);
-			return Response.ok(directorylist).build();
+			return CustomSuccessMessage.createResponse(directorylist);
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -376,7 +377,7 @@ public class RepoService {
 			}
 			java.nio.file.Path newfile = Files.createFile(targetpath);
 			FileData data = new FileData(newfile.toFile(), path);
-			return Response.ok(data).build();
+			return CustomSuccessMessage.createResponse(data);
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -635,7 +636,7 @@ public class RepoService {
 			if (!file.isFile()) {
 				throw new IOException("Cannot find file \"" + file.getAbsolutePath().toString() + "\" on the server");
 			}
-			return Response.ok(new FileContent(file, path)).build();
+			return CustomSuccessMessage.createResponse(new FileContent(file, path));
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}

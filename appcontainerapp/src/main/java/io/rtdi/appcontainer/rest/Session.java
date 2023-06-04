@@ -51,7 +51,7 @@ public class Session {
 	@Tag(name = "Repository")
     public Response login() {
 		try {
-			return Response.ok(SuccessMessage.getOk()).build();
+			return SuccessMessage.createResponseOK();
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -89,7 +89,7 @@ public class Session {
 			HttpSession session = request.getSession(false);
 			if (session != null) {
 				session.invalidate();
-				return Response.ok(SuccessMessage.getOk()).build();
+				return SuccessMessage.createResponseOK();
 			} else {
 				return ErrorMessage.createResponse("There is something wrong, a user without a session was able to call the protected logout call");
 			}

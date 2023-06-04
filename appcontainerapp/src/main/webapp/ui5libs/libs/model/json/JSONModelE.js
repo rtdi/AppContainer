@@ -1,3 +1,11 @@
+/**
+ * The extended JSONModel adds functions to make the daily life with the JSONModel easier.
+ * - Manipulate array nodes
+ * - go to the parent node
+ * - loadData supports ui5 namespaces
+ * - apply row and structure transformations on the data
+ * - find category, time and measure columns based in the datatype (requires the json to contain a /columns array with the metadata of the query columns)
+ */
 sap.ui.define([
 	'sap/ui/model/json/JSONModel',
 ], function(JSONModel) {
@@ -5,7 +13,7 @@ sap.ui.define([
 		metadata : {
 			publicMethods : ["setJSON", "getJSON"]
 		},
-		/*
+		/**
 		 * Calls super.setData() after all input has been passed through the transformations
 		 */
 		setData : function(oData, bMerge) {
@@ -22,6 +30,11 @@ sap.ui.define([
 			}
 			JSONModel.prototype.setData.call(this, oData, bMerge);
 		},
+		/**
+		 * Calls super.loadData() but checks the sURL
+		 * - if sURL starts with a text, e.g. ui5rest/query the namespace ui5rest is transformed into the actual path on the webserver
+		 * - if sURL starts with / or . it is considered an url without namespaces and paased to the super method as is
+		 */
 		loadData : function(sURL, oParameters, bAsync, sType, bMerge, bCache, mHeaders) {
 			if (sURL) {
 				if (!sURL.startsWith("/") && !sURL.startsWith(".")) {
@@ -30,6 +43,9 @@ sap.ui.define([
 				JSONModel.prototype.loadData.call(this, sURL, oParameters, bAsync, sType, bMerge, bCache, mHeaders);
     		}
 		},
+		/**
+		 * assigns an array of ui5libs.libs.model.mt.RowTransformation rules to the model
+		 */
 		setRowTransformations : function(aTransformations) {
 			if (aTransformations && Array.isArray(aTransformations)) {
 				for (var t of aTransformations) {
@@ -40,9 +56,15 @@ sap.ui.define([
 				this._rowTransformations = aTransformations;
 			}
 		},
+		/**
+		 * @return the list of all row transformations configured
+		 */
 		getRowTransformations : function() {
 			return this._rowTransformations;
 		},
+		/**
+		 * add a new ui5libs.libs.model.mt.RowTransformation to the array of transformations
+		 */
 		addRowTransformation : function(oTransformation) {
 			if (oTransformation && oTransformation instanceof ui5libs.libs.model.mt.RowTransformation) {
 				if (!this._rowTransformations) {
@@ -54,6 +76,9 @@ sap.ui.define([
 				throw "The addRowTransformations() call got the object " + oTransformation;
 			}
 		},
+		/**
+		 * assigns an array of ui5libs.libs.model.mt.ModelTransformation rules to the model
+		 */
 		setModelTransformations : function(aTransformations) {
 			if (aTransformations && Array.isArray(aTransformations)) {
 				for (var t of aTransformations) {
@@ -64,9 +89,15 @@ sap.ui.define([
 				this._modelTransformations = aTransformations;
 			}
 		},
+		/**
+		 * @return the list of all configured model transformations
+		 */
 		getModelTransformations : function() {
 			return this._modelTransformations;
 		},
+		/**
+		 * add a new ui5libs.libs.model.mt.ModelTransformation to the array of transformations
+		 */
 		addModelTransformation : function(oTransformation) {
 			if (oTransformation && oTransformation instanceof ui5libs.libs.model.mt.ModelTransformation) {
 				if (!this._modelTransformations) {
@@ -78,6 +109,10 @@ sap.ui.define([
 				throw "The addModelTransformations() call got the invalid object: " + oTransformation;
 			}
 		},
+		/**
+		 * Removes the upper element from the sPath, e.g. returns /rows/0 for sPath /rows/0/field1.
+		 * Hence can return objects or arrays
+		 */
 		getParentPath: function(sPath) {
 			if (sPath && typeof sPath === 'string' ) {
 				var pos = sPath.lastIndexOf("/");
@@ -90,8 +125,9 @@ sap.ui.define([
 				throw "The sPath argument is not a string (" + typeof sPath + ")";
 			}
 		},
-		/*
-		 * If the path is an array element, it does return the array owner, not the array as getParentPath() does
+		/**
+		 * @return the parent object, skipping array items, e.g. returns /rows for sPath /rows/0/field1 if rows is an array
+		 * see getParentPath()
 		 */
 		getParentObjectPath: function(sPath) {
 			var parentpath = this.getParentPath(sPath);
@@ -102,9 +138,17 @@ sap.ui.define([
 				return parentpath;
 			}
 		},
+		/**
+		 * @return the parent property of the provided path.
+		 * It takes the path, removes the top path and returns the property value of this new path
+		 * see getParentPath()
+		 */
 		getParentProperty: function(sPath) {
 			return this.getProperty(this.getParentPath(sPath));
 		},
+		/**
+		 * deletes an object or array item in a way so the model change events are triggered properly
+		 */
 		deleteProperty: function(sPath) {
 			// Example: sPath = /children/1/children/0/children/0
 			if (sPath && typeof sPath === 'string' ) {
@@ -129,6 +173,9 @@ sap.ui.define([
 				throw "The sPath argument is not a string (" + typeof sPath + ")";
 			}
 		},
+		/**
+		 * inserts an object or array item in a way so the model change events are triggered properly
+		 */
 		insertProperty: function(sPath, obj) {
 			// Example: sPath = /children/1/children/0/children/0
 			if (sPath && typeof sPath === 'string' ) {
@@ -150,11 +197,17 @@ sap.ui.define([
 				throw "The sPath argument is not a string (" + typeof sPath + ")";
 			}
 		},
+		/**
+		 * add an additional property as last item of an array
+		 */
 		addArrayProperty: function(sPath, obj) {
 			// Example: sPath = /children/1/children/0/children
 			var index = this.getArrayPropertyLength(sPath);
 			this.setProperty(sPath + "/" + index, obj);
 		},
+		/**
+		 * Remove the item at position index from an array property
+		 */
 		removeArrayProperty: function(sPath, index) {
 			// Example: sPath = /children, index=1
 			if (!index) {
@@ -168,6 +221,10 @@ sap.ui.define([
 				this.setProperty(sPath, a);
 			}
 		},
+		/**
+		 * @return true if the sPath points to the last item of an array property.
+		 * Throws errors if the path does not point to an item of an array
+		 */
 		isLastProperty: function(sPath) {
 			if (sPath && typeof sPath === 'string' ) {
 				var p = this.getProperty(sPath);
@@ -188,6 +245,9 @@ sap.ui.define([
 				throw "The sPath argument is not a string (" + typeof sPath + ")";
 			}
 		},
+		/**
+		 * @return the length of an array property
+		 */
 		getArrayPropertyLength: function(sPath) {
 			var a =  this.getArrayPropertyOf(sPath);
 			if (a && Array.isArray(a)) {
@@ -196,6 +256,9 @@ sap.ui.define([
 				throw "The sPath argument (" + sPath + ") points to a property that is not an array";
 			}
 		},
+		/**
+		 * @return the parent path of an array property with validation the path was actually pointing to an item of an array
+		 */
 		getArrayPropertyOf: function(sPath) {
 			if (sPath && typeof sPath === 'string' ) {
 				var p = this.getProperty(sPath.substring(0, pos));
@@ -218,6 +281,9 @@ sap.ui.define([
 				throw "The sPath argument is not a string (" + typeof sPath + ")";
 			}
 		},
+		/**
+		 * @return the last item of an array property
+		 */
 		getLastArrayProperty : function(sPath) {
 			var lastindex = this.getArrayPropertyLength(sPath) - 1;
 			if (lastindex >= 0) {
@@ -231,6 +297,89 @@ sap.ui.define([
 			if (!lastItem || !!lastItem[fieldname]) {
 				this.addArrayProperty(sPath, obj);
 			}
-		}
+		},
+		/**
+		 * @param resultsetindex which resultset to be used, defaults to 0
+		 * @return the /columns array in case this was a rest call against the rest/query endpoint or something similar
+		 */
+		getColumnMetadata : function(resultsetindex) {
+			if (!resultsetindex) {
+				resultsetindex = 0;
+			}
+			return this.getProperty("/resultsets/" + resultsetindex + "/columns");
+		},
+		/**
+		 * Category columns are all short character columns.
+		 * Meaning VARCHAR, NVARCHAR, CHAR, NCHAR but not their long equivalents
+		 * 
+		 * @return a list of columns of type varchar and similar
+		 */
+		getCategoryColumns : function(resultsetindex) {
+			var metadata = this.getColumnMetadata(resultsetindex);
+			if (metadata) {
+				var a = [];
+				var pos = 0;
+				for( var col of metadata) {
+					if (col.jdbctype == 1 /* CHAR */ || col.jdbctype == 12 /* VARCHAR */ || col.jdbctype == -15 /* NCHAR */ || col.jdbctype == -9 /* NVARCHAR */) {
+						var o = Object.assign(col);
+						o.pos = pos;
+						a.push(o);
+					}
+					pos++;
+				}
+				return a;
+			} else {
+				return undefined;
+			}
+		},
+		/**
+		 * Measure columns are all number columns.
+		 * 
+		 * @return a list of columns of type int, float, decimal, etc
+		 */
+		getMeasureColumns : function(resultsetindex) {
+			var metadata = this.getColumnMetadata(resultsetindex);
+			if (metadata) {
+				var a = [];
+				var pos = 0;
+				for( var col of metadata) {
+					if (col.jdbctype == -5 /* BIGINT */ || col.jdbctype == -6 /* TINYINT */ || col.jdbctype == 5 /* SMALLINT */ ||
+						col.jdbctype == 4 /* INT */ || col.jdbctype == 6 /* FLOAT */ || col.jdbctype == 7 /* REAL */ || col.jdbctype == 8 /* DOUBLE */ ||
+						col.jdbctype == 2 /* NUMERIC */ || col.jdbctype == 3 /* DECIMAL */) {
+						var o = Object.assign(col);
+						o.pos = pos;
+						a.push(o);
+					}
+					pos++;
+				}
+				return a;
+			} else {
+				return undefined;
+			}
+		},
+		/**
+		 * Date columns are all date/time related columns.
+		 * 
+		 * @return a list of columns of type date, time, timestamps in all their variations
+		 */
+		getDateColumns : function(resultsetindex) {
+			var metadata = this.getColumnMetadata(resultsetindex);
+			if (metadata) {
+				var a = [];
+				var pos = 0;
+				for( var col of metadata) {
+					if (col.jdbctype == 91 /* DATE */ || col.jdbctype == 92 /* TIME */ || col.jdbctype == 93 /* TIMESTAMP */ ||
+						col.jdbctype == 2013 /* TIME_WITH_TIMEZONE */ || col.jdbctype == 2014 /* TIMESTAMP_WITH_TIMEZONE */) {
+						var o = Object.assign(col);
+						o.pos = pos;
+						a.push(o);
+					}
+					pos++;
+				}
+				return a;
+			} else {
+				return undefined;
+			}
+		},
 	});
 });
