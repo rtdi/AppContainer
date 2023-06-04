@@ -112,12 +112,12 @@ sap.ui.define([
 				var sPath = oContext.getPath();
 				if (!qualifier) {
 					var tabledetails = this.getModel().getProperty(sPath + "/metadata");
-					qualifier = SharedFunctions.minimalQuotedStringOf(tabledetails.objectname, undefined, undefined);
+					qualifier = helperfunctions.minimalQuotedStringOf(tabledetails.objectname, undefined, undefined);
 				}
 				for (var item of columnmodel.getProperty(sPath + "/columns")) {
 					var rank = rankfunction.call(this, text, item);
 					if (rank > 0) {
-						model.addArrayProperty("/", { qualifiershort: qualifier + "." + SharedFunctions.minimalQuotedStringOf(item.name, undefined, undefined), match: rank, name: item.name } );
+						model.addArrayProperty("/", { qualifiershort: qualifier + "." + helperfunctions.minimalQuotedStringOf(item.name, undefined, undefined), match: rank, name: item.name } );
 					}
 				}
 			}
@@ -168,7 +168,7 @@ sap.ui.define([
 					} else {
 						ui5ajax.getJsonString("/catalog/schemas/"
 							+ helperfunctions.encodeURIfull(selectedrow.targetschemaname) + "/"
-							+ helperfunctions.encodeURIfull(selectedrow.targetobjectname) + "/columns", "ui5rest")
+							+ helperfunctions.encodeURIfull(selectedrow.targetobjectname) + "/columns", "ui5rest", this.getView())
 							.then(
 								data => {
 									columnmodel.setProperty(frompath + "/columns", JSON.parse(data.text));

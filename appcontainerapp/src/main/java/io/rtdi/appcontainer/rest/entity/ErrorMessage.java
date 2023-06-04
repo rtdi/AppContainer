@@ -111,11 +111,11 @@ public class ErrorMessage {
 	 * @return a Json with detailed information about the problem
 	 */
 	public static Response createResponse(Exception e) {
-		return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(new ErrorMessage(e)).build();
+		return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(new ErrorMessage(e)).cacheControl(CustomSuccessMessage.control).build();
 	}
 
 	public static Response createResponse(String text) {
-		return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(new ErrorMessage(text)).build();
+		return Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(new ErrorMessage(text)).cacheControl(CustomSuccessMessage.control).build();
 	}
 
 	public long getTimestamp() {

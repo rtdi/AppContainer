@@ -1,0 +1,3 @@
+div.sapMTabContainer.noCloseButtons > .sapMTabStripContainer > .sapMTabStrip > .sapMTSTabsContainer > .sapMTSTabs > .sapMTabStripItem > .sapMTSItemCloseBtnCnt {
+  visibility: hidden;
+}

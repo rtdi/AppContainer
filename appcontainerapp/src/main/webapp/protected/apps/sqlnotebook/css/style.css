@@ -7,6 +7,8 @@
 	flex-wrap: nowrap;
 	border: 1pt solid black;
 	min-height: 100%;
-	/* resize: both;
-	 overflow: auto; */
+}
+
+div.sapMTabContainer.noCloseButtons > .sapMTabStripContainer > .sapMTabStrip > .sapMTSTabsContainer > .sapMTSTabs > .sapMTabStripItem > .sapMTSItemCloseBtnCnt {
+  visibility: hidden;
 }

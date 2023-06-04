@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.rest.entity.UserData;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
@@ -61,7 +62,7 @@ public class SystemUserData {
 				throw new IOException("The user did not log in yet");
 			}
 			UserData data = new UserData(dbprincipal);
-			return Response.ok(data).build();
+			return CustomSuccessMessage.createResponse(data);
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -96,7 +97,7 @@ public class SystemUserData {
 	@Tag(name = "Information")
     public Response getTimeZones() {
 		try {
-			return Response.ok(TimeZone.getAvailableIDs()).build();
+			return CustomSuccessMessage.createResponse(TimeZone.getAvailableIDs());
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -131,7 +132,7 @@ public class SystemUserData {
 	@Tag(name = "Information")
     public Response getCountries() {
 		try {
-			return Response.ok(Locale.getISOCountries()).build();
+			return CustomSuccessMessage.createResponse(Locale.getISOCountries());
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -166,7 +167,7 @@ public class SystemUserData {
 	@Tag(name = "Information")
     public Response getLanguages() {
 		try {
-			return Response.ok(Locale.getISOLanguages()).build();
+			return CustomSuccessMessage.createResponse(Locale.getISOLanguages());
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}

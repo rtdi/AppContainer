@@ -24,6 +24,7 @@ import io.rtdi.appcontainer.repo.UserPreferences;
 import io.rtdi.appcontainer.repo.rest.entity.GitCommit;
 import io.rtdi.appcontainer.repo.rest.entity.GitConfig;
 import io.rtdi.appcontainer.repo.rest.entity.GitResult;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.rest.entity.SuccessMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,7 +113,7 @@ public class GitService {
 						result.add(pullresult.getFetchResult());
 						result.add(pullresult.getMergeResult());
 						result.add(pullresult.getRebaseResult());
-						return Response.ok(result).build();
+						return CustomSuccessMessage.createResponse(result);
 					}
 				} else {
 					return ErrorMessage.createResponse("Git not configured");
@@ -212,7 +213,7 @@ public class GitService {
 							result.add(pushResult);
 						}
 					}
-					return Response.ok(result).build();
+					return CustomSuccessMessage.createResponse(result);
 				} else {
 					throw new IOException("No git repository configured at that path");
 				}
@@ -279,7 +280,7 @@ public class GitService {
 			if (gitconfig == null) {
 				gitconfig = new GitConfig();
 			}
-			return Response.ok(gitconfig).build();
+			return CustomSuccessMessage.createResponse(gitconfig);
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}
@@ -402,7 +403,7 @@ public class GitService {
 					}
 				}
 			}
-			return Response.ok(new SuccessMessage(message)).build();
+			return CustomSuccessMessage.createResponse(new SuccessMessage(message));
 		} catch (Exception e) {
 			return ErrorMessage.createResponse(e);
 		}

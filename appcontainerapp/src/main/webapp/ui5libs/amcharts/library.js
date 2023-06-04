@@ -80,13 +80,12 @@ sap.ui.define([
 		thisLib._addToSetting(oSettings, name, that.getProperty(name));
 	};
 	thisLib._addColorFromProperty = function(that, oSettings, name) {
-		var value = thisLib._getColorFromProperty(that, name);
+		var value = thisLib.getColor(that.getProperty(name));
 		if (value) {
 			this._addToSetting(oSettings, name, value);
 		}
 	};
-	thisLib._getColorFromProperty = function(that, name) {
-		var value = that.getProperty(name);
+	thisLib.getColor = function(value) {
 		if (value) {
 			if (value.startsWith("#")) {
 				var n = parseInt("0x" + value.substring(1));
@@ -96,6 +95,15 @@ sap.ui.define([
 			}
 		}
 		return undefined;
+	};
+	thisLib._addColorSetFromProperty = function(that, oSettings, name) {
+		var value = thisLib.getColorSet(that._root, that.getProperty(name).getBaseColor());
+		if (value) {
+			this._addToSetting(oSettings, name, value);
+		}
+	};
+	thisLib.getColorSet = function(root, basecolor) {
+		return am5.ColorSet.new(root, { "baseColor": thisLib.getColor(basecolor) } );
 	};
 	thisLib._addNumberPercentFromProperty = function(that, oSettings, name) {
 		var value = that.getProperty(name);

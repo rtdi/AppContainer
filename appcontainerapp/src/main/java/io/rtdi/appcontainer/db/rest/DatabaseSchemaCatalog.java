@@ -19,6 +19,7 @@ import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.plugins.database.DatabaseObjectTree;
 import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.plugins.database.SelectSource;
+import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
 import io.rtdi.appcontainer.utils.DatabaseProvider;
@@ -99,7 +100,7 @@ public class DatabaseSchemaCatalog {
 					while (rs.next()) {
 						schemas.add(new SchemaDefinition(rs.getString(1)));
 					}
-					return Response.ok(schemas).build();
+					return CustomSuccessMessage.createResponse(schemas);
 				}
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "JDBC getSchemas()", null);
@@ -162,7 +163,7 @@ public class DatabaseSchemaCatalog {
 					while (rs.next()) {
 						sources.add(new SourceDetails(rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
 					}
-					return Response.ok(sources).build();
+					return CustomSuccessMessage.createResponse(sources);
 				}
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "JDBC getTables()", null);
@@ -242,7 +243,7 @@ public class DatabaseSchemaCatalog {
 						}
 					}
 				}
-				return Response.ok(columns).build();
+				return CustomSuccessMessage.createResponse(columns);
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "JDBC getColumns() and getPrimaryKeys()", null);
 			}
@@ -298,7 +299,7 @@ public class DatabaseSchemaCatalog {
 			IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
 			try (Connection conn = dbprincipal.getConnection();) {
 				DatabaseObjectTree tree = provider.getCatalogService().getDependencies(conn, schema, name);
-				return Response.ok(tree).build();
+				return CustomSuccessMessage.createResponse(tree);
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "JDBC getColumns() and getPrimaryKeys()", null);
 			}
@@ -364,7 +365,7 @@ public class DatabaseSchemaCatalog {
 						shortqualifiers.put(item.getQualifiershort(), item);
 					}
 				}
-				return Response.ok(res).build();
+				return CustomSuccessMessage.createResponse(res);
 			} catch (SQLException e) {
 				throw AppContainerSQLException.cloneFrom(e, "select all view, tables, synonyms", null);
 			}

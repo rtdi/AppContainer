@@ -1,6 +1,6 @@
 sap.ui.define([
 	'ui5libs/contentcontrols/ContentBase',
-	'sap/ui/codeeditor/CodeEditor'
+	'ui5libs/controls/CodeEditorE'
 ], function() {
   return ui5libs.contentcontrols.ContentBase.extend("ui5libs.contentcontrols.XMLFragmentEditor", {
 		metadata : {
@@ -14,7 +14,12 @@ sap.ui.define([
 		renderer: {},
 		init : function() {
 			ui5libs.contentcontrols.ContentBase.prototype.init.call(this);
-			this.setEditorControl(new sap.ui.codeeditor.CodeEditor( { type: "xml" }));
+			this.setEditorControl(new ui5libs.controls.CodeEditorE( {
+				type: "xml",
+				compile: function(event) {
+					this.compile(event);
+				}.bind(this)
+			}));
 		},
 		setCodeEditorHeight : function(value) {
 			this.setProperty("codeEditorHeight", value);

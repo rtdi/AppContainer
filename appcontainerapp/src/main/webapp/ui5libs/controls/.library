@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd" >
+
+  <name>ui5libs.controls</name>
+  <vendor>rtdi.io GmbH</vendor>
+  <copyright>${copyright}</copyright>
+  <version>${version}</version>
+  
+  <documentation>AddOn controls</documentation>
+  
+  <dependencies>
+	<dependency>
+	  <libraryName>sap.ui.core</libraryName>
+	  <libraryName>sap.m</libraryName>
+	</dependency>
+  </dependencies>
+  
+  <appData>
+  </appData>
+
+</library>

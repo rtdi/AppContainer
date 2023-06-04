@@ -1,14 +1,15 @@
 sap.ui.define([
 	"ui5libs/ui5ajax",
 	"ui5libs/helperfunctions",
+	"ui5libs/controls/ResultSetTable",
 	'ui5libs/contentcontrols/ContentBase',
-	'sap/ui/codeeditor/CodeEditor'
+	'ui5libs/controls/CodeEditorE'
 ], function(ui5ajax, helperfunctions) {
   return ui5libs.contentcontrols.ContentBase.extend("ui5libs.contentcontrols.SQLEditor", {
 		metadata : {
 			properties : {
 				codeEditorHeight: {type: "sap.ui.core.CSSSize", defaultValue: "auto" },
-				tableVisibleRowCountMode: {type: "string" },
+				dataHeight: {type: "sap.ui.core.CSSSize", defaultValue: "auto" },
 			},
 			aggregations : {
 			},
@@ -17,23 +18,28 @@ sap.ui.define([
 		renderer: {},
 		init : function() {
 			ui5libs.contentcontrols.ContentBase.prototype.init.call(this);
-			this.setEditorControl(new sap.ui.codeeditor.CodeEditor( {
-				type: "sql"
+			this.setEditorControl(new ui5libs.controls.CodeEditorE( {
+				type: "sql",
+				compile: function(event) {
+					this.compile(event);
+				}.bind(this)
 			}));
-			var table = new sap.ui.table.Table( {
-					selectionMode: "Single",
-					selectionBehavior: "RowOnly",
-					enableSelectAll: false,
-					rowsUpdated: this._onTableDataResizeColumns
-				} );
-			table.setModel(new ui5libs.libs.model.json.JSONModelE());
-			this.setDataControl(new sap.m.ScrollContainer( { content: table }));
+			var tabcontainer = new sap.m.TabContainer( {
+				layoutData: new sap.m.FlexItemData( {
+					growFactor: 1
+				})
+			});
+			tabcontainer.setModel(new ui5libs.libs.model.json.JSONModelE());
+			this.setDataControl( new sap.m.VBox( {
+				items: [tabcontainer],
+				height: "100%"
+			}));
 		},
 		getDataModel : function() {
 			/*
 			 * Used by the NBJsonContainer to find the previous control with a data type
 			 */
-			return this.getDataControl().getContent()[0].getModel();
+			return this.getDataControl().getItems()[0].getModel();
 		},
 		setValue: function(text) {
 			this.setProperty("value", text);
@@ -46,58 +52,51 @@ sap.ui.define([
 			this.setProperty("codeEditorHeight", value);
 			this.getEditorControl().setHeight(value);
 		},
-		setTableVisibleRowCountMode : function(value) {
-			this.setProperty("tableVisibleRowCountMode", value);
-			this.getDataControl().getContent()[0].setVisibleRowCountMode(value);
+		setDataHeight : function(value) {
+			this.setProperty("dataHeight", value);
+			this.getDataControl().setHeight(value);
 		},
-		compile : function() {
-			var oTableData = this.getDataControl().getContent()[0];
-			oTableData.removeAllColumns();
-			var datamodel = oTableData.getModel();
-			var sqltext = this.getEditorControl().getValue();
-			ui5ajax.getJsonObject("../../rest/query?$select="+ helperfunctions.encodeURIfull(sqltext))
+		compile : function(event) {
+			var sqltext = event.getParameter("text");
+			if (!sqltext) {
+				sqltext = this.getValue();
+			}
+			var tabcontainer = this.getDataControl().getItems()[0];
+			var datamodel = tabcontainer.getModel();
+			tabcontainer.unbindItems();
+			tabcontainer.removeAllItems();
+			ui5ajax.getJsonObject("/query?$select="+ helperfunctions.encodeURIfull(sqltext), "ui5rest", tabcontainer)
 				.then(
 					data => {
 						var oData = JSON.parse(data.text);
-						for (var oCol of oData.columns) {
-							var oColumn = new sap.ui.table.Column({
-								resizable: true,
-								autoResizable: true,
-								minWidth: 80,
-								label: [new sap.m.Label({ text: oCol.name })],
-								template: [new sap.m.Text({ text: "{ path: '" + oCol.name + "', targetType:'any'}", wrapping: false })]
-							});
-							oTableData.addColumn(oColumn);
-						}
-						oTableData.bindRows("/rows");
-						oTableData._wasresized = false;
 						datamodel.setData(oData);
+						var table = new ui5libs.controls.ResultSetTable( {
+								selectionMode: "Single",
+								selectionBehavior: "RowOnly",
+								enableSelectAll: false,
+								visibleRowCountMode: "Auto",
+							} );
+						tabcontainer.bindItems({
+							path: "/resultsets",
+							template: new sap.m.TabContainerItem({
+								content: table,
+								name: "{name} ({= ${hasmore}?'&gt;':''} {rowcount} rows)"
+							})
+						});
 					},
 					error => {
 						var oData = JSON.parse(error.text);
 						datamodel.setData(undefined);
-						oTableData.setNoData(oData.message + "\n" + oData.sqlstatement.replace("\\r\\n", "\n"));
-						this._addDefaultColumn(oTableData);
+						tabcontainer.addItem(new sap.m.TabContainerItem({
+								content: new sap.m.Text( {
+									text: oData.message,
+									wrapping: true
+								} ),
+								name: "Error"
+							})
+						);
 					}
 				);
-		},
-		_addDefaultColumn : function(oTableData) {
-			var oColumn = new sap.ui.table.Column({
-				resizable: true,
-				autoResizable: true,
-				minWidth: 80,
-				label: [new sap.m.Label({ text: "Error" })],
-					template: [new sap.m.Text({ text: "none", wrapping: false })]
-			});
-			oTableData.addColumn(oColumn);
-		},
-		_onTableDataResizeColumns : function(oEvent) {
-			if (!this._wasresized) {
-				for (var i=0; i<this.getColumns().length; i++) {
-					this.autoResizeColumn(i);
-				}
-				this._wasresized = true;
-			}
 		},
 		_setEditorVisible : function(isVisible) {
 			this.getEditorControl().setVisible(isVisible);

@@ -1,6 +1,6 @@
 sap.ui.define([
 	'ui5libs/contentcontrols/ContentBase',
-	'sap/ui/codeeditor/CodeEditor'
+	'ui5libs/controls/CodeEditorE'
 ], function() {
   return ui5libs.contentcontrols.ContentBase.extend("ui5libs.contentcontrols.HTMLEditor", {
 		metadata : {
@@ -14,7 +14,12 @@ sap.ui.define([
 		renderer: {},
 		init : function() {
 			ui5libs.contentcontrols.ContentBase.prototype.init.call(this);
-			this.setEditorControl(new sap.ui.codeeditor.CodeEditor( { type: "html" }));
+			this.setEditorControl(new ui5libs.controls.CodeEditorE( {
+				type: "html",
+				compile: function(event) {
+					this.compile(event);
+				}.bind(this)
+			}));
 			var text = new sap.m.FormattedText( {
 				} );
 			this.setDataControl(text);
@@ -30,8 +35,12 @@ sap.ui.define([
 		getValue: function() {
 			return this.getEditorControl().getValue();
 		},
-		compile : function() {
-			this.getDataControl().setHtmlText(this.getEditorControl().getValue());
+		compile : function(event) {
+			var text = event.getParameter("text");
+			if (!text) {
+				text = this.getValue();
+			}
+			this.getDataControl().setHtmlText(text);
 		},
 		_setEditorVisible : function(isVisible) {
 			this.getEditorControl().setVisible(isVisible);

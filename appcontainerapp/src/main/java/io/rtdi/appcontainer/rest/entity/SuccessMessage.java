@@ -30,11 +30,11 @@ public class SuccessMessage {
 	}
 
 	public static Response createResponseOK() {
-		return Response.ok().entity(OK).build();
+		return Response.ok().entity(OK).cacheControl(CustomSuccessMessage.control).build();
 	}
 
 	public static Response createResponseOK(String message) {
-		return Response.ok().entity(new SuccessMessage(message)).build();
+		return Response.ok().entity(new SuccessMessage(message)).cacheControl(CustomSuccessMessage.control).build();
 	}
 
 }

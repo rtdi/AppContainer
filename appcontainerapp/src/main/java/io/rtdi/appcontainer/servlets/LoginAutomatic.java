@@ -26,7 +26,17 @@ public class LoginAutomatic extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		PrintWriter out = resp.getWriter();
-		HttpSession session = req.getSession(true);
+		HttpSession session = req.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+		/* 
+		 * This endpoint must be called always
+		 */
+		resp.setHeader("Cache-control", "no-cache, no-store");
+		resp.setHeader("Pragma", "no-cache");
+		resp.setHeader("Expires", "0");
+		session = req.getSession(true);
 		String username = req.getParameter("username");
 		String password = req.getParameter("password");
 		String page = req.getParameter("page");
@@ -38,7 +48,8 @@ public class LoginAutomatic extends HttpServlet {
 			}
 			resp.sendRedirect(page);
 			out.println("<!DOCTYPE html>");
-			out.println("<html><head></head><body>");
+			out.println("<html><head>");
+			out.println("</head><body>");
 			out.println("Redirecting to the <a href=\"" + page + "\">" + page + "</a></body></html>");
 		} else {
 			out.println("<!DOCTYPE html>");

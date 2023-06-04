@@ -1,9 +1,10 @@
 sap.ui.define([
 	'sap/ui/core/Control',
 	'ui5app/libs/SharedFunctions',
+	'ui5libs/helperfunctions',
 	'ui5app/controls/TableExpression',
 	'ui5app/controls/WhereCondition'
-], function(Control, SharedFunctions) {
+], function(Control, SharedFunctions, helperfunctions) {
 	/*
 	  A subquery is a select statement that can be used as primary SQL or embedded as subquery, cte, nested query
 	  
@@ -61,7 +62,7 @@ sap.ui.define([
 				var rank = rankfunction.call(this, text, item);
 				if (rank > 0) {
 					model.addArrayProperty("/", {
-						qualifiershort: SharedFunctions.minimalQuotedStringOf(item.qualifiershort, item.schemaname, item.objectname),
+						qualifiershort: helperfunctions.minimalQuotedStringOf(item.qualifiershort, item.schemaname, item.objectname),
 						match: rank,
 						schemaname: item.schemaname,
 						objectname: item.objectname,
@@ -69,7 +70,7 @@ sap.ui.define([
 						targetschemaname: item.targetschemaname,
 						targetobjectname: item.targetobjectname,
 						targetobjecttype: item.targetobjecttype,
-						qualifier: SharedFunctions.minimalQuotedStringOf(item.qualifier, item.schemaname, item.objectname)
+						qualifier: helperfunctions.minimalQuotedStringOf(item.qualifier, item.schemaname, item.objectname)
 					} );
 				}
 			}

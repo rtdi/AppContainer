@@ -23,6 +23,5 @@ sap.ui.define([
 			library.logContainerNewInstance("am5percent.PieChart.new", oSettings);
 			return am5percent.PieChart.new(root, oSettings);
 		},
-
 	});
 });

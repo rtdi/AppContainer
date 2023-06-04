@@ -30,5 +30,8 @@ sap.ui.define([
 		_addNumberPercentFromProperty : function(oSettings, name) {
 			library._addNumberPercentFromProperty(this, oSettings, name);
 		},
+		_addColorSetFromProperty : function(oSettings, name) {
+			library._addColorSetFromProperty(this, oSettings, name);
+		},
 	});
 });

@@ -12,6 +12,11 @@ sap.ui.define([
 				legend: {type: "ui5libs.amcharts.base.Legend", multiple: false},
 			},
 		},
+		prepareChart : function() {
+			for (var child of this.getSeries()) {
+				child.prepareChart();
+			}
+		},
 		_buildSettings : function() {
 			var oSettings = Chart.prototype._buildSettings.apply(this);
 			this._addFromProperty(oSettings, "colors");

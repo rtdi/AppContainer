@@ -31,7 +31,7 @@ sap.ui.define([
 			}
 			
 			var that = this;
-			ui5ajax.ajaxGet("/repo/file/" + sFilename, "ui5rest")
+			ui5ajax.ajaxGet("/repo/file/" + sFilename, "ui5rest", this.getView())
 				.then(
 					data => {
 						var parser = new DOMParser();
@@ -42,7 +42,6 @@ sap.ui.define([
 						}
 					}, 
 					error => {
-						oView.setBusy(false);
 						if (error.code === 400) {
 							errorfunctions.addError(that.getView(), error);
 						} else {
@@ -443,13 +442,12 @@ sap.ui.define([
 						'</mvc:View>';
 				var that = this;
 				var oView = this.getView();
-				ui5ajax.postText("/repo/file/" + sFilename, viewcontent, "ui5rest")
+				ui5ajax.postText("/repo/file/" + sFilename, viewcontent, "ui5rest", this.getView())
 					.then(
 						data => {
 							errorfunctions.uiSuccess(that.getView(), data);
 						}, 
 						error => {
-							oView.setBusy(false);
 							if (error.code === 400) {
 								errorfunctions.addError(that.getView(), error);
 							} else {

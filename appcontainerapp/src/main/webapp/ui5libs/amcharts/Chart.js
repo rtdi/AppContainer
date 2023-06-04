@@ -64,6 +64,7 @@ sap.ui.define([
 					container.renderContainer();
 				}
 			}
+			this.prepareChart();
 			/*
 			 * After the chart is built completely, set the data
 			 */
@@ -75,6 +76,11 @@ sap.ui.define([
 			this.fireEvent("buildChart", {
 				root: this._root
 			});
+		},
+		prepareChart : function() {
+			for (var child of this.getChildren()) {
+				child.prepareChart();
+			}
 		},
 		getRoot : function() {
 			return this._root;

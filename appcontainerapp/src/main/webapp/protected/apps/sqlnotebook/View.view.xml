@@ -13,6 +13,8 @@
 				<Toolbar>
 					<Text id="headertext" />
 					<ToolbarSpacer />
+					<Button text="code" tooltip="Add new cell" press=".onCode"/>
+					<Button icon="sap-icon://collapse-all" tooltip="Add new cell" press=".onCollapseAll"/>
 					<Button icon="sap-icon://add" tooltip="Add new cell" press=".onAddCell"/>
 					<Button icon="sap-icon://save" tooltip="Save" press=".onSave"/>
 					<Button icon="sap-icon://open-folder" tooltip="Load" press=".onLoad"/>

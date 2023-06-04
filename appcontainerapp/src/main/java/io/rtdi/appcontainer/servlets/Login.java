@@ -31,6 +31,12 @@ public class Login extends HttpServlet {
 		HttpSession session = req.getSession(false);
 		String username = null;
 		String password = null;
+		/* 
+		 * This should not cache the html page so the code is always executed
+		 */
+		resp.setHeader("Cache-control", "no-cache, no-store");
+		resp.setHeader("Pragma", "no-cache");
+		resp.setHeader("Expires", "0");
 		if (session != null) {
 			username = (String) session.getAttribute("username");
 			password = (String) session.getAttribute("password");
@@ -41,10 +47,23 @@ public class Login extends HttpServlet {
 				 * The login information was provided via the autologin servlet
 				 */
 				String target = "j_security_check?j_username=" + URLEncoder.encode(username, "UTF-8") + "&j_password=" + URLEncoder.encode(password, "UTF-8");
-				resp.sendRedirect(target);
+				// resp.sendRedirect(target);
 				out.println("<!DOCTYPE html>");
-				out.println("<html><head></head><body>");
-				out.println("Redirecting to the <a href=\"" + target + "\">tomcat authenticator</a> (j_security_check)</body></html>");
+				out.println("<html><head>");
+				out.println("<script>\n"
+						+ "    function loginForm() {\n"
+						+ "        document.loginform.submit();\n"
+						+ "    }\n"
+						+ "</script>");
+				out.println("</head>");
+				out.println("<body onload=\"loginForm()\">\n");
+				out.println("Redirecting to the <a href=\"" + target + "\">tomcat authenticator</a> (j_security_check)");
+				out.println("<form name=\"loginform\" action=\"j_security_check\" method=\"post\">\n"
+						+ "    <input type=\"hidden\" name=\"j_username\" value=\"" + username + "\">\n"
+						+ "    <input type=\"hidden\" name=\"j_password\" value=\"" + password + "\">\n"
+						+ "</form>\n"
+						+ "</body>");
+				out.println("</html>");
 				return;
 			}
 		}
