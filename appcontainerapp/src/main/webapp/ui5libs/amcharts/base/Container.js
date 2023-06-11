@@ -23,10 +23,10 @@ sap.ui.define([
 			},
 		},
 		prepareChart : function() {
-			for (var child of getChildren()) {
+			for (var child of this.getChildren()) {
 				child.prepareChart();
 			}
-			for (var child of getSubelements()) {
+			for (var child of this.getSubelements()) {
 				child.prepareChart();
 			}
 		},

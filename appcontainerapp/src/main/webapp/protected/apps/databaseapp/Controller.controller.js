@@ -3,7 +3,7 @@ sap.ui.define([
 	"ui5libs/ui5ajax",
 	"ui5libs/errorfunctions",
 	"ui5libs/helperfunctions",
-	"ui5libs/controls/ActivationResultDialog"],
+	"ui5libs/controls/ResultSetTable"],
 function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 	"use strict";
 	return Controller.extend("io.rtdi.appcontainer.browseapp.Controller", {
@@ -14,13 +14,16 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 					oTreeModel.setProperty("/" + i + "/sources", [{name:""}]);
 				}
 			});
-			var oColumnModel = new sap.ui.model.json.JSONModel();
+			var oColumnModel = new ui5libs.libs.model.json.JSONModelE();
 			oColumnModel.setData([]);
 			this.getView().byId("idColumns").setModel(oColumnModel);
 			
 			var oChartControl = this.getView().byId("dependencychart");
-			var oDependencyModel = new sap.ui.model.json.JSONModel();
+			var oDependencyModel = new ui5libs.libs.model.json.JSONModelE();
 			oChartControl.setModel(oDependencyModel);
+			var oDataPreview = new ui5libs.libs.model.json.JSONModelE();
+			var tabledatacontrol = this.getView().byId("idTableData");
+			tabledatacontrol.setModel(oDataPreview);
 		},
 		iconFormatter : function(sObjectType) {
 			// "TABLE","VIEW", "SYSTEM TABLE", "ALIAS", "SYNONYM"
@@ -46,33 +49,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				oTreeModel.reload();
 			}
 		},
-		onTableDataRefresh : function() {
-			var oTableData = this.getView().byId("idTableData");
-			oTableData.unbindRows();
-			oTableData.removeAllColumns();
-			var oColumnModel = this.getView().byId("idColumns").getModel();
-			for (var oCol of oColumnModel.getProperty("/")) {
-				var oColumn = new sap.ui.table.Column({
-					resizable:true,
-					autoResizable: true,
-					minWidth: 80,
-					label: [new sap.m.Label({text: oCol.name})],
-					template: [ new sap.m.Text( { text: "{ path: '" + oCol.name + "', targetType:'any'}", wrapping: false } ) ]
-				});
-				oTableData.addColumn(oColumn);
-			}
-			oTableData.bindRows("/RS");
-		},
-		onTableDataResizeColumns : function(oEvent) {
-			var oTableData = this.getView().byId("idTableData");
-			for (var i=0; i<oTableData.getColumns().length; i++) {
-				oTableData.autoResizeColumn(i);
-			}
-		},
 		onSourceSelect : function(oEvent) {
-			var oTableData = this.getView().byId("idTableData");
-			oTableData.unbindRows();
-			oTableData.removeAllColumns();
 			var oSelected = oEvent.getParameter("rowContext");
 			if (oSelected && oSelected.getObject().objectname) {
 				var oColumnModel = this.getView().byId("idColumns").getModel();
@@ -80,19 +57,27 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				var sName = oSelected.getObject().objectname;
 				this._schemaname = sSchema;
 				this._objectname = sName;
-				oColumnModel.loadData(sap.ui.require.toUrl("ui5rest/catalog/schemas/" + helperfunctions.encodeURIfull(sSchema) + "/" + helperfunctions.encodeURIfull(sName) + "/columns"));
+				oColumnModel.loadData("ui5rest/catalog/schemas/" + helperfunctions.encodeURIfull(sSchema) + "/" + helperfunctions.encodeURIfull(sName) + "/columns");
 				
-				var oTableDataModel = new sap.ui.model.odata.v4.ODataModel({ 
-						"serviceUrl" : sap.ui.require.toUrl("ui5rest/odata/tables/" + helperfunctions.encodeURIfull(sSchema) + "/" + helperfunctions.encodeURIfull(sName) + "/"),  
-						"autoExpandSelect": true, 
-						"operationMode": "Server", 
-						"groupId": "$direct", 
-						"synchronizationMode": "None" 
-					});
-				oTableData.setModel(oTableDataModel);
-
 				var oChartControl = this.getView().byId("dependencychart");
 				oChartControl.getModel().loadData("ui5rest/catalog/schemas/" + helperfunctions.encodeURIfull(this._schemaname) + "/" + helperfunctions.encodeURIfull(this._objectname) + "/dependencies");
+				
+				var tabcontainer = this.getView().byId("idTableData");
+				var datamodel = tabcontainer.getModel();
+				ui5ajax.getJsonObject("/query/"+ helperfunctions.encodeURIfull(sSchema) + "/" + helperfunctions.encodeURIfull(sName) + "?$limit=100", "ui5rest", tabcontainer)
+					.then(
+						data => {
+							var oData = JSON.parse(data.text);
+							datamodel.setData(oData);
+							tabcontainer.display();
+						},
+						error => {
+							var oData = JSON.parse(error.text);
+							datamodel.setData(undefined);
+							tabcontainer.displayError(oData.message);
+						}
+					);
+
 			}
 		},
 		onOpen : function(oEvent) {
@@ -100,7 +85,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 				var oNode = oEvent.getParameter("rowContext");
 				if (oNode.getObject()["schemaname"]) {
 					var oTreeModel = this.getView().byId("idTree").getModel();
-					ui5ajax.ajaxGet("/catalog/schemas/" + helperfunctions.encodeURIfull(oNode.getObject().schemaname), helperfunctions.encodeURIfull("ui5rest"), this.getView())
+					ui5ajax.ajaxGet("/catalog/schemas/" + helperfunctions.encodeURIfull(oNode.getObject().schemaname), "ui5rest", this.getView())
 						.then(
 							data => {
 								var oChild = JSON.parse(data.text);

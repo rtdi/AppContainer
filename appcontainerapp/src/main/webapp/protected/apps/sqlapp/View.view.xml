@@ -24,11 +24,11 @@
 					<ui5app:controls.Query id="query">
 					</ui5app:controls.Query>
 					<TextArea id="sqltext" width="100%" editable="false" growing="true" growingMaxLines="15" />
-					<VBox id="datatablecontainer" >
-						<layoutData>
+					<ui5libs:controls.ResultSets id="datatablecontainer" execute=".onCompile" >
+						<ui5libs:layoutData>
 							<FlexItemData growFactor="1"/>
-						</layoutData>
-					</VBox>
+						</ui5libs:layoutData>
+					</ui5libs:controls.ResultSets>
 				</VBox>
 			</content>
 		</Panel>

@@ -15,6 +15,9 @@ sap.ui.define([
 		dependencies : ["sap.ui.core"],
 		controls: [
 		],
+		elements: [
+			"ui5libs.amcharts.base.ColorSet"
+		],
 		modules: [
 		]
 	});
@@ -96,10 +99,13 @@ sap.ui.define([
 		}
 		return undefined;
 	};
-	thisLib._addColorSetFromProperty = function(that, oSettings, name) {
-		var value = thisLib.getColorSet(that._root, that.getProperty(name).getBaseColor());
-		if (value) {
-			this._addToSetting(oSettings, name, value);
+	thisLib._addColorSetFromAggregation = function(that, oSettings, name) {
+		var prop = that.getAggregation(name);
+		if (prop) {
+			var value = thisLib.getColorSet(that._root, prop.getBaseColor());
+			if (value) {
+				this._addToSetting(oSettings, name, value);
+			}
 		}
 	};
 	thisLib.getColorSet = function(root, basecolor) {

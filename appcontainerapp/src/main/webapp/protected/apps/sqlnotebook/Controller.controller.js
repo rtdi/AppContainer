@@ -43,7 +43,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 			var item = event.getParameter("item");
 			var editor = undefined;
 			if (item.getText() === "SQL") {
-				editor = new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt", dataHeight: "200pt" } );
+				editor = new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt", dataHeight: "300pt" } );
 			} else if (item.getText() === "HTML") {
 				editor = new ui5libs.contentcontrols.HTMLEditor( { useSplitter: false, codeEditorHeight: "200pt" } );
 			} else if (item.getText() === "MD") {
@@ -165,7 +165,7 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 									});
 								} else if (item.type === "SQL") {
 									cell = new ui5app.controls.NotebookCell( {
-										content: new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt", dataHeight: "200pt" } )
+										content: new ui5libs.contentcontrols.SQLEditor( { useSplitter: false, codeEditorHeight: "200pt", dataHeight: "300pt" } )
 									});
 								} else if (item.type === "XMLFragment") {
 									cell = new ui5app.controls.NotebookCell( {

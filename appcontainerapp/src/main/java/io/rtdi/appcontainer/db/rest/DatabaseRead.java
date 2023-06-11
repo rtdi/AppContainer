@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
-import io.rtdi.appcontainer.db.rest.entity.SQLResultSet;
+import io.rtdi.appcontainer.db.rest.entity.SQLQueryResult;
 import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
 import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
@@ -143,10 +143,11 @@ public class DatabaseRead extends RestService {
 				}
 	
 				try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
+					SQLQueryResult result = new SQLQueryResult(sql.toString());
 					try (ResultSet rs = stmt.executeQuery(); ) {
-						SQLResultSet resultset = new SQLResultSet(rs, sql.toString());
+						result.addResultSet(rs, "RS0");
 						tickRest();
-						return CustomSuccessMessage.createResponse(resultset);
+						return CustomSuccessMessage.createResponse(result);
 					}
 
 				} catch (SQLException e) {
