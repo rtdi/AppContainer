@@ -26,7 +26,7 @@ sap.ui.define([
 		_setComponentData : function() {
 			if (this.container) {
 				var data = this.getComponentData();
-				if (data && data.length > 0) {
+				if (data) {
 					if (Array.isArray(data)) {
 						this.container.data.setAll(data);
 						console.info("id[" + this.container.uid + ", " + this.container.className + "].data.setAll(data)" );

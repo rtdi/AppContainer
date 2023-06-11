@@ -39,7 +39,6 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 		},
 		onCompile : function() {
 			var oTableData = view.byId("datatablecontainer");
-			oTableData.unbindAggregation("items");
 			var querymodel = view.byId("query").getModel();
 			var datamodel = oTableData.getModel();
 			var sqltext = view.byId("sqltext");
@@ -49,20 +48,12 @@ function(Controller, ui5ajax, errorfunctions, helperfunctions) {
 						var oData = JSON.parse(data.text);
 						datamodel.setData(oData);
 						sqltext.setValue(oData.sql);
-						oTableData.bindAggregation("items", {
-							path: "/resultsets",
-							template: new ui5libs.controls.ResultSetTable({
-								selectionMode: "Single",
-								enableSelectAll: false,
-								selectionBehavior: "RowOnly",
-								visibleRowCountMode: "Auto",
-								layoutData: new sap.m.FlexItemData( {growFactor: 1} ),
-							})
-						});
+						oTableData.display();
 					},
 					error => {
 						var oData = JSON.parse(error.text);
-						sqltext.setValue(oData.message + "\n" + oData.sqlstatement.replace("\\r\\n", "\n"));
+						sqltext.setValue("");
+						oTableData.displayError(oData.message + "\n" + oData.sqlstatement.replace("\\r\\n", "\n"));
 					}
 				);
 		},

@@ -27,4 +27,8 @@ public class SchemaDefinition {
 		this.schemaname = name;
 	}
 	
+	public String getObjecttype() {
+		return "SCHEMA";
+	}
+	
 }

@@ -16,6 +16,7 @@ sap.ui.define([
 			this.attachModelContextChange(this.createColumns);
 			this.attachRowsUpdated(this._onTableDataChange);
 			this.bindRows("rows");
+			this.setMinAutoRowCount(2);
 		},
 		createColumns : function(event) {
 			var control = event.getSource();
@@ -26,21 +27,23 @@ sap.ui.define([
 					var columns = model.getProperty(context.getPath() + "/columns");
 					control.removeAllColumns();
 					control._wasresized = false;
-					for (var oCol of columns) {
-						var oColumn = new sap.ui.table.Column({
-							resizable: true,
-							autoResizable: true,
-							minWidth: 80,
-							label: [new sap.m.Label({ text: oCol.name })],
-							// template: [new sap.m.Text({ text: "{" + oCol.name + "}", wrapping: false })]
-							// template: [new sap.m.Text({ text: "{=!!${" + oCol.name + "}?${" + oCol.name + "}:'<null>'}", wrapping: false })]
-							template: [new ui5libs.controls.TextWithStyle({
-								text: "{=!!${" + oCol.name + "}?${" + oCol.name + "}:'<null>'}",
-								wrapping: false,
-								fontstyle: "{=!!${" + oCol.name + "}?'Normal':'Italic'}",
-							})]
-						});
-						control.addColumn(oColumn);
+					if (columns && Array.isArray(columns)) {
+						for (var oCol of columns) {
+							var oColumn = new sap.ui.table.Column({
+								resizable: true,
+								autoResizable: true,
+								minWidth: 80,
+								label: [new sap.m.Label({ text: oCol.name })],
+								// template: [new sap.m.Text({ text: "{" + oCol.name + "}", wrapping: false })]
+								// template: [new sap.m.Text({ text: "{=!!${" + oCol.name + "}?${" + oCol.name + "}:'<null>'}", wrapping: false })]
+								template: [new ui5libs.controls.TextWithStyle({
+									text: "{=!!${" + oCol.name + "}?${" + oCol.name + "}:'<null>'}",
+									wrapping: false,
+									fontstyle: "{=!!${" + oCol.name + "}?'Normal':'Italic'}",
+								})]
+							});
+							control.addColumn(oColumn);
+						}
 					}
 				}
 			}

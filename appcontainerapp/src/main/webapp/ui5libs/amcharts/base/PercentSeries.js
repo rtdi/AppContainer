@@ -13,15 +13,17 @@ sap.ui.define([
             properties: {
 				alignLabels: {type: "boolean" },
 				categoryField: {type: "string" },
-				colors: {type: "ui5libs.amcharts.base.ColorSet" },
 				fillField: {type: "string" },
             },
+            aggregations: {
+				colors: {type: "ui5libs.amcharts.base.ColorSet", multiple: false },
+			}
 		},
 		_buildSettings : function() {
 			var oSettings = Series.prototype._buildSettings.apply(this);
 			this._addFromProperty(oSettings, "alignLabels");
 			this._addFromProperty(oSettings, "categoryField");
-			this._addColorSetFromProperty(oSettings, "colors");
+			library._addColorSetFromAggregation(this, oSettings, "colors");
 			this._addFromProperty(oSettings, "fillField");
 			return oSettings;
 		},

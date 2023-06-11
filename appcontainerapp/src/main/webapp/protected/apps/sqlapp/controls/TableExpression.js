@@ -168,7 +168,7 @@ sap.ui.define([
 					} else {
 						ui5ajax.getJsonString("/catalog/schemas/"
 							+ helperfunctions.encodeURIfull(selectedrow.targetschemaname) + "/"
-							+ helperfunctions.encodeURIfull(selectedrow.targetobjectname) + "/columns", "ui5rest", this.getView())
+							+ helperfunctions.encodeURIfull(selectedrow.targetobjectname) + "/columns", "ui5rest", undefined)
 							.then(
 								data => {
 									columnmodel.setProperty(frompath + "/columns", JSON.parse(data.text));

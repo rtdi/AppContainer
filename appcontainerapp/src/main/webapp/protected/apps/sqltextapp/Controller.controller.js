@@ -24,9 +24,9 @@ function(Controller, ui5ajax, errorfunctions) {
 			}
 		    this.doLoad();
 		},
-		onCompile : function() {
+		onCompile : function(event) {
          	var oEditorControl = view.byId("sql");
-         	oEditorControl.compile();
+         	oEditorControl.compile(event);
          },
 		onSave : function () {
          	if (filepath) {

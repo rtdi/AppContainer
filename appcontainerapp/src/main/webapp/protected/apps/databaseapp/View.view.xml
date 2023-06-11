@@ -23,7 +23,8 @@
 						ariaLabelledBy="title"
 						toggleOpenState="onOpen"
 						rowSelectionChange=".onSourceSelect"
-						visibleRowCountMode="Auto">
+						visibleRowCountMode="Auto"
+						tooltip="">
 					   	<t:customData>
 					   		<ui5libs:controls.JsonContainer key="model" url="ui5rest/catalog/schemas" />
 					   	</t:customData>
@@ -37,9 +38,9 @@
 							<t:Column>
 								<Label text="Object Tree"/>
 								<t:template>
-									<HBox>
+									<HBox tooltip="{comment}">
 										<core:Icon src="{path: 'objecttype', formatter: '.iconFormatter'}" class="sapUiSmallMarginEnd" />
-										<Text text="{name}" wrapping="false" tooltip="{comment}" />
+										<Text text="{name} ({objecttype})" wrapping="false" tooltip="{comment}" />
 									</HBox> 
 								</t:template>
 							</t:Column>
@@ -150,21 +151,8 @@
 							</TabContainerItem>
 							<TabContainerItem name="Data" >
 								<content>
-									<t:Table
-										id="idTableData"
-										visibleRowCountMode="Auto"
-										rowsUpdated=".onTableDataResizeColumns"
-										selectionMode="None" selectionBehavior="RowOnly"
-										>
-						                <t:extension>
-						                    <OverflowToolbar>
-												<ToolbarSpacer />
-						                        <Button icon="sap-icon://resize" tooltip="Auto-resize all columns" press=".onTableDataResizeColumns"/>
-												<Button icon="sap-icon://write-new-document" tooltip="Open in FreeForm SQL" press=".onFreeFormSQL"/>
-						                        <Button icon="sap-icon://refresh" tooltip="Refresh the table contents" press=".onTableDataRefresh"/>
-						                    </OverflowToolbar>
-						                </t:extension>
-									</t:Table>
+									<ui5libs:controls.ResultSets id="idTableData" class="sapUiResponsiveContentPadding sapUiResponsivePadding--header noCloseButtons" itemClose=".onItemClose" >
+									</ui5libs:controls.ResultSets>
 								</content>
 							</TabContainerItem>
 							<TabContainerItem name="Dependencies" >
@@ -187,7 +175,6 @@
 														downDepth="1"
 													    initialDepth="5"
 													    topDepth="0"
-													    valueField="value"
 													    categoryField="name"
 													    childDataField="children"
 													    componentData="{/}"

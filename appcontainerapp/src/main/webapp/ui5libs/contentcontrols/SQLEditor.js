@@ -1,7 +1,7 @@
 sap.ui.define([
 	"ui5libs/ui5ajax",
 	"ui5libs/helperfunctions",
-	"ui5libs/controls/ResultSetTable",
+	"ui5libs/controls/ResultSets",
 	'ui5libs/contentcontrols/ContentBase',
 	'ui5libs/controls/CodeEditorE'
 ], function(ui5ajax, helperfunctions) {
@@ -24,10 +24,12 @@ sap.ui.define([
 					this.compile(event);
 				}.bind(this)
 			}));
-			var tabcontainer = new sap.m.TabContainer( {
+			var tabcontainer = new ui5libs.controls.ResultSets( {
 				layoutData: new sap.m.FlexItemData( {
 					growFactor: 1
-				})
+				}),
+				execute: function(event) { this.compile(event) }.bind(this),
+				enableScrolling: false
 			});
 			tabcontainer.setModel(new ui5libs.libs.model.json.JSONModelE());
 			this.setDataControl( new sap.m.VBox( {
@@ -63,38 +65,17 @@ sap.ui.define([
 			}
 			var tabcontainer = this.getDataControl().getItems()[0];
 			var datamodel = tabcontainer.getModel();
-			tabcontainer.unbindItems();
-			tabcontainer.removeAllItems();
 			ui5ajax.getJsonObject("/query?$select="+ helperfunctions.encodeURIfull(sqltext), "ui5rest", tabcontainer)
 				.then(
 					data => {
 						var oData = JSON.parse(data.text);
 						datamodel.setData(oData);
-						var table = new ui5libs.controls.ResultSetTable( {
-								selectionMode: "Single",
-								selectionBehavior: "RowOnly",
-								enableSelectAll: false,
-								visibleRowCountMode: "Auto",
-							} );
-						tabcontainer.bindItems({
-							path: "/resultsets",
-							template: new sap.m.TabContainerItem({
-								content: table,
-								name: "{name} ({= ${hasmore}?'&gt;':''} {rowcount} rows)"
-							})
-						});
+						tabcontainer.display();
 					},
 					error => {
 						var oData = JSON.parse(error.text);
 						datamodel.setData(undefined);
-						tabcontainer.addItem(new sap.m.TabContainerItem({
-								content: new sap.m.Text( {
-									text: oData.message,
-									wrapping: true
-								} ),
-								name: "Error"
-							})
-						);
+						tabcontainer.displayError(oData.message);
 					}
 				);
 		},

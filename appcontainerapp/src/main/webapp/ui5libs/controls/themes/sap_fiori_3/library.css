@@ -15,3 +15,8 @@
 	text-decoration-style: wavy;
 	text-decoration-line: underline;
 }
+
+div.sapMTabContainer.noCloseButtons > .sapMTabStripContainer > .sapMTabStrip > .sapMTSTabsContainer > .sapMTSTabs > .sapMTabStripItem > .sapMTSItemCloseBtnCnt {
+  visibility: hidden;
+}
+
