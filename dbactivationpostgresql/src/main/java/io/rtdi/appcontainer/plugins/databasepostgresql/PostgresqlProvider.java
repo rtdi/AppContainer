@@ -116,4 +116,20 @@ public class PostgresqlProvider implements IDatabaseProvider {
 		return false;
 	}
 
+	@Override
+	public String addLimitClause(String sql, Integer limit, Integer offset) {
+		return sql + (limit != null?" limit " + String.valueOf(limit):"") + (offset != null?" offset " + String.valueOf(offset):"");
+	}
+
+	@Override
+	public StringBuilder addLimitClause(StringBuilder sql, Integer limit, Integer offset) {
+		if (limit != null) {
+			sql.append(" limit ").append(limit);
+		}
+		if (offset != null) {
+			sql.append(" offset ").append(offset);
+		}
+		return sql;
+	}
+
 }

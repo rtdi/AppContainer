@@ -11,10 +11,12 @@ import org.apache.logging.log4j.Logger;
 import io.rtdi.appcontainer.databaseloginrealm.IDatabaseLoginPrincipal;
 import io.rtdi.appcontainer.db.rest.entity.SQLResultSet;
 import io.rtdi.appcontainer.dbactivationbase.AppContainerSQLException;
+import io.rtdi.appcontainer.plugins.database.IDatabaseProvider;
 import io.rtdi.appcontainer.rest.RestService;
 import io.rtdi.appcontainer.rest.entity.CustomSuccessMessage;
 import io.rtdi.appcontainer.rest.entity.ErrorMessage;
 import io.rtdi.appcontainer.servlets.DatabaseServlet;
+import io.rtdi.appcontainer.utils.DatabaseProvider;
 import io.rtdi.appcontainer.utils.Util;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -105,8 +107,8 @@ public class DatabaseRecordLookup extends RestService {
 			try (Connection conn = dbprincipal.getConnection();) {
 				String schema = Util.decodeURIfull(schemaraw);
 				schema = Util.getSchema(schema, request);
-				StringBuffer sql = new StringBuffer();
-				sql.append("select top 1 ");
+				StringBuilder sql = new StringBuilder();
+				sql.append("select ");
 				if (select != null) {
 					String[] projections = select.split("\\,");
 					boolean first = true;
@@ -132,7 +134,8 @@ public class DatabaseRecordLookup extends RestService {
 				if (where != null && where.length() != 0) {
 					sql.append("where ").append(where);
 				}
-	
+				IDatabaseProvider provider = DatabaseProvider.getDatabaseProvider(servletContext, dbprincipal.getDriver());
+				sql = provider.addLimitClause(sql, 1, null);
 				try (PreparedStatement stmt = conn.prepareStatement(sql.toString());) {
 					try (ResultSet rs = stmt.executeQuery(); ) {
 						SQLResultSet rootnode = new SQLResultSet(rs, sql.toString());

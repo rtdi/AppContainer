@@ -21,5 +21,7 @@ public interface IDatabaseProvider {
 	String createSql(SqlStatement sql) throws SQLException;
 	String[] getAggregationFunctions();
 	boolean isAggregationExpression(String text);
+	String addLimitClause(String sql, Integer limit, Integer offset);
+	StringBuilder addLimitClause(StringBuilder sql, Integer limit, Integer offset);
 	
 }
