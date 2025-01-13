@@ -2,6 +2,7 @@ package io.rtdi.appcontainer.plugins.databasesqlserver;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -31,6 +32,8 @@ public class SqlserverProvider implements IDatabaseProvider {
 	public static final String[] AGGREGATION_FUNCTIONS = {"AVG", "COUNT", "MAX", "MIN", "SUM"};
 	public static Pattern[] AGGREGATION_PATTERNS;
     final static String regex = ".*((%s\\s*\\(.*\\))).*";
+    final String regexorderby = "\\sorder\\s*by\\s";
+    final Pattern patternorderby = Pattern.compile(regex, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
     
     static {
     	AGGREGATION_PATTERNS = new Pattern[AGGREGATION_FUNCTIONS.length];
@@ -114,6 +117,30 @@ public class SqlserverProvider implements IDatabaseProvider {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public String addLimitClause(String sql, Integer limit, Integer offset) {
+		StringBuilder sb = new StringBuilder(sql);
+		return addLimitClause(sb, limit, offset).toString();
+	}
+
+	@Override
+	public StringBuilder addLimitClause(StringBuilder sql, Integer limit, Integer offset) {
+		/*
+		 * ORDER BY ...
+		 * OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY;
+		 */
+		Matcher matcher = patternorderby.matcher(sql);
+		if (!matcher.find()) {
+			sql.append(" order by 1"); // offset/next requires an order by
+		}
+		if (offset == null) {
+			offset = 0;
+		}
+		sql.append(" offset ").append(offset).append(" rows ");
+		sql.append(" fetch next ").append(limit).append(" rows only");
+		return sql;
 	}
 
 }

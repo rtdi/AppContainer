@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.io.FileSystem;
+import org.graalvm.polyglot.io.IOAccess;
 
 import io.rtdi.appcontainer.plugins.activation.ActivationResult;
 import io.rtdi.appcontainer.plugins.activation.ActivationSuccess;
@@ -40,7 +41,7 @@ public class JavaScriptExecutor implements IActivationService {
 			ActivationResult result = new ActivationResult(file.toPath(), "Executing test");
 			FileSystem fs = new RestrictedFileSystem(rootpath);
 			
-			try (Context context = Context.newBuilder("js").logHandler(log).out(out).err(err).fileSystem(fs).allowIO(true).build(); ) {
+			try (Context context = Context.newBuilder("js").logHandler(log).out(out).err(err).allowIO(IOAccess.newBuilder().fileSystem(fs).build()).allowIO(IOAccess.ALL).build(); ) {
 				Commands commands = new Commands(conn, rootpath, provider);
 				context.getBindings("js").putMember("db", commands);
 	            context.eval("js", code);
@@ -62,7 +63,7 @@ public class JavaScriptExecutor implements IActivationService {
 		            }
 	            }
 	            if (result.getChildren() == null || result.getChildren().size() == 0) {
-	            	// If neiter sdtout nor stderr has an output add a dummy success message
+	            	// If neither stdout nor stderr has an output add a dummy success message
 		            result.addResult("No (error) messages produced", null, ActivationSuccess.SUCCESS);
 	            }
 	            return result;

@@ -11,7 +11,7 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.11.1</version>
+				<version>${antlr.version}</version>
 				<configuration>
 					<sourceDirectory>src/main/java</sourceDirectory>
 					<outputDirectory>src/main/java</outputDirectory>

@@ -15,9 +15,8 @@
 		<url>https://github.com/rtdi/AppContainer</url>
 	</scm>
 	<properties>
-		<jersey>3.1.0</jersey>
-		<swagger>2.2.7</swagger>
-		<tomcatversion>10.0.13</tomcatversion>
+		<jersey>3.1.8</jersey>
+		<swagger>2.2.22</swagger>
 	</properties>
 	<repositories>
 		<repository>
@@ -29,7 +28,7 @@
 		</repository>
 		<repository>
 			<id>github</id>
-			<url>https://maven.pkg.github.com/rtdi/*</url>
+			<url>https://maven.pkg.github.com/rtdi</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -53,19 +52,24 @@
 					<warSourceDirectory>src/main/webapp</warSourceDirectory>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.17.1</version>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
-			<version>6.0.0</version>
+			<version>6.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
 			<artifactId>JDBCoData</artifactId>
-			<version>0.2.1</version>
+			<version>0.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -78,9 +82,9 @@
 			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-nop</artifactId>
-		    <version>2.0.6</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>2.1.0-alpha1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -100,7 +104,7 @@
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
-			<version>4.0.1</version>
+			<version>4.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -113,9 +117,9 @@
 			<version>${jersey}</version>
 		</dependency>
 		<dependency>
-		    <groupId>javax.xml.bind</groupId>
-		    <artifactId>jaxb-api</artifactId>
-		    <version>2.4.0-b180830.0359</version>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.4.0-b180830.0359</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -151,9 +155,9 @@
 			<version>${swagger}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.httpcomponents.client5</groupId>
-		    <artifactId>httpclient5</artifactId>
-		    <version>5.2.1</version>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.4.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -169,6 +173,11 @@
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
 			<artifactId>dbactivationhana</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>dbactivationabap</artifactId>
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
@@ -189,7 +198,7 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>6.4.0.202211300538-r</version>
+			<version>7.1.0.202411261347-r</version>
 		</dependency>
 		<dependency>
 			<groupId>io.rtdi.appcontainer</groupId>
@@ -206,7 +215,13 @@
 		<dependency>
 			<groupId>net.snowflake</groupId>
 			<artifactId>snowflake-jdbc</artifactId>
-			<version>3.13.29</version>
+			<version>3.21.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rtdi.appcontainer</groupId>
+			<artifactId>abaprealm</artifactId>
+			<version>${appcontainerrealm}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -218,7 +233,7 @@
 		<dependency>
 			<groupId>com.sap.cloud.db.jdbc</groupId>
 			<artifactId>ngdbc</artifactId>
-			<version>2.15.10</version>
+			<version>2.23.7</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -230,7 +245,7 @@
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
-			<version>11.2.2.jre17</version>
+			<version>12.9.0.jre11-preview</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -242,7 +257,7 @@
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
-			<version>8.0.31</version>
+			<version>9.1.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -254,14 +269,14 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.5.1</version>
+			<version>42.7.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.tomcat.embed</groupId>
-		    <artifactId>tomcat-embed-core</artifactId>
-		    <version>${tomcatversion}</version>
-		    <scope>test</scope>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcatversion}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

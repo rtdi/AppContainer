@@ -17,6 +17,9 @@ sap.ui.define([
             },
             aggregations: {
 				colors: {type: "ui5libs.amcharts.base.ColorSet", multiple: false },
+				labels: {type: "ui5libs.amcharts.base.RadialLabel", multiple: false },
+				ticks: {type: "ui5libs.amcharts.base.Tick", multiple: false },
+				slices: {type: "ui5libs.amcharts.base.Tick", multiple: false },
 			}
 		},
 		_buildSettings : function() {
@@ -33,6 +36,17 @@ sap.ui.define([
 		},
 		getDefaultTemplate : function() {
 			return this.container.slices.template;
+		},
+		applyTemplates : function() {
+			Series.prototype.applyTemplates.apply(this);
+			var labels = this.getLabels();
+			if (labels) {
+				this.container.labels.template.setAll(labels._buildSettings());
+			}
+			var ticks = this.getTicks();
+			if (ticks) {
+				this.container.ticks.template.setAll(ticks._buildSettings());
+			}
 		},
 	});
 });

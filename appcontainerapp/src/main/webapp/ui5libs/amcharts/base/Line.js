@@ -4,8 +4,8 @@ sap.ui.define([
 	return Graphics.extend("ui5libs.amcharts.base.Line", {
 		metadata: {
             properties: {
-				points : {type: "ui5libs.amcharts.IPoint[]"},
-				segments : {type: "ui5libs.amcharts.IPoint[]"},
+				points : {type: "ui5libs.amcharts.base.IPoint[]"},
+				segments : {type: "ui5libs.amcharts.base.IPoint[]"},
             },
 		},
 		_buildSettings : function() {

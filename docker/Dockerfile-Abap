@@ -1,0 +1,15 @@
+FROM rtdi/connectorrootapp
+
+LABEL maintainer="info@rtdi.io"
+
+ADD https://github.com/rtdi/AppContainerRealm/releases/latest/download/dbrealmbase.jar ./lib
+ADD https://github.com/rtdi/AppContainerRealm/releases/latest/download/abaprealm.jar ./lib
+ADD https://repo1.maven.org/maven2/io/rtdi/sap/jdbcabap/0.4.0/jdbcabap-0.4.0.jar ./lib
+ADD https://raw.githubusercontent.com/rtdi/AppContainer/master/docker/server-abap.xml conf/server.xml
+ADD https://github.com/rtdi/AppContainer/releases/latest/download/AppContainer.war ./webapps/
+
+EXPOSE 8080
+EXPOSE 8443
+
+
+CMD ["appcontainer.sh", "run"]
